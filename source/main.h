@@ -4,6 +4,9 @@
 #include <iostream>
 #include <vector>
 #include <string>
+//#include <future>
+#include <thread>
+#include <atomic>
 
 /* 
     nlohmnann JSON is a feature-rich header-only C++ JSON implementation.
@@ -13,6 +16,11 @@
 #include "json.hpp"
 
 #include "helper.h"
+#include "stringthings.h"
 #include "system.h"
+
+void on_receive_response(const ollama::response& response);
+
+void send_to_ollama(string Text);
 
 #endif //MAIN_H

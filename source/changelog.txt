@@ -1,0 +1,6 @@
+0.002_241011
+  - Started building main structure.
+  - Testing routines to see what works.
+
+0.001_241010
+  - First write, compile, and publish to github.

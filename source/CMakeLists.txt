@@ -27,16 +27,15 @@ add_executable(chatapi)
 
 target_include_directories(chatapi PRIVATE 
   ../../ollama-hpp/include
-#   ../../rpi_ws281x-master
-#   ../../imgui
-#   ../../imgui/backends
-#   ../../imgui/misc/cpp
-#   ${Boost_INCLUDE_DIR}
 )
 
 target_sources(chatapi PRIVATE
-#   ../../imgui/imgui.cpp
+  ../../ollama-hpp/include/ollama.hpp
+  ../../ollama-hpp/include/json.hpp
   helper.cpp
+  stringthings.cpp
+  fled_time.cpp
+  system.cpp
   main.cpp
 )
 
