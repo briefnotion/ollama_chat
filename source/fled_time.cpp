@@ -199,34 +199,21 @@ int FLED_TIME_VAR::get_second()
 }
 
 // -------------------------------------------------------------------------------------
-// Keeps track of timing variables
-double FLED_TIME::store_sleep_time(double tmeSleep)
-// Pass through variable
-// Stores the Sleep time to be displayed in diag, then returns the same value.
-{
-  PREVSLEEPTIME.set_data(tmeSleep);
-  return tmeSleep;
-}
-
-double FLED_TIME::get_sleep_time(double Current_Time, unsigned long Wake_Time)
-{
-  // Return, in microseconds, the amount of time required to sleep.
-  
-  double sleeptime = 0;
-
-  if(Current_Time < Wake_Time)
-  {
-    sleeptime = (unsigned long)Wake_Time - Current_Time;
-  }
-
-  return sleeptime;
-}
 
 void FLED_TIME::request_ready_time(unsigned long Ready_Time)
 {
-  if (Ready_Time < SLEEP_WAKE_TIME)
+  int requested_sleep_time = Ready_Time - now();
+
+  if (requested_sleep_time > 0)
   {
-    SLEEP_WAKE_TIME = Ready_Time;
+    if (requested_sleep_time < SLEEP_TIME)
+    {
+      SLEEP_TIME = requested_sleep_time;
+    }
+  }
+  else
+  {
+    SLEEP_TIME = 0;
   }
 }
 
@@ -304,11 +291,23 @@ void FLED_TIME::sleep_till_next_frame()
   // Reset the the compute timer (stopwatch) and store the value before the program sleeps. 
   COMPUTETIME.set_data(EFFIC_TIMER.elapsed_timer_time(now()));
 
+  // Store Sleep time, probably doesnt need to be before, but here it is.
+  PREVSLEEPTIME.set_data(SLEEP_TIME);
+
+  if (SLEEP_TIME > 1000 || SLEEP_TIME < 0)
+  {
+    cout << "Sleep time is more that 1000 ms. Weird.  Setting it to 1000." << endl;
+    SLEEP_TIME = 1000;
+  }
+
   // Sleep until the next frame.
-  usleep ((int)(1000 * store_sleep_time(get_sleep_time(now(), SLEEP_WAKE_TIME))));
-  
+  if (SLEEP_TIME > 0 && SLEEP_TIME < 1000 )
+  {
+    usleep ((1000 * SLEEP_TIME));
+  }
+
   // Reset to 1 second
-  SLEEP_WAKE_TIME = 1000;
+  SLEEP_TIME = 1000;
 
   // Start the the compute timer (stopwatch) before the program as the program wakes to measure the amount of 
   //  time the compute cycle is.

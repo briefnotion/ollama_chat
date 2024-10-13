@@ -35,6 +35,8 @@ target_sources(chatapi PRIVATE
   helper.cpp
   stringthings.cpp
   fled_time.cpp
+  threading.cpp
+  ollama_helper.cpp
   system.cpp
   main.cpp
 )

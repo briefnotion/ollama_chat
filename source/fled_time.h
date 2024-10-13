@@ -120,11 +120,14 @@ class FLED_TIME_VAR
 
 // -------------------------------------------------------------------------------------
 // Keeps track of timing variables
+//  1ms accuracy is good enough for anything outside of the sciences.
+//  However, watching my blinkers get out of sync after 20 seconds threads 
+//  on the side of irritating.
+
 class FLED_TIME
 {
   private:
   std::chrono::time_point<std::chrono::system_clock> TIME_START;
-  //std::chrono::time_point<std::chrono::system_clock> tmeFrame;
 
   EFFICIANTCY_TIMER EFFIC_TIMER;           // Diagnostic timer to measure cycle times.
 
@@ -138,17 +141,12 @@ class FLED_TIME
   bool test = false;
 
   // How long sleep will occure
-  unsigned long   SLEEP_WAKE_TIME = 0; // Will contain time the cycle sleeper wakes.
+  int SLEEP_TIME = 1000;
 
   public:
   STAT_DATA_DOUBLE COMPUTETIME;   // Loop time spent while only proceessing.
   STAT_DATA_DOUBLE CYCLETIME;     // Amount of time to complete an entire cycle.
-  STAT_DATA_DOUBLE PREVSLEEPTIME; // Stored value returned on pref sleep cycle.
-
-  private:
-  double store_sleep_time(double tmeSleep);
-
-  double get_sleep_time(double Current_Time, unsigned long Wake_Time);
+  STAT_DATA_DOUBLE PREVSLEEPTIME; // Stored value returned on prev sleep cycle.
 
   public:
   void request_ready_time(unsigned long Ready_Time);

@@ -1,3 +1,8 @@
+0.003_241012
+  - Async communication to Ollama is working but still needs 
+      attention.
+  - Corrected an errer if fled_time.
+
 0.002_241011
   - Started building main structure.
   - Testing routines to see what works.
