@@ -43,21 +43,19 @@ int OLLAMA_API_MUTEX::response_size() const
   return RESPONSE_VECTOR.size();
 }
 
-string OLLAMA_API_MUTEX::return_vector_as_string()
+void OLLAMA_API_MUTEX::get_response_to_vector(vector<string> &Receiving_Vector)
 {
   lock_guard<mutex> lock(MUTEX_);
-  string ret_string = "";
 
   if (RESPONSE_VECTOR.size() > 0)
   {
     for (int i = 0; i < (int)RESPONSE_VECTOR.size(); ++i) 
     {
-      ret_string += RESPONSE_VECTOR[i];
+      Receiving_Vector.push_back(RESPONSE_VECTOR[i]);
     }
   }
-
+  
   RESPONSE_VECTOR.clear();
-  return ret_string;
 }
 
 // ------------------------------------------------------------------------- //

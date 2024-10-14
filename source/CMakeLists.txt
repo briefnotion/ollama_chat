@@ -37,6 +37,7 @@ target_sources(chatapi PRIVATE
   fled_time.cpp
   threading.cpp
   ollama_helper.cpp
+  ollama_api.cpp
   system.cpp
   main.cpp
 )

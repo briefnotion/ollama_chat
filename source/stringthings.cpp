@@ -461,6 +461,30 @@ void print_vector_with_title(string Title, vector<string> &Vector_String)
   }
 }
 
+string ask_a_question(string Question)
+{
+  string input = "";
+  cout << Question << endl;
+  getline(cin, input);
+  return input;
+}
+
+string return_vector_as_string(vector<string> &Vector_String)
+{
+  string ret_string = "";
+
+  if (Vector_String.size() > 0)
+  {
+    for (int i = 0; i < (int)Vector_String.size(); ++i) 
+    {
+      ret_string += Vector_String[i];
+    }
+  }
+
+  Vector_String.clear();
+  return ret_string;
+}
+
 void STRING_STRING::store(string str_value)
 {
   STR_VALUE = str_value;

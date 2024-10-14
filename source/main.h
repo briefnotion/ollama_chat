@@ -25,10 +25,4 @@ using namespace std;
 
 // ------------------------------------------------------------------------- //
 
-void on_receive_response(const ollama::response& response);
-void send_to_ollama(SYSTEM &sdSystem, string Text);
-bool ollama_create(SYSTEM &sdSystem);
-
-// ------------------------------------------------------------------------- //
-
 #endif //MAIN_H

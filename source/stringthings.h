@@ -159,6 +159,10 @@ short xor_checksum(string Line, char Start_Char, char End_Char);
  */
 void print_vector_with_title(string Title, vector<string> &Vector_String);
 
+string ask_a_question(string Question);
+
+string return_vector_as_string(vector<string> &Vector_String);
+
 class STRING_STRING
 // Variable stores original string number and converted value.
 // Sets error if conversion unsucessful.

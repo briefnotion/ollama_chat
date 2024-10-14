@@ -267,6 +267,11 @@ bool FLED_TIME::setframetime()
   CURRENT_FRAME_TIME = now();
 
   return ERROR_EXIST;
+
+  // Error can be reported as follows in true loop if necessary.
+  //cout << "Frame Time: Inteupted " << endl;
+  //cout << "  Current Time Frame: " << to_string(sdSystem.PROGRAM_TIME.current_frame_time()) << endl;
+  //cout << "          Error (ms): " << to_string(sdSystem.PROGRAM_TIME.error()) << endl;
 }
 
 double FLED_TIME::tmeFrameElapse()
@@ -296,7 +301,6 @@ void FLED_TIME::sleep_till_next_frame()
 
   if (SLEEP_TIME > 1000 || SLEEP_TIME < 0)
   {
-    cout << "Sleep time is more that 1000 ms. Weird.  Setting it to 1000." << endl;
     SLEEP_TIME = 1000;
   }
 
