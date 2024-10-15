@@ -40,12 +40,17 @@ class OLLAMA_API
   vector<string> OLLAMA_MODELS_LIST;
   vector<string> OLLAMA_MODELS_RUNNING;
 
-  ollama::options options;
-  ollama::response responce;
+  ollama::options OPTIONS;
+
+  ollama::response RESPONSE;
+  ollama::response CONTEXT;
 
   public:
 
-  vector<string> RESPONSE;
+  vector<string> RESPONSE_STRING_VECTOR;
+
+  // Sending
+  string REQUEST = "";
 
   bool create();
 
@@ -59,6 +64,7 @@ class OLLAMA_API
 
   int check_response();
 
+  void check_response_done();
 };
 
 // ------------------------------------------------------------------------- //

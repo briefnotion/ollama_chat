@@ -1,3 +1,7 @@
+0.005_241014
+  - Code is running better.
+  - Context is working
+  
 0.004_241013
   - built ollama_api
   - built ollama_helper

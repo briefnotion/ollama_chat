@@ -7,6 +7,43 @@ using namespace std;
 
 // ------------------------------------------------------------------------- //
 
+void OLLAMA_API_MUTEX::set_complete_response_after_done(ollama::response Response)
+{
+  lock_guard<mutex> lock(MUTEX_);
+
+  COMPLETE_RESPONSE_AFTER_DONE = Response;
+  COMPLETE_RESPONSE_READY_AFTER_DONE = true;
+}
+
+ollama::response OLLAMA_API_MUTEX::get_complete_response_after_done()
+{
+  lock_guard<mutex> lock(MUTEX_);
+
+  ollama::response ret_response = COMPLETE_RESPONSE_AFTER_DONE;
+
+  // Clear the response.
+  COMPLETE_RESPONSE_AFTER_DONE = ollama::response();
+  COMPLETE_RESPONSE_READY_AFTER_DONE = false;
+
+  CHANGED = false;
+
+  return ret_response;
+}
+
+bool OLLAMA_API_MUTEX::complete_respoonse_ready_after_done() const
+{
+  lock_guard<mutex> lock(MUTEX_);
+
+  if (CHANGED)
+  {
+    return COMPLETE_RESPONSE_READY_AFTER_DONE;
+  }
+  else
+  {
+    return false;
+  }
+}
+
 int OLLAMA_API_MUTEX::done() const
 {
   lock_guard<mutex> lock(MUTEX_);
@@ -17,18 +54,11 @@ void OLLAMA_API_MUTEX::set_done(int Done)
 {
   lock_guard<mutex> lock(MUTEX_);
   DONE = Done;
-}
 
-void OLLAMA_API_MUTEX::set_request(string Request)
-{
-  lock_guard<mutex> lock(MUTEX_);
-  REQUEST = Request;
-}
-
-string OLLAMA_API_MUTEX::request() const
-{
-  lock_guard<mutex> lock(MUTEX_);
-  return REQUEST;
+  if (DONE == OLLAMA_API_RESPONSE_DONE)
+  {
+    CHANGED = true;
+  }
 }
 
 void OLLAMA_API_MUTEX::add_to_response(const string& value) 

@@ -97,9 +97,13 @@ int main()
         // Print Responses that may arrive.
         if (sdSystem.OLLAMA_SYSTEM.check_response() > 0)
         {
-          cout << return_vector_as_string(sdSystem.OLLAMA_SYSTEM.RESPONSE) << flush;
+          cout << return_vector_as_string(sdSystem.OLLAMA_SYSTEM.RESPONSE_STRING_VECTOR) << flush;
         }
+        
+        sdSystem.OLLAMA_SYSTEM.check_response_done();
       }
+
+      //cout << to_string(sdSystem.OLLAMA_SYSTEM.get_status()) << flush;
 
       // ------------------------------------------------------------------------- //
 
@@ -110,6 +114,7 @@ int main()
         if (sdSystem.OLLAMA_SYSTEM.get_status() == OLLAMA_API_REQUEST_SUBMITTED)
         {
           // start generating response
+          cout << endl << "OUTPUT > " << endl;
           
           // Be careful with this because it looks like black magic to me.
           sdSystem.OLLAMA_RESPONSE_THREAD.start_render_thread([&]() 
