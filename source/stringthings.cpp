@@ -469,7 +469,7 @@ string ask_a_question(string Question)
   return input;
 }
 
-string return_vector_as_string(vector<string> &Vector_String)
+string return_vector_as_string(vector<string> &Vector_String, bool Add_LF)
 {
   string ret_string = "";
 
@@ -478,6 +478,11 @@ string return_vector_as_string(vector<string> &Vector_String)
     for (int i = 0; i < (int)Vector_String.size(); ++i) 
     {
       ret_string += Vector_String[i];
+      
+      if (Add_LF)
+      {
+        ret_string += "\n";
+      }
     }
   }
 

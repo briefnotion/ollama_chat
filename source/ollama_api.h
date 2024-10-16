@@ -13,6 +13,7 @@
 
 #include "helper.h"
 #include "ollama_helper.h"
+#include "tty_io.h"
 
 using namespace std;
 
@@ -52,13 +53,11 @@ class OLLAMA_API
   // Sending
   string REQUEST = "";
 
-  bool create();
+  bool create(TTY_OUTPUT &Output_Container, TTY_OUTPUT_FOCUS &Output_Focus);
 
   int get_status();
 
-  void set_ready_for_request();
-
-  void set_questioning();
+  void set_status(int Status);
 
   void set_request(const string& request);
 

@@ -1,3 +1,9 @@
+0.006-241015
+- Created a simple TTY_Interface. 
+    Its not finished, and i didnt put any limit on the size of the text 
+    box.  Works ok.  Probably spent more time on it than I should've.
+- Changed other parts of the code.       
+
 0.005_241014
   - Code is running better.
   - Context is working

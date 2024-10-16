@@ -15,22 +15,33 @@
 #include "fled_time.h"
 #include "threading.h"
 #include "ollama_api.h"
+#include "tty_io.h"
 
 using namespace std;
 
 // -------------------------------------------------------------------------------------
 
+// Contains all varibles to be access by the main and provides a communications 
+//  channel between them.
 
 // -------------------------------------------------------------------------------------
 
 class SYSTEM
 {
   public:
+  // I/O
+  TTY_INPUT INPUT;
+  
+  TTY_OUTPUT_FOCUS  OUTPUT_FOCUS;
+  TTY_OUTPUT        OUTPUT_INPUT;
+  TTY_OUTPUT        OUTPUT_OLLAMA_RESPONSE;
 
+  // Program Clock
   FLED_TIME        PROGRAM_TIME;
 
-  OLLAMA_API OLLAMA_SYSTEM;
-  THREADING_INFO OLLAMA_RESPONSE_THREAD;
+  // Ollama System
+  OLLAMA_API      OLLAMA_SYSTEM;
+  THREADING_INFO  OLLAMA_RESPONSE_THREAD;
 
 };
 

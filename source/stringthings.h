@@ -161,7 +161,7 @@ void print_vector_with_title(string Title, vector<string> &Vector_String);
 
 string ask_a_question(string Question);
 
-string return_vector_as_string(vector<string> &Vector_String);
+string return_vector_as_string(vector<string> &Vector_String, bool Add_LF = false);
 
 class STRING_STRING
 // Variable stores original string number and converted value.

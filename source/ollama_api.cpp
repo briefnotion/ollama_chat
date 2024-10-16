@@ -79,7 +79,7 @@ void OLLAMA_API::proc_render_thread()
 
 // ------------------------------------------------------------------------- //
 
-bool OLLAMA_API::create()
+bool OLLAMA_API::create(TTY_OUTPUT &Output_Container, TTY_OUTPUT_FOCUS &Output_Focus)
 {
   bool ret_running = false;
 
@@ -95,7 +95,10 @@ bool OLLAMA_API::create()
 
   if (OLLAMA.is_running())
   {
-    cout << "Version: " << OLLAMA.get_version() << endl;
+    string thing = "";
+
+    Output_Container.add_to("Version: " + OLLAMA.get_version() + "\n", Output_Focus);
+    //cout << "Version: " << OLLAMA.get_version() << endl;
 
     // This can optionally be used to deliberately load a model into memory prior to use. 
     // This occurs automatically when a request is made for an unloaded model, but can be 
@@ -113,15 +116,21 @@ bool OLLAMA_API::create()
 
     // Request model info from the OLLAMA server.
     nlohmann::json model_info = OLLAMA.show_model_info("llama3:8b");
-    cout << "Model family is " << model_info["details"]["family"] << endl;
+    //cout << "Model family is " << model_info["details"]["family"] << endl;
+    thing = model_info["details"]["family"];
+    Output_Container.add_to( "Model family is " + thing + "\n", Output_Focus);
 
     // List the models available locally in the OLLAMA server
     OLLAMA_MODELS_LIST = OLLAMA.list_models();
-    print_vector_with_title("Available models", OLLAMA_MODELS_LIST);
+    //print_vector_with_title("Available models", OLLAMA_MODELS_LIST);
+    thing = return_vector_as_string(OLLAMA_MODELS_LIST, true);
+    Output_Container.add_to( "Available models \n" + thing + "\n", Output_Focus);
 
     // List the models available locally in the OLLAMA server
     OLLAMA_MODELS_RUNNING = OLLAMA.list_running_models();
-    print_vector_with_title("Running models", OLLAMA_MODELS_RUNNING);
+    //print_vector_with_title("Running models", OLLAMA_MODELS_RUNNING);
+    thing = return_vector_as_string(OLLAMA_MODELS_RUNNING, true);
+    Output_Container.add_to( "Running models \n" + thing + "\n", Output_Focus);
 
     // Most calls will throw ollama::exception in the event of an error, with details on the exception that has occurred. Exceptions are enabled by default.    
     //try { 
@@ -248,7 +257,10 @@ bool OLLAMA_API::create()
     OPTIONS["num_ctx"] = 8192; 
     // increases the context window size to 8192 tokens. This means the model can consider up to 8192 tokens from the input context when generating responses, which can help improve the coherence and relevance of the output, especially for longer inputs.
 
-    cout  << endl;
+
+    // -------------------------------------------------
+    
+    Output_Container.add_to( " -----\n\n", Output_Focus);
 
     ret_running = true;
   }
@@ -261,14 +273,9 @@ int OLLAMA_API::get_status()
   return OLLAMA_MUTEX.done();
 }
 
-void OLLAMA_API::set_ready_for_request()
+void OLLAMA_API::set_status(int Status)
 {
-  OLLAMA_MUTEX.set_done(OLLAMA_API_READY_FOR_REQUEST);
-}
-
-void OLLAMA_API::set_questioning()
-{
-  OLLAMA_MUTEX.set_done(OLLAMA_API_WRITING_REQUEST);
+  OLLAMA_MUTEX.set_done(Status);
 }
 
 void OLLAMA_API::set_request(const string& Request)

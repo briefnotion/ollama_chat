@@ -34,6 +34,7 @@ target_sources(chatapi PRIVATE
   ../../ollama-hpp/include/json.hpp
   helper.cpp
   stringthings.cpp
+  tty_io.cpp
   fled_time.cpp
   threading.cpp
   ollama_helper.cpp

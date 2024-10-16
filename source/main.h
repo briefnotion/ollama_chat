@@ -22,6 +22,7 @@ using namespace std;
 #include "stringthings.h"
 #include "system.h"
 #include "ollama_helper.h"
+#include "tty_io.h"
 
 // ------------------------------------------------------------------------- //
 
