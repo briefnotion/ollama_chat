@@ -5,6 +5,7 @@
 #include <string>
 #include <vector>
 
+
 // ------------------------------------------------------------------------- //
 // This is a bit of a future proof that is completely untested.
 //  Keeping this around just as a reminder that it is possible.
@@ -15,6 +16,8 @@
 #include <unistd.h>
 #include <fcntl.h>
 #endif
+
+#include "definitions.h"
 
 using namespace std;
 // ------------------------------------------------------------------------- //

@@ -21,7 +21,7 @@
 // DEFINITIONS
 // -------------------------------------------------------------------------------------
 
-#define Revision "0.006-241015"
+#define Revision "0.007-241025"
 #define  QACODE  "Z782"
 
 // -------------------------------------------------------------------------------------
@@ -37,8 +37,7 @@
 
 #define TEST_MODE           false
 
-
-
+#define INTEFACE_NON_BLOCKING_MODE true
 
 /*
 #define TEST_DATA   false

@@ -2,6 +2,7 @@
 #define THREADING_H
 
 #include <future>
+#include <iostream>
 
 #include "fled_time.h"
 
@@ -28,6 +29,9 @@ class THREADING_INFO
 
   public:
 
+  //Returns true if thread is currently running a procedure
+  bool is_running();
+
   // Initializes the threading process with a specified frame rate (FPS).
   // @param Time_in_FPS The desired FPS for the threading process.
   void create(int Time_in_FPS);
@@ -49,6 +53,7 @@ class THREADING_INFO
   bool check_to_run_routine_on_thread(unsigned long Time_Frame);
 
   // Waits for the rendering thread to finish its execution.
+  // Call at program closing.
   void wait_for_thread_to_finish();
 };
 

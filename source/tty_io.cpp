@@ -253,12 +253,18 @@ int TTY_INPUT::kbhit()
 
 void TTY_INPUT::restore_terminal_settings()
 {
-  tcsetattr(STDIN_FILENO, TCSANOW, &STARTING_TERMINAL_STATE); // Restore old settings
+  if (INTEFACE_NON_BLOCKING_MODE)
+  {
+    tcsetattr(STDIN_FILENO, TCSANOW, &STARTING_TERMINAL_STATE); // Restore old settings
+  }
 }
 
 void TTY_INPUT::create()
 {
-  set_nonblocking_mode();
+  if (INTEFACE_NON_BLOCKING_MODE)
+  {
+    set_nonblocking_mode();
+  }
 }
 
 void TTY_INPUT::read_input(TTY_OUTPUT &Output_Container, TTY_OUTPUT_FOCUS &Output_Focus)

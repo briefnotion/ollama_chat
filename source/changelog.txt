@@ -1,3 +1,6 @@
+0.007-241025
+  - Restoration after system migration
+  
 0.006-241015
 - Created a simple TTY_Interface. 
     Its not finished, and i didnt put any limit on the size of the text 

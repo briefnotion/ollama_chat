@@ -7,6 +7,11 @@ using namespace std;
 
 // ------------------------------------------------------------------------- //
 
+bool THREADING_INFO::is_running()
+{
+  return IS_RUNNING;
+}
+
 void THREADING_INFO::create(int Time_in_FPS)
 {
   THREAD_TIMER.set( 1000 / Time_in_FPS );

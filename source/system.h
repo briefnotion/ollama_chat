@@ -8,7 +8,7 @@
   This library was created by Jonathan Monty and is available under the MIT License.
   For more details visit: https://github.com/jmont-dev/ollama-hpp
 */
-#include "ollama.hpp"
+#include <nlohmann/json.hpp>
 
 #include "helper.h"
 //#include "stringthings.h"
@@ -29,6 +29,7 @@ using namespace std;
 class SYSTEM
 {
   public:
+
   // I/O
   TTY_INPUT INPUT;
   

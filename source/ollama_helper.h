@@ -6,6 +6,13 @@
 #include <vector>
 #include <mutex>
 
+/* 
+  nlohmnann JSON is a feature-rich header-only C++ JSON implementation.
+  This library was created by Niels Lohmann and is available under the MIT License.
+  For more details visit: https://github.com/nlohmann/json
+*/
+#include <nlohmann/json.hpp>
+
 #include "ollama.hpp"
 
 #define OLLAMA_API_READY_FOR_REQUEST      0
@@ -23,8 +30,6 @@ class OLLAMA_API_MUTEX
   private:
 
   mutable mutex MUTEX_;
-
-  //string REQUEST = "";
 
   vector<string> RESPONSE_VECTOR;
   int DONE = 0;

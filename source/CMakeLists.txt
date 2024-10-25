@@ -13,6 +13,7 @@ endif()
 # Project name and description
 project(chatapi)
 
+find_package(nlohmann_json REQUIRED)
 # find_package(glfw3 REQUIRED)
 # find_package(OpenGL REQUIRED)
 # find_package(Boost COMPONENTS system thread filesystem REQUIRED)
@@ -23,6 +24,8 @@ project(chatapi)
 # find_library(GLFW_LIBRARIES NAMES glfw3)
 # find_library(LIBRT rt)
 
+include_directories(${nlohmann_json_INCLUDE_DIRS})
+
 add_executable(chatapi)
 
 target_include_directories(chatapi PRIVATE 
@@ -31,7 +34,7 @@ target_include_directories(chatapi PRIVATE
 
 target_sources(chatapi PRIVATE
   ../../ollama-hpp/include/ollama.hpp
-  ../../ollama-hpp/include/json.hpp
+  #../../ollama-hpp/include/json.hpp
   helper.cpp
   stringthings.cpp
   tty_io.cpp
@@ -45,7 +48,8 @@ target_sources(chatapi PRIVATE
 
 # target_compile_definitions(chatapi PRIVATE BOOST_BIND_GLOBAL_PLACEHOLDERS)
 
-# target_link_libraries(chatapi 
+ target_link_libraries(chatapi 
+    ${nlohmann_json_LIBRARIES}
 #   ${WIRINGPI_LIBRARIES} 
 #   ${WS2811_LIBRARIES}
 #   glfw
@@ -53,7 +57,7 @@ target_sources(chatapi PRIVATE
 #   ${PTHREAD_LIBRARIES}
 #   ${LIBRT}
 #   ${Boost_LIBRARIES}
-# )
+)
 
 # Specify the source files for the project
 # set(CMAKE_CXX_STANDARD 14)
