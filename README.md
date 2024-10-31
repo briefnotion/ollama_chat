@@ -9,10 +9,29 @@ To Compile:
 
 
 
+Things:
+
+
+sudo apt-get update
+
+sudo apt-get install nlohmann-json3-dev
+sudo apt-get install libssl-dev
+
+
+
+https://github.com/ollama/ollama
+
+
+
+https://github.com/jmont-dev/ollama-hpp
 gh repo clone jmont-dev/ollama-hpp
 
 
 
+https://github.com/BlackyDrum/chromadb-cpp
+gh repo clone BlackyDrum/chromadb-cpp
 
-sudo apt-get update
-sudo apt-get install nlohmann-json3-dev
+
+Extra:
+
+https://docs.trychroma.com/deployment/auth#static-api-token-authentication

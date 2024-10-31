@@ -1,3 +1,10 @@
+0.008-241028
+  - THIS BUILD DOES NOT WORK:
+      On line 8 of ollama_api.h, if (#include "ollama.hpp") is not commented out, 
+        line 54 of chromadb_api.cpp (chromadb::Client client("http", "localhost", "8000");)
+        will throw the exceotion:
+          Include this for: Fatal glibc error: pthread_mutex_lock.c:94 (___pthread_mutex_lock): assertion failed: mutex->__data.__owner == 0
+
 0.007-241025
   - Restoration after system migration
   

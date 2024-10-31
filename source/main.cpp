@@ -6,6 +6,8 @@
 using namespace std;
 
 // ------------------------------------------------------------------------- //
+
+
 // ------------------------------------------------------------------------- //
 
 int main()
@@ -19,7 +21,7 @@ int main()
   SYSTEM sdSystem;
 
   // ------------------------------------------------------------------------- //
-
+/*
   // Prepair Variables:
   sdSystem.INPUT.create();
 
@@ -27,9 +29,15 @@ int main()
   sdSystem.OUTPUT_OLLAMA_RESPONSE.create(1, 0, 5, 10);
 
   sdSystem.OLLAMA_RESPONSE_THREAD.create(TEST_THREAD_TIMER_DELAY);
+*/
 
   // ------------------------------------------------------------------------- //
 
+  sdSystem.CHROMADB_SYSTEM.embedding_test();
+
+  // ------------------------------------------------------------------------- //
+
+/*
   //initialize_response_callback();
 
   // Sleeping Loop Variables
@@ -170,6 +178,7 @@ int main()
   {
     cout << endl << "No server available." << endl << endl;
   }
+*/
 
   return 0;
 }

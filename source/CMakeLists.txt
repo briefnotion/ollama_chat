@@ -1,83 +1,97 @@
-# Minimum required version of CMake
 cmake_minimum_required(VERSION 3.18.0)
 
+# Specify the C++ standard
+set(CMAKE_CXX_STANDARD 20)
+set(CMAKE_CXX_STANDARD_REQUIRED True)
+
+# Assign build type
 set(BUILD_RELEASE ON)
 set(BUILD_STRICT OFF)
 
 if(BUILD_RELEASE)
-      set(CMAKE_BUILD_TYPE Release)
+    set(CMAKE_BUILD_TYPE Release)
 else()
-      set(CMAKE_BUILD_TYPE Debug)
+    set(CMAKE_BUILD_TYPE Debug)
 endif()
 
 # Project name and description
 project(chatapi)
 
-find_package(nlohmann_json REQUIRED)
-# find_package(glfw3 REQUIRED)
-# find_package(OpenGL REQUIRED)
-# find_package(Boost COMPONENTS system thread filesystem REQUIRED)
+# Find JSON
+#find_package(nlohmann_json REQUIRED)
 
-# find_library(WIRINGPI_LIBRARIES NAMES wiringPi)
-# find_library(WS2811_LIBRARIES NAMES ws2811)
-# find_library(PTHREAD_LIBRARIES NAMES pthread)
-# find_library(GLFW_LIBRARIES NAMES glfw3)
-# find_library(LIBRT rt)
+# Find the OpenSSL package
+find_package(OpenSSL REQUIRED)
 
-include_directories(${nlohmann_json_INCLUDE_DIRS})
+# Find ChromaDB
+if (WIN32)
+    set(CMAKE_PREFIX_PATH "C:/Program Files (x86)/ChromaDB")
+    find_library(ChromaDB_LIB NAMES chromadb HINTS ${CMAKE_PREFIX_PATH}/lib)
+    find_path(ChromaDB_INCLUDE_DIR NAMES ChromaDB/ChromaDB.h HINTS ${CMAKE_PREFIX_PATH}/include)
+else()
+    find_library(ChromaDB_LIB NAMES chromadb HINTS /usr/local/lib /usr/lib /lib)
+    find_path(ChromaDB_INCLUDE_DIR NAMES ChromaDB/ChromaDB.h HINTS /usr/local/include /include)
+endif()
 
-add_executable(chatapi)
+# Check ChromaDB_CPP Errors
+if(NOT ChromaDB_LIB)
+    message(FATAL_ERROR "ChromaDB library not found")
+endif()
+if(NOT ChromaDB_INCLUDE_DIR)
+    message(FATAL_ERROR "ChromaDB include directory not found")
+endif()
 
-target_include_directories(chatapi PRIVATE 
-  ../../ollama-hpp/include
+# Inclues
+
+#include_directories(${nlohmann_json_INCLUDE_DIRS})
+include_directories(
+    ${ChromaDB_INCLUDE_DIR} 
+    ../../ollama-hpp/include
+    )
+
+#link_directories(${ChromaDB_LIB})
+
+# Add the executable
+add_executable(chatapi
+    #../../ollama-hpp/include/ollama.hpp
+    helper.cpp
+    stringthings.cpp
+    tty_io.cpp
+    fled_time.cpp
+    threading.cpp
+    ollama_helper.cpp
+    ollama_api.cpp
+    chromadb_api.cpp
+    system.cpp
+    main.cpp
 )
 
-target_sources(chatapi PRIVATE
-  ../../ollama-hpp/include/ollama.hpp
-  #../../ollama-hpp/include/json.hpp
-  helper.cpp
-  stringthings.cpp
-  tty_io.cpp
-  fled_time.cpp
-  threading.cpp
-  ollama_helper.cpp
-  ollama_api.cpp
-  system.cpp
-  main.cpp
+# Include directories
+#target_include_directories(chatapi PRIVATE
+#    ../../ollama-hpp/include
+#    ${ChromaDB_INCLUDE_DIR}
+#    ${OpenSSL_INCLUDE_DIR}
+#)
+
+target_link_libraries(chatapi 
+    #../../ollama-hpp/include
+    ${ChromaDB_LIB} 
+    OpenSSL::SSL 
+    OpenSSL::Crypto
+    atomic
+    pthread
 )
-
-# target_compile_definitions(chatapi PRIVATE BOOST_BIND_GLOBAL_PLACEHOLDERS)
-
- target_link_libraries(chatapi 
-    ${nlohmann_json_LIBRARIES}
-#   ${WIRINGPI_LIBRARIES} 
-#   ${WS2811_LIBRARIES}
-#   glfw
-#   ${OPENGL_LIBRARIES}
-#   ${PTHREAD_LIBRARIES}
-#   ${LIBRT}
-#   ${Boost_LIBRARIES}
-)
-
-# Specify the source files for the project
-# set(CMAKE_CXX_STANDARD 14)
-# set(SOURCES main.cpp)
-
-# Add executable target to build the program
-# add_executable(${PROJECT_NAME} ${SOURCES})
 
 if(BUILD_STRICT)
-  # Strict
-  if(CMAKE_COMPILER_IS_GNUCC OR CMAKE_COMPILER_IS_GNUCXX)
-    target_compile_options(chatapi PRIVATE -Wall -Wextra -Werror)
-  elseif(CMAKE_CXX_COMPILER_ID MATCHES "Clang")
-    target_compile_options(chatapi PRIVATE -Weverything -Werror)
-  endif()
+    if(CMAKE_COMPILER_IS_GNUCC OR CMAKE_COMPILER_IS_GNUCXX)
+        target_compile_options(chatapi PRIVATE -Wall -Wextra -Werror)
+    elseif(CMAKE_CXX_COMPILER_ID MATCHES "Clang")
+        target_compile_options(chatapi PRIVATE -Weverything -Werror)
+    endif()
 else()
-  # Not Strict
-  if(CMAKE_COMPILER_IS_GNUCC OR CMAKE_COMPILER_IS_GNUCXX)
-    target_compile_options(chatapi PRIVATE -Wall -Wextra)
-  elseif(CMAKE_CXX_COMPILER_ID MATCHES "Clang")
-    target_compile_options(chatapi PRIVATE -Weverything)
-  endif()
+    if(CMAKE_COMPILER_IS_GNUCC OR CMAKE_COMPILER_IS_GNUCXX)
+        target_compile_options(chatapi PRIVATE -Wall -Wextra)
+    elseif(CMAKE_CXX_COMPILER_ID MATCHES "Clang")
+        target_compile_options(chatapi PRIVATE -Weverything)
+    endif()
 endif()

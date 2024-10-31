@@ -7,6 +7,7 @@ using namespace std;
 
 // ------------------------------------------------------------------------- //
 
+/*/
 void OLLAMA_API::on_receive_response(const ollama::response& response) 
 {
   if (response.as_json()["done"] == true) 
@@ -279,7 +280,9 @@ bool OLLAMA_API::create(TTY_OUTPUT &Output_Container, TTY_OUTPUT_FOCUS &Output_F
   Output_Container.add_to( " -----\n\n", Output_Focus);
   return ret_running;
 }
+*/
 
+/*
 int OLLAMA_API::get_status()
 {
   return OLLAMA_MUTEX.done();
@@ -310,5 +313,6 @@ void OLLAMA_API::check_response_done()
     CONTEXT = RESPONSE;
   }
 }
+*/
 
 #endif  // OLLAMA_API_CPP

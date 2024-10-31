@@ -7,6 +7,8 @@ using namespace std;
 
 // ------------------------------------------------------------------------- //
 
+/*
+
 void OLLAMA_API_MUTEX::set_complete_response_after_done(ollama::response Response)
 {
   lock_guard<mutex> lock(MUTEX_);
@@ -89,5 +91,5 @@ void OLLAMA_API_MUTEX::get_response_to_vector(vector<string> &Receiving_Vector)
 }
 
 // ------------------------------------------------------------------------- //
-
+*/
 #endif  // OLLAMA_HELPER_CPP
