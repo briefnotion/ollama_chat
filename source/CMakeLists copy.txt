@@ -18,38 +18,38 @@ endif()
 project(chatapi)
 
 # Find JSON
-find_package(nlohmann_json REQUIRED)
+#find_package(nlohmann_json REQUIRED)
 
 # Find the OpenSSL package
 find_package(OpenSSL REQUIRED)
 
 # Find ChromaDB
-#if (WIN32)
-#    set(CMAKE_PREFIX_PATH "C:/Program Files (x86)/ChromaDB")
-#    find_library(ChromaDB_LIB NAMES chromadb HINTS ${CMAKE_PREFIX_PATH}/lib)
-#    find_path(ChromaDB_INCLUDE_DIR NAMES ChromaDB/ChromaDB.h HINTS ${CMAKE_PREFIX_PATH}/include)
-#else()
-#    find_library(ChromaDB_LIB NAMES chromadb HINTS /usr/local/lib /usr/lib /lib)
-#    find_path(ChromaDB_INCLUDE_DIR NAMES ChromaDB/ChromaDB.h HINTS /usr/local/include /include)
-#endif()
+if (WIN32)
+    set(CMAKE_PREFIX_PATH "C:/Program Files (x86)/ChromaDB")
+    find_library(ChromaDB_LIB NAMES chromadb HINTS ${CMAKE_PREFIX_PATH}/lib)
+    find_path(ChromaDB_INCLUDE_DIR NAMES ChromaDB/ChromaDB.h HINTS ${CMAKE_PREFIX_PATH}/include)
+else()
+    find_library(ChromaDB_LIB NAMES chromadb HINTS /usr/local/lib /usr/lib /lib)
+    find_path(ChromaDB_INCLUDE_DIR NAMES ChromaDB/ChromaDB.h HINTS /usr/local/include /include)
+endif()
 
 # Check ChromaDB_CPP Errors
-#if(NOT ChromaDB_LIB)
-#    message(FATAL_ERROR "ChromaDB library not found")
-#endif()
-#if(NOT ChromaDB_INCLUDE_DIR)
-#    message(FATAL_ERROR "ChromaDB include directory not found")
-#endif()
+if(NOT ChromaDB_LIB)
+    message(FATAL_ERROR "ChromaDB library not found")
+endif()
+if(NOT ChromaDB_INCLUDE_DIR)
+    message(FATAL_ERROR "ChromaDB include directory not found")
+endif()
 
 # Inclues
 
 #include_directories(${nlohmann_json_INCLUDE_DIRS})
 
-#include_directories(
+include_directories(
     #../include
     #${ChromaDB_INCLUDE_DIR} 
     #../../ollama-hpp/include
-#    )
+    )
 
 #link_directories(${ChromaDB_LIB})
 
@@ -63,18 +63,17 @@ add_executable(chatapi
     threading.cpp
     ollama_helper.cpp
     ollama_api.cpp
-    #chromadb_api.cpp
-    vectordb_api.cpp
+    chromadb_api.cpp
     system.cpp
     main.cpp
 )
 
 target_include_directories(chatapi PRIVATE
+    ../include
     ../../ollama-hpp/include
-    ../../chromadb-cpp/include
-    #../../cpp-httplib/
-    #${ChromaDB_INCLUDE_DIR}
-    #${OpenSSL_INCLUDE_DIR}
+    ../../cpp-httplib/
+    ${ChromaDB_INCLUDE_DIR}
+    ${OpenSSL_INCLUDE_DIR}
 )
 
 # Include directories
@@ -89,6 +88,8 @@ target_link_libraries(chatapi
     ${ChromaDB_LIB} 
     OpenSSL::SSL 
     OpenSSL::Crypto
+    atomic
+    pthread
 )
 
 if(BUILD_STRICT)

@@ -1,3 +1,7 @@
+0.009-241105
+  - Slow progress. Embedding with RAG support still doesn't work.  I'm updating git 
+      with the latest progress.
+
 0.008-241028
   - THIS BUILD DOES NOT WORK:
       On line 8 of ollama_api.h, if (#include "ollama.hpp") is not commented out, 

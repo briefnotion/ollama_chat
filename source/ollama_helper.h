@@ -7,6 +7,7 @@
 #include <mutex>
 
 #include <nlohmann/json.hpp>
+#include "ollama.hpp"
 
 #define OLLAMA_API_READY_FOR_REQUEST      0
 #define OLLAMA_API_WRITING_REQUEST        1
@@ -18,7 +19,6 @@ using namespace std;
 
 // ------------------------------------------------------------------------- //
 
-/*/
 class OLLAMA_API_MUTEX
 {
   private:
@@ -50,7 +50,6 @@ class OLLAMA_API_MUTEX
   int response_size() const;
   void get_response_to_vector(vector<string> &Receiving_Vector);
 };
-*/
 
 // ------------------------------------------------------------------------- //
 

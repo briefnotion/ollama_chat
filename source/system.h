@@ -9,11 +9,10 @@
   For more details visit: https://github.com/jmont-dev/ollama-hpp
 */
 
-/*/
 #include <nlohmann/json.hpp>
+#include "httplib.h"
 
-//#include "stringthings.h"
-*/
+#include "stringthings.h"
 
 #include "definitions.h"
 #include "helper.h"
@@ -21,9 +20,9 @@
 #include "tty_io.h"
 #include "threading.h"
 
-//#include "ollama_api.h"
-
-#include "chromadb_api.h"
+#include "ollama_api.h"
+//#include "chromadb_api.h"
+#include "vectordb_api.h"
 
 using namespace std;
 
@@ -49,11 +48,12 @@ class SYSTEM
   FLED_TIME        PROGRAM_TIME;
 
   // Ollama System
-  //OLLAMA_API      OLLAMA_SYSTEM;
+  OLLAMA_API      OLLAMA_SYSTEM;
   THREADING_INFO  OLLAMA_RESPONSE_THREAD;
 
   // ChromaDB System
-  CHROMADB_API    CHROMADB_SYSTEM;
+  //CHROMADB_API    CHROMADB_SYSTEM;
+  VECTORDB_API    VECTORDB_SYSTEM;
 
 };
 

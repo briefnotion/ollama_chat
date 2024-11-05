@@ -20,8 +20,22 @@ int main()
   // Main System Varibles
   SYSTEM sdSystem;
 
+
   // ------------------------------------------------------------------------- //
-/*
+
+  int ret_code = 0;
+
+  //ret_code = sdSystem.VECTORDB_SYSTEM.embedding_test_0();
+  //ret_code = sdSystem.VECTORDB_SYSTEM.embedding_test_1();
+  //ret_code = sdSystem.VECTORDB_SYSTEM.embedding_test_2();
+
+  if (ret_code == 1)
+  {
+    exit(1);
+  }
+
+  // ------------------------------------------------------------------------- //
+
   // Prepair Variables:
   sdSystem.INPUT.create();
 
@@ -29,16 +43,8 @@ int main()
   sdSystem.OUTPUT_OLLAMA_RESPONSE.create(1, 0, 5, 10);
 
   sdSystem.OLLAMA_RESPONSE_THREAD.create(TEST_THREAD_TIMER_DELAY);
-*/
 
   // ------------------------------------------------------------------------- //
-
-  sdSystem.CHROMADB_SYSTEM.embedding_test();
-
-  // ------------------------------------------------------------------------- //
-
-/*
-  //initialize_response_callback();
 
   // Sleeping Loop Variables
   TIMED_IS_READY  ollama_sleep_timer;          // Delay for communicating with compass 
@@ -168,6 +174,9 @@ int main()
 
     // ------------------------------------------------------------------------- //
 
+    // Clean up and exit.
+    sdSystem.INPUT.clear_screeen();
+
     // Shutdown any open threads process
     // Restore the terminal
     sdSystem.OLLAMA_RESPONSE_THREAD.wait_for_thread_to_finish();
@@ -178,7 +187,6 @@ int main()
   {
     cout << endl << "No server available." << endl << endl;
   }
-*/
 
   return 0;
 }

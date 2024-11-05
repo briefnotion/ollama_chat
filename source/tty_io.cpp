@@ -286,6 +286,11 @@ void TTY_INPUT::read_input(TTY_OUTPUT &Output_Container, TTY_OUTPUT_FOCUS &Outpu
   }
 }
 
+void TTY_INPUT::clear_screeen()
+{
+  clear_screen();
+}
+
 // ------------------------------------------------------------------------- //
 
 #endif // TTY_IO_CPP

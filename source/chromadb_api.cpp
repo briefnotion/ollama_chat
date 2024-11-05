@@ -1,5 +1,5 @@
-#ifndef CHROMADB_API_CPP
-#define CHROMADB_API_CPP
+#ifndef VECTORDB_API_CPP
+#define VECTORDB_API_CPP
 
 
 #include "chromadb_api.h"
@@ -112,4 +112,4 @@ int CHROMADB_API::embedding_test()
 
 // ------------------------------------------------------------------------- //
 
-#endif // CHROMADB_API_CPP
+#endif

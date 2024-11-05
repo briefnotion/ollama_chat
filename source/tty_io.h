@@ -116,10 +116,10 @@ class TTY_INPUT
 
   void create();
 
-
   void read_input(TTY_OUTPUT &Output_Container);
   void read_input(TTY_OUTPUT &Output_Container, TTY_OUTPUT_FOCUS &Output_Focus);
 
+  void clear_screeen();
 };
 
 // ------------------------------------------------------------------------- //

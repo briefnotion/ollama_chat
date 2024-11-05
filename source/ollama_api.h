@@ -21,26 +21,26 @@ class OLLAMA_API
   // This section reserved for async
   private:
   
-  //OLLAMA_API_MUTEX OLLAMA_MUTEX;
+  OLLAMA_API_MUTEX OLLAMA_MUTEX;
 
-  //std::function<void(const ollama::response&)> response_callback;
-  //void on_receive_response(const ollama::response& Request);
+  std::function<void(const ollama::response&)> response_callback;
+  void on_receive_response(const ollama::response& Request);
 
   public:
 
-  //void proc_render_thread();
+  void proc_render_thread();
   // ------------------------------------------------------------------------- //
 
   private:
-  //Ollama OLLAMA;
+  Ollama OLLAMA;
 
   vector<string> OLLAMA_MODELS_LIST;
   vector<string> OLLAMA_MODELS_RUNNING;
 
-  //ollama::options OPTIONS;
+  ollama::options OPTIONS;
 
-  //ollama::response RESPONSE;
-  //ollama::response CONTEXT;
+  ollama::response RESPONSE;
+  ollama::response CONTEXT;
 
   public:
 
@@ -49,17 +49,17 @@ class OLLAMA_API
   // Sending
   string REQUEST = "";
 
-  //bool create(TTY_OUTPUT &Output_Container, TTY_OUTPUT_FOCUS &Output_Focus);
+  bool create(TTY_OUTPUT &Output_Container, TTY_OUTPUT_FOCUS &Output_Focus);
 
-  //int get_status();
+  int get_status();
 
-  //void set_status(int Status);
+  void set_status(int Status);
 
-  //void set_request(const string& request);
+  void set_request(const string& request);
 
-  //int check_response();
+  int check_response();
 
-  //void check_response_done();
+  void check_response_done();
 };
 
 // ------------------------------------------------------------------------- //
