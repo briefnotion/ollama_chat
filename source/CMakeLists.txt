@@ -23,39 +23,22 @@ find_package(nlohmann_json REQUIRED)
 # Find the OpenSSL package
 find_package(OpenSSL REQUIRED)
 
-# Find ChromaDB
-#if (WIN32)
-#    set(CMAKE_PREFIX_PATH "C:/Program Files (x86)/ChromaDB")
-#    find_library(ChromaDB_LIB NAMES chromadb HINTS ${CMAKE_PREFIX_PATH}/lib)
-#    find_path(ChromaDB_INCLUDE_DIR NAMES ChromaDB/ChromaDB.h HINTS ${CMAKE_PREFIX_PATH}/include)
-#else()
-#    find_library(ChromaDB_LIB NAMES chromadb HINTS /usr/local/lib /usr/lib /lib)
-#    find_path(ChromaDB_INCLUDE_DIR NAMES ChromaDB/ChromaDB.h HINTS /usr/local/include /include)
-#endif()
+# Find the ChromaDB package
+find_library(ChromaDB_LIB NAMES chromadb HINTS  /usr/local/lib /usr/lib /lib)
+find_path(ChromaDB_INCLUDE_DIR NAMES ChromaDB/ChromaDB.h HINTS ../../chromadb-cpp/include)
 
-# Check ChromaDB_CPP Errors
-#if(NOT ChromaDB_LIB)
-#    message(FATAL_ERROR "ChromaDB library not found")
-#endif()
-#if(NOT ChromaDB_INCLUDE_DIR)
-#    message(FATAL_ERROR "ChromaDB include directory not found")
-#endif()
+# Find the OllamaHPP package
+find_path(OllamaHPP_INCLUDE_DIR NAMES ollama.hpp HINTS ../../ollama-hpp/singleheader)
 
-# Inclues
-
-#include_directories(${nlohmann_json_INCLUDE_DIRS})
-
-#include_directories(
-    #../include
-    #${ChromaDB_INCLUDE_DIR} 
-    #../../ollama-hpp/include
-#    )
+include_directories(
+    ${ChromaDB_INCLUDE_DIR} 
+    ${OllamaHPP_INCLUDE_DIR} 
+    )
 
 #link_directories(${ChromaDB_LIB})
 
 # Add the executable
 add_executable(chatapi
-    #../../ollama-hpp/include/ollama.hpp
     helper.cpp
     stringthings.cpp
     tty_io.cpp
@@ -63,30 +46,21 @@ add_executable(chatapi
     threading.cpp
     ollama_helper.cpp
     ollama_api.cpp
-    #chromadb_api.cpp
-    vectordb_api.cpp
+    chromadb_api.cpp
+    #vectordb_api.cpp
     system.cpp
     main.cpp
 )
 
 target_include_directories(chatapi PRIVATE
-    ../../ollama-hpp/include
-    ../../chromadb-cpp/include
-    #../../cpp-httplib/
-    #${ChromaDB_INCLUDE_DIR}
-    #${OpenSSL_INCLUDE_DIR}
+    ${ChromaDB_INCLUDE_DIR}
+    ${OllamaHPP_INCLUDE_DIR}
+
 )
 
-# Include directories
-#target_include_directories(chatapi PRIVATE
-#    ../../ollama-hpp/include
-#    ${ChromaDB_INCLUDE_DIR}
-#    ${OpenSSL_INCLUDE_DIR}
-#)
-
 target_link_libraries(chatapi 
-    #../../ollama-hpp/include
     ${ChromaDB_LIB} 
+    #${OllamaHPP_LIB} 
     OpenSSL::SSL 
     OpenSSL::Crypto
 )

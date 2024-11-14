@@ -74,7 +74,7 @@ void OLLAMA_API::proc_render_thread()
 
   //std::cout << OLLAMA_MUTEX.context().as_simple_string() << std::endl;
 
-  ollama::generate("llama3:8b", REQUEST, CONTEXT, response_callback, OPTIONS);
+  ollama::generate(PROPS.MODEL, REQUEST, CONTEXT, response_callback, OPTIONS);
 }
 
 // ------------------------------------------------------------------------- //
@@ -85,7 +85,7 @@ bool OLLAMA_API::create(TTY_OUTPUT &Output_Container, TTY_OUTPUT_FOCUS &Output_F
 
   // Optional. By default, the server URL is set to http://localhost:11434. 
   // Use this function if your server resides at a different URL.
-  OLLAMA.setServerURL("http://localhost:11434");
+  OLLAMA.setServerURL(PROPS.URL);
   //OLLAMA.setServerURL("http://127.0.0.1:11434");
   
   // Optional. Set the read and write timeouts in seconds for server interactions.
@@ -115,7 +115,7 @@ bool OLLAMA_API::create(TTY_OUTPUT &Output_Container, TTY_OUTPUT_FOCUS &Output_F
     // bool model_deleted = OLLAMA.delete_model("llama3_copy");
 
     // Request model info from the OLLAMA server.
-    nlohmann::json model_info = OLLAMA.show_model_info("llama3:8b");
+    nlohmann::json model_info = OLLAMA.show_model_info(PROPS.MODEL);
 
     // Ensure "details" and "family" exist and are not null
     if (model_info.contains("details") && 

@@ -6,11 +6,9 @@ To Compile:
   Run "cmak.sh" to build Cmake Files (unnecessary?) (Run Once)
   Run "m.sh" subsequencially for any changes to build the executable.
 
+---
 
-
-
-Things:
-
+Dependancies Notes:
 
 sudo apt-get update
 
@@ -21,17 +19,41 @@ sudo apt-get install libssl-dev
 
 https://github.com/ollama/ollama
 
-
-
 https://github.com/jmont-dev/ollama-hpp
 gh repo clone jmont-dev/ollama-hpp
-
-
 
 https://github.com/BlackyDrum/chromadb-cpp
 gh repo clone BlackyDrum/chromadb-cpp
 
+---
 
-Extra:
+ChromaDB Notes:
 
 https://docs.trychroma.com/deployment/auth#static-api-token-authentication
+
+---
+
+BuOllama Build / Install, things to do. (https://github.com/ollama/ollama/blob/main/docs/development.md)
+
+CUDA Toolkit Installer: (not sure it works correctly) (https://developer.nvidia.com/cuda-downloads?target_os=Linux&target_arch=x86_64&Distribution=WSL-Ubuntu&target_version=2.0&target_type=runfile_local)
+wget https://developer.download.nvidia.com/compute/cuda/12.6.2/local_installers/cuda_12.6.2_560.35.03_linux.run
+sudo sh cuda_12.6.2_560.35.03_linux.run
+
+verify -lcuda installed correctly.  (If error, gives you pointer to the correct spot.)
+nvcc --version
+
+
+Python Notes:
+
+sudo apt install python3-pip
+
+sudo apt install python3.12-venv
+python3 -m venv ./venv
+source venv/bin/activate
+pip install chromadb
+
+pip list --outdated
+pip3 install --upgrade package
+
+pip3 install nltk
+

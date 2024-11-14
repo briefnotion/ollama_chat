@@ -1,3 +1,7 @@
+0.010-241114
+  - Slow progress. Embedding with RAG support still doesn't work.  I'm updating git 
+      with the latest progress.
+
 0.009-241105
   - Slow progress. Embedding with RAG support still doesn't work.  I'm updating git 
       with the latest progress.

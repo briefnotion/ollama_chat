@@ -28,22 +28,13 @@ int main()
   //ret_code = sdSystem.VECTORDB_SYSTEM.embedding_test_0();
   //ret_code = sdSystem.VECTORDB_SYSTEM.embedding_test_1();
   //ret_code = sdSystem.VECTORDB_SYSTEM.embedding_test_2();
+  
+  //ret_code = sdSystem.CHROMADB_SYSTEM.embedding_test_1();
 
   if (ret_code == 1)
   {
     exit(1);
   }
-
-  // ------------------------------------------------------------------------- //
-
-  // Prepair Variables:
-  sdSystem.INPUT.create();
-
-  sdSystem.OUTPUT_INPUT.create(0, 0, 0, 5);
-  sdSystem.OUTPUT_OLLAMA_RESPONSE.create(1, 0, 5, 10);
-
-  sdSystem.OLLAMA_RESPONSE_THREAD.create(TEST_THREAD_TIMER_DELAY);
-
   // ------------------------------------------------------------------------- //
 
   // Sleeping Loop Variables
@@ -59,10 +50,29 @@ int main()
   bool main_loop_exit = false;
 
   // Only run main look if connection to server is sucessful.
+  sdSystem.OLLAMA_SYSTEM.PROPS.MODEL = "llama3.1:8b";
+  sdSystem.OLLAMA_SYSTEM.PROPS.URL = "http://localhost:11434";
+
   if (sdSystem.OLLAMA_SYSTEM.create(sdSystem.OUTPUT_OLLAMA_RESPONSE, sdSystem.OUTPUT_FOCUS))
   {
+    // ------------------------------------------------------------------------- //
+
+    // Prepair Variables:
+    sdSystem.INPUT.create();
+
+    sdSystem.OUTPUT_INPUT.create(0, 0, 0, 5);
+    sdSystem.OUTPUT_OLLAMA_RESPONSE.create(1, 0, 5, 10);
+    
+    sdSystem.INPUT.clear_screeen();
+
+    // ------------------------------------------------------------------------- //
+
+    sdSystem.OLLAMA_RESPONSE_THREAD.create(TEST_THREAD_TIMER_DELAY);
+
     // Send the output of the create to the screen.
     sdSystem.OUTPUT_OLLAMA_RESPONSE.output(sdSystem.OUTPUT_FOCUS);
+
+    // ------------------------------------------------------------------------- //
 
     // Main Thread Loop
     while (main_loop_exit == false)

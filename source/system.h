@@ -10,7 +10,7 @@
 */
 
 #include <nlohmann/json.hpp>
-#include "httplib.h"
+//#include "httplib.h"
 
 #include "stringthings.h"
 
@@ -21,8 +21,8 @@
 #include "threading.h"
 
 #include "ollama_api.h"
-//#include "chromadb_api.h"
-#include "vectordb_api.h"
+#include "chromadb_api.h"
+//#include "vectordb_api.h"
 
 using namespace std;
 
@@ -53,7 +53,7 @@ class SYSTEM
 
   // ChromaDB System
   //CHROMADB_API    CHROMADB_SYSTEM;
-  VECTORDB_API    VECTORDB_SYSTEM;
+  //VECTORDB_API    VECTORDB_SYSTEM;
 
 };
 

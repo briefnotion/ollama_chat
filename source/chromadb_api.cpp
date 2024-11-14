@@ -9,7 +9,7 @@ using namespace std;
 // ------------------------------------------------------------------------- //
 
 
-int CHROMADB_API::embedding_test()
+int CHROMADB_API::embedding_test_1()
 {
   /*
 
@@ -45,6 +45,7 @@ int CHROMADB_API::embedding_test()
       print(chunk['response'], end='', flush=True)
 */
 
+
   cout << "Varable Assigment" << endl;
   std::string embedModel = "nomic-embed-text";
   std::string mainModel = "llama3.1:8b";
@@ -56,7 +57,6 @@ int CHROMADB_API::embedding_test()
   cout << "Print Info" << endl;
 	std::cout << client.GetVersion() << std::endl;
 	std::cout << client.GetHeartbeat() << std::endl;
-
 
 /*
   chromadb::Collection collection = client.CreateCollection("buildragwithpython");
@@ -104,9 +104,7 @@ int CHROMADB_API::embedding_test()
   }
 */
 
-  exit(0);
-
-  return 0;
+  return 1;
 }
 
 

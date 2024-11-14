@@ -15,6 +15,14 @@ using namespace std;
 
 // ------------------------------------------------------------------------- //
 
+class OLLAMA_API_PROPS
+{
+  public:
+
+  string MODEL = "";  // "llama3.1:8b"
+  string URL   = "";  // "http://localhost:11434"
+};
+
 class OLLAMA_API
 {
   // ------------------------------------------------------------------------- //
@@ -43,6 +51,8 @@ class OLLAMA_API
   ollama::response CONTEXT;
 
   public:
+
+  OLLAMA_API_PROPS PROPS;
 
   vector<string> RESPONSE_STRING_VECTOR;
 

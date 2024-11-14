@@ -19,7 +19,7 @@ class CHROMADB_API
 {
   public:
   
-  int embedding_test();
+  int embedding_test_1();
 
 };
 
