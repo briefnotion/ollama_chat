@@ -49,10 +49,11 @@ print("--- %s seconds ---" % (time.time() - starttime))
 */
 
 
-int VECTORDB_API::embedding_test_0()
+int VECTORDB_API::embedding_test_1()
 {
   // chromadb
 
+  /*
   cout << "Varable Assigment" << endl;
   std::string embedModel = "nomic-embed-text";
   std::string mainModel = "llama3.1:8b";
@@ -64,7 +65,7 @@ int VECTORDB_API::embedding_test_0()
   cout << "Print Info" << endl;
 	std::cout << client.GetVersion() << std::endl;
 	std::cout << client.GetHeartbeat() << std::endl;
-
+  */
   return 0;
 
       
@@ -166,13 +167,22 @@ int VECTORDB_API::embedding_test_0()
 
 // ------------------------------------------------------------------------- //
 
+/*
 json post_request(const std::string& url, const json& jsonData) 
 {
   httplib::Client cli("http://localhost:8000");
 
-  cout << "JSONDUMP: " << jsonData.dump() << endl;
+  //cout << "JSONDUMP: " << jsonData.dump() << endl;
+  //std::cout<< std::setw(2) << jsonData << endl;
 
-  auto res = cli.Post(url.c_str(), jsonData.dump(), "application/json");
+  json data1 = jsonData["embeddings"][0];
+
+  cout << "EMB: \n" << data1.dump() << endl;
+
+  //exit(0);
+
+  //auto res = cli.Post(url.c_str(), jsonData.dump(), "application/json");
+  auto res = cli.Post(url.c_str(), data1.dump(), "application/json");
 
 
 
@@ -188,9 +198,11 @@ json post_request(const std::string& url, const json& jsonData)
 
   return jsonResponse;
 }
+*/
 
-int VECTORDB_API::embedding_test_1()
+int VECTORDB_API::embedding_test_2()
 {
+  /*
   // Fetch configuration values
   std::string embedModel = "nomic-embed-text";
   std::string mainModel = "llama3.1:8b";
@@ -200,8 +212,6 @@ int VECTORDB_API::embedding_test_1()
   ollama.setServerURL("http://localhost:11434");
   ollama.setReadTimeout(120);
   ollama.setWriteTimeout(120);
-
-
 
   // Ask for the query input
   std::string query;
@@ -221,14 +231,11 @@ int VECTORDB_API::embedding_test_1()
 
   cout << "Embedding request: " << embedData.dump() << endl;
 
-  
   cout << "A" << endl;
   ollama::response response = ollama::generate_embeddings("nomic-embed-text", "Why is the sky blue?");
   cout << "B" << endl;
-  cout << "GENERATED: " << response.as_json_string() << endl;
+  //cout << "GENERATED: " << response.as_json_string() << endl;
   cout << "C" << endl;
-
-
 
   //json embedResponse = post_request("/embeddings", embedData);
   //json embedResponse = post_request("/api/v1/collections/", embedData);
@@ -310,18 +317,141 @@ int VECTORDB_API::embedding_test_1()
   }
 
   exit(0);
+  */
 
   return 0;
 }
 
 
-int VECTORDB_API::embedding_test_2()
+int VECTORDB_API::embedding_test_3()
 {
 
   //exit(0);
 
   return 0;
 
+}
+
+// ------------------------------------------------------------------------- //
+
+/*
+int VECTORDB_API::embedding_test_cjson_1()
+{
+  const char *baseUrl = "http://localhost:8000";
+
+  // Test Connection to the chromadb host
+  testConnection(baseUrl);
+  const char *collectionName = "TestCollection";
+
+  // Create a Collection
+  printf("\n\nCreate Collection\n");
+  int result = createCollection(baseUrl, collectionName);
+  if (result) {
+    printf("Collection created successfully.\n");
+  } else {
+    printf("Failed to create collection.\n");
+  }
+
+  // Get Collection
+  MemoryStruct response = getCollection(baseUrl, collectionName);
+  printf("\n\nGet Collection\n");
+  if (response.size > 0) {
+    Collection collection = parseCollectionResponse(response.memory);
+    if (collection.id != NULL && collection.name != NULL) {
+      printf("Collection ID: %s\n", collection.id);
+      printf("Collection Name: %s\n", collection.name);
+    }
+    freeCollection(&collection);
+  } else {
+    printf("Collection not found or an error occurred.\n");
+  }
+
+  free(response.memory);
+
+
+
+  return 0;
+}
+*/
+
+// ------------------------------------------------------------------------- //
+string VECTORDB_API::callPythonScript() 
+{
+  // Call the Python script
+  system("python3 ../python/script.py");
+
+  // Read the result from the file
+  ifstream file("output.txt");
+  string result;
+
+  if (file.is_open()) {
+    getline(file, result);
+    file.close();
+  } else {
+    result = "Error: unable to open file";
+  }
+
+  return result;
+}
+
+int VECTORDB_API::embedding_test_python_1()
+{
+  string result = callPythonScript();
+  cout << "Result from Python script: " << result << endl;
+
+  return 1;
+}
+
+
+string VECTORDB_API::exec(const char* cmd) 
+{
+  array<char, 128> buffer;
+  string result;
+  unique_ptr<FILE, decltype(&pclose)> pipe(popen(cmd, "r"), pclose);
+  if (!pipe) 
+  {
+    throw runtime_error("popen() failed!");
+  }
+  while (fgets(buffer.data(), buffer.size(), pipe.get()) != nullptr) 
+  {
+    result += buffer.data();
+  }
+  return result;
+}
+
+int VECTORDB_API::embedding_test_python_2() 
+{
+  string command = "python3 ../python/script.py";
+  string result = exec(command.c_str());
+  cout << "Result from Python script: " << result << endl;
+    
+  return 1;
+}
+
+int VECTORDB_API::embedding_test_python_3() 
+{
+  string andand = "&& ";
+
+  string bash = "bash -c '";
+
+  string environment = "source /home/briefn/py/venv/bin/activate ";
+  string script = "python3 ../python/search.py ";
+  string question = "what happened in tiawan?";
+
+  string enviornement_stop = "deactivate";
+
+  string command = environment + andand + script + question;
+  //string command = script + question;
+  //string command = environment;
+
+  string bcommand = bash + command + "'";
+
+  cout << bcommand << endl;
+
+  string result = exec(bcommand.c_str());
+  cout << "Result from Python script: " << result << endl;
+    
+  return 1;
 }
 
 

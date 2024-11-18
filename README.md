@@ -14,8 +14,11 @@ sudo apt-get update
 
 sudo apt-get install nlohmann-json3-dev
 sudo apt-get install libssl-dev
+sudo apt install libcurl4-openssl-dev
 
 
+cpp-httplib
+gh repo clone yhirose/cpp-httplib
 
 https://github.com/ollama/ollama
 

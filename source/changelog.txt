@@ -1,3 +1,7 @@
+0.011-241115
+  - Successful OllamaDB fetch made via Python scipts.
+  - Clean up some tty_io routines.
+
 0.010-241114
   - Slow progress. Embedding with RAG support still doesn't work.  I'm updating git 
       with the latest progress.

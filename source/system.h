@@ -21,8 +21,9 @@
 #include "threading.h"
 
 #include "ollama_api.h"
-#include "chromadb_api.h"
+//#include "chromadb_api.h"
 //#include "vectordb_api.h"
+#include "vectordb_python_api.h"
 
 using namespace std;
 
@@ -36,6 +37,10 @@ using namespace std;
 class SYSTEM
 {
   public:
+
+  // Main Program Sleep Timers
+  TIMED_IS_READY  OLLAMA_SLEEP_TIMER;
+  TIMED_IS_READY  SCREENIO_SLEEP_TIMER;
 
   // I/O
   TTY_INPUT INPUT;
@@ -52,8 +57,9 @@ class SYSTEM
   THREADING_INFO  OLLAMA_RESPONSE_THREAD;
 
   // ChromaDB System
-  //CHROMADB_API    CHROMADB_SYSTEM;
-  //VECTORDB_API    VECTORDB_SYSTEM;
+  //CHROMADB_API      CHROMADB_SYSTEM;
+  //VECTORDB_API      VECTORDB_SYSTEM;
+  VECTORDB_PYTHON_API VECTORDB_SYSTEM;
 
 };
 

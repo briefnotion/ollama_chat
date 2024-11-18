@@ -18,6 +18,7 @@
 #endif
 
 #include "definitions.h"
+#include "stringthings.h"
 
 using namespace std;
 // ------------------------------------------------------------------------- //
@@ -50,7 +51,18 @@ class TTY_OUTPUT_FOCUS
 
   void set_focus(int focus);
   bool focus_changed(int focus);
-  void unchange();
+  void unchanged();
+};
+
+class TTY_OUTPUT_PROPERTIES
+{
+  public:
+
+  string TITLE = "";
+
+  int POSITION_X = 0;
+  int POSITION_Y = 0;
+  int LINES = -1;
 };
 
 class TTY_OUTPUT
@@ -66,17 +78,16 @@ class TTY_OUTPUT
   bool NEEDS_REDRAW = false;
 
   int FOCUS_ID = -1; // -1 means no focus ID
-  int POSITION_X = 0;
-  int POSITION_Y = 0;
-  int LINES = -1;
 
   bool check_char_recieived(int Character);
 
   public:
 
+  TTY_OUTPUT_PROPERTIES PROPS;
+
   bool CHANGED = false;
 
-  void create(int Focus_ID, int Position_X, int Position_Y, int Line_Count);
+  void create(int Focus_ID);
 
   void clear();
 

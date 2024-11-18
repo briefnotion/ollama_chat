@@ -49,6 +49,9 @@ void move_up_a_line()
 
 void get_console_size(int &Rows, int &Cols)
 {
+  // THIS ROUTINE NEEDS WORK
+  // CIN BRINGS IN INFO TO INPUT LINE AND DOESNT GET CLEARED.
+
   // Save the current cursor position
   cout << "\033[s";
 
@@ -101,7 +104,7 @@ bool TTY_OUTPUT_FOCUS::focus_changed(int focus)
   }
 }
 
-void TTY_OUTPUT_FOCUS::unchange()
+void TTY_OUTPUT_FOCUS::unchanged()
 {
   FOCUS_CHANGED = false;
 }
@@ -143,12 +146,9 @@ bool TTY_OUTPUT::check_char_recieived(int Character)
   }
 }
 
-void TTY_OUTPUT::create(int Focus_ID, int Position_X, int Position_Y, int Line_Count)
+void TTY_OUTPUT::create(int Focus_ID)
 {
   FOCUS_ID = Focus_ID;
-  POSITION_X = Position_X;
-  POSITION_Y = Position_Y;
-  LINES = Line_Count;
 }
 
 void TTY_OUTPUT::clear()
@@ -186,20 +186,47 @@ void TTY_OUTPUT::output(TTY_OUTPUT_FOCUS &Output_Focus)
 {
   if (CHANGED)
   {
+    // ----------------------
+    // THIS ROUTINE NEEDS WORK:
+    // When adding data text needs wrap.
+    // When data size exceeds available line count, top needs to be 
+    //  trimmed out.
+
+    // simple (string too large) clear
+    int linefeeds = count_char_in_string(OUTPUT_STRING, '\n');
+
+    int max_size = PROPS.LINES;
+
+    if (linefeeds > max_size)
+    {
+      int pos = 0;
+      for (int count = 0; count < (linefeeds - max_size); count++)
+      {
+        pos  = OUTPUT_STRING.find("\n", pos + 1);
+      }
+
+      OUTPUT_STRING.erase(0, pos+1);
+      NEEDS_REDRAW = true;
+    }
+
+    // ----------------------
+    
+    CHANGED = false;
+
     if (Output_Focus.focus_changed(FOCUS_ID) || NEEDS_REDRAW)
     {
-      Output_Focus.unchange();
+      Output_Focus.unchanged();
       NEEDS_REDRAW = false;
 
       OUTPUT_STRING_FOCUS_CHANGES = "";
 
       //clear_screen();
-      move_cursor(POSITION_X, POSITION_Y);
-      clear_lines(LINES);
-      move_cursor(POSITION_X, POSITION_Y);
+      move_cursor(PROPS.POSITION_X, PROPS.POSITION_Y);
+      clear_lines(PROPS.LINES);
+      move_cursor(PROPS.POSITION_X, PROPS.POSITION_Y);
 
+      cout << linemerge_left_justify("---------------------------------", PROPS.TITLE) << endl;
       cout << OUTPUT_STRING << flush;
-      CHANGED = false;
     }
     else
     {
@@ -213,12 +240,6 @@ void TTY_OUTPUT::output(TTY_OUTPUT_FOCUS &Output_Focus)
 
 void TTY_INPUT::set_nonblocking_mode()
 {
-  //termios ttystate;
-  //tcgetattr(STDIN_FILENO, &ttystate);
-  //ttystate.c_lflag &= ~ICANON;
-  //ttystate.c_lflag &= ~ECHO;
-  //tcsetattr(STDIN_FILENO, TCSANOW, &ttystate);
-
   tcgetattr(STDIN_FILENO, &STARTING_TERMINAL_STATE); // Save old settings
   termios newt = STARTING_TERMINAL_STATE;
   newt.c_lflag &= ~(ICANON | ECHO);
