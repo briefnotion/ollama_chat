@@ -217,6 +217,16 @@ void FLED_TIME::request_ready_time(unsigned long Ready_Time)
   }
 }
 
+void FLED_TIME::request_ready_time(unsigned long Ready_Time, char ID)
+{
+  int requested_sleep_time = Ready_Time - now();
+  if (requested_sleep_time <= 0)
+  {
+    cout << ID << flush;
+  }
+  request_ready_time(Ready_Time);
+}
+
 double FLED_TIME::error()
 {
   return ERROR;

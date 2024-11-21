@@ -1,3 +1,6 @@
+0.012-241121
+  - Started wrapping embedding into a thread.
+
 0.011-241115
   - Successful OllamaDB fetch made via Python scipts.
   - Clean up some tty_io routines.

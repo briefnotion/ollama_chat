@@ -146,13 +146,53 @@ bool TTY_OUTPUT::check_char_recieived(int Character)
   }
 }
 
+void TTY_OUTPUT::clean_for_print()
+{
+  // ----------------------
+  // THIS ROUTINE NEEDS WORK:
+  // When adding data text needs wrap.
+  // When data size exceeds available line count, top needs to be 
+  //  trimmed out.
+
+  // simple (string too large) clear
+  int linefeeds = count_char_in_string(OUTPUT_STRING, '\n');
+
+  int max_size = PROPS.LINES;
+
+  if (linefeeds > max_size)
+  {
+    int pos = 0;
+    for (int count = 0; count < (linefeeds - max_size); count++)
+    {
+      pos  = OUTPUT_STRING.find("\n", pos + 1);
+    }
+
+    OUTPUT_STRING.erase(0, pos+1);
+    NEEDS_REDRAW = true;
+  }
+}
+
 void TTY_OUTPUT::create(int Focus_ID)
 {
   FOCUS_ID = Focus_ID;
+  if (PROPS.TITLE.size() > 0)
+  {
+    DRAW_TITLE = true;
+  }
+  else
+  {
+    DRAW_TITLE = false;
+  }
+}
+
+void TTY_OUTPUT::redraw()
+{
+  NEEDS_REDRAW = true;
 }
 
 void TTY_OUTPUT::clear()
 {
+  OUTPUT_STRING_FOCUS_CHANGES = "";
   OUTPUT_STRING = "";
   ENTER_RECEIVED = false;
 }
@@ -166,15 +206,26 @@ bool TTY_OUTPUT::add_to(int Character, TTY_OUTPUT_FOCUS &Output_Focus)
 
 void TTY_OUTPUT::add_to(string Text, TTY_OUTPUT_FOCUS &Output_Focus)
 {
-  OUTPUT_STRING_FOCUS_CHANGES += Text;
-  OUTPUT_STRING += Text;
-  CHANGED = true;
-  Output_Focus.set_focus(FOCUS_ID);
+  if (Text.size() > 0)
+  {
+    OUTPUT_STRING_FOCUS_CHANGES += Text;
+    OUTPUT_STRING += Text;
+    CHANGED = true;
+    Output_Focus.set_focus(FOCUS_ID);
+  }
 }
 
 bool TTY_OUTPUT::pressed_enter()
 {
-  return ENTER_RECEIVED;
+  if (ENTER_RECEIVED)
+  {
+    ENTER_RECEIVED = false;
+    return true;
+  }
+  else
+  {
+    return false;
+  }
 }
 
 string TTY_OUTPUT::value()
@@ -186,32 +237,11 @@ void TTY_OUTPUT::output(TTY_OUTPUT_FOCUS &Output_Focus)
 {
   if (CHANGED)
   {
-    // ----------------------
-    // THIS ROUTINE NEEDS WORK:
-    // When adding data text needs wrap.
-    // When data size exceeds available line count, top needs to be 
-    //  trimmed out.
-
-    // simple (string too large) clear
-    int linefeeds = count_char_in_string(OUTPUT_STRING, '\n');
-
-    int max_size = PROPS.LINES;
-
-    if (linefeeds > max_size)
-    {
-      int pos = 0;
-      for (int count = 0; count < (linefeeds - max_size); count++)
-      {
-        pos  = OUTPUT_STRING.find("\n", pos + 1);
-      }
-
-      OUTPUT_STRING.erase(0, pos+1);
-      NEEDS_REDRAW = true;
-    }
-
-    // ----------------------
-    
     CHANGED = false;
+
+    //clean_for_print();
+
+    // ----------------------
 
     if (Output_Focus.focus_changed(FOCUS_ID) || NEEDS_REDRAW)
     {
@@ -225,8 +255,15 @@ void TTY_OUTPUT::output(TTY_OUTPUT_FOCUS &Output_Focus)
       clear_lines(PROPS.LINES);
       move_cursor(PROPS.POSITION_X, PROPS.POSITION_Y);
 
-      cout << linemerge_left_justify("---------------------------------", PROPS.TITLE) << endl;
-      cout << OUTPUT_STRING << flush;
+      if (DRAW_TITLE)
+      {
+        cout << linemerge_left_justify("---------------------------------", PROPS.TITLE) << endl;
+        cout << OUTPUT_STRING << flush;
+      }
+      else
+      {
+        cout << OUTPUT_STRING << flush;
+      }
     }
     else
     {

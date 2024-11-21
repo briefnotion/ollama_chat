@@ -79,7 +79,11 @@ class TTY_OUTPUT
 
   int FOCUS_ID = -1; // -1 means no focus ID
 
+  bool DRAW_TITLE = false;
+
   bool check_char_recieived(int Character);
+
+  void clean_for_print();
 
   public:
 
@@ -89,12 +93,16 @@ class TTY_OUTPUT
 
   void create(int Focus_ID);
 
+  void redraw();
+
   void clear();
 
   bool add_to(int Character, TTY_OUTPUT_FOCUS &Output_Focus);
   void add_to(string Text, TTY_OUTPUT_FOCUS &Output_Focus);
 
   bool pressed_enter();
+  // READ ONCE
+  // Clears after being read.
 
   string value();
 

@@ -23,30 +23,13 @@ find_package(nlohmann_json REQUIRED)
 # Find the OpenSSL package
 find_package(OpenSSL REQUIRED)
 
-# Find the curl package 
-#find_package(CURL REQUIRED)
-
 # Find the OllamaHPP package
 find_path(OllamaHPP_INCLUDE_DIR NAMES ollama.hpp HINTS ../../ollama-hpp/singleheader)
-
-# Find the HTTP_Lib package
-find_path(HTTPLIB_INCLUDE_DIR NAMES httplib.h HINTS ../../cpp-httplib)
-
-# Find the ChromaDB package
-#find_library(ChromaDB_LIB NAMES chromadb HINTS  /usr/local/lib /usr/lib /lib)
-#find_path(ChromaDB_INCLUDE_DIR NAMES ChromaDB/ChromaDB.h HINTS ../../chromadb-cpp/include)
-
-# Find the COLLECTIONAPI package
-#find_path(COLLECTIONAPI_DIR NAMES cJSON.h HINTS ../../chromadb_client)
 
 include_directories(
     ${OllamaHPP_INCLUDE_DIR}
     ${HTTPLIB_INCLUDE_DIR} 
-    #${ChromaDB_INCLUDE_DIR} 
-    #${COLLECTIONAPI_DIR} 
 )
-
-#link_directories(${ChromaDB_LIB})
 
 # Add the executable
 add_executable(chatapi
@@ -58,8 +41,6 @@ add_executable(chatapi
     threading.cpp
     ollama_helper.cpp
     ollama_api.cpp
-    #chromadb_api.cpp
-    #vectordb_api.cpp
     vectordb_python_api.cpp
     system.cpp
     main.cpp
@@ -67,16 +48,11 @@ add_executable(chatapi
 
 target_include_directories(chatapi PRIVATE
     ${OllamaHPP_INCLUDE_DIR}
-    #${ChromaDB_INCLUDE_DIR}
-    #${CURL_INCLUDE_DIRS}
 )
 
 target_link_libraries(chatapi 
-    #${ChromaDB_LIB} 
-    #${OllamaHPP_LIB} 
     OpenSSL::SSL 
     OpenSSL::Crypto
-    #${CURL_LIBRARIES}
 )
 
 if(BUILD_STRICT)

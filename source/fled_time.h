@@ -149,7 +149,9 @@ class FLED_TIME
   STAT_DATA_DOUBLE PREVSLEEPTIME; // Stored value returned on prev sleep cycle.
 
   public:
-  void request_ready_time(unsigned long Ready_Time);
+  void request_ready_time(unsigned long Ready_Time);          // Set sleep time to loweset
+  void request_ready_time(unsigned long Ready_Time, char ID); // For debugging. will print id if 
+                                                              // id if sleep time requested is <=0
  
   double error();
 

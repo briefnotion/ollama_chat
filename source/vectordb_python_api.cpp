@@ -7,24 +7,103 @@
 using namespace std;
 
 // ------------------------------------------------------------------------- //
-string VECTORDB_PYTHON_API::callPythonScript() 
+
+/*
+void OLLAMA_API_MUTEX::set_complete_response_after_done(ollama::response Response)
 {
-  // Call the Python script
-  system("python3 ../python/script.py");
+  lock_guard<mutex> lock(MUTEX_);
 
-  // Read the result from the file
-  ifstream file("output.txt");
-  string result;
-
-  if (file.is_open()) {
-    getline(file, result);
-    file.close();
-  } else {
-    result = "Error: unable to open file";
-  }
-
-  return result;
+  COMPLETE_RESPONSE_AFTER_DONE = Response;
+  COMPLETE_RESPONSE_READY_AFTER_DONE = true;
 }
+
+ollama::response OLLAMA_API_MUTEX::get_complete_response_after_done()
+{
+  lock_guard<mutex> lock(MUTEX_);
+
+  ollama::response ret_response = COMPLETE_RESPONSE_AFTER_DONE;
+
+  // Clear the response.
+  COMPLETE_RESPONSE_AFTER_DONE = ollama::response();
+  COMPLETE_RESPONSE_READY_AFTER_DONE = false;
+
+  CHANGED = false;
+
+  return ret_response;
+}
+
+bool OLLAMA_API_MUTEX::complete_respoonse_ready_after_done() const
+{
+  lock_guard<mutex> lock(MUTEX_);
+
+  if (CHANGED)
+  {
+    return COMPLETE_RESPONSE_READY_AFTER_DONE;
+  }
+  else
+  {
+    return false;
+  }
+}
+*/
+
+void VECTORDB_PYTHON_MUTEX::set_command_line(string Command)
+{
+  lock_guard<mutex> lock(MUTEX_);
+  COMMAND_LINE = Command;
+}
+
+string VECTORDB_PYTHON_MUTEX::command_line() const
+{
+  lock_guard<mutex> lock(MUTEX_);
+  return COMMAND_LINE;
+}
+
+int VECTORDB_PYTHON_MUTEX::done() const
+{
+  lock_guard<mutex> lock(MUTEX_);
+  return DONE;
+}
+
+void VECTORDB_PYTHON_MUTEX::set_done(int Done)
+{
+  lock_guard<mutex> lock(MUTEX_);
+  DONE = Done;
+
+  if (DONE == OLLAMA_API_RESPONSE_DONE)
+  {
+    CHANGED = true;
+  }
+}
+
+void VECTORDB_PYTHON_MUTEX::add_to_response(const string& value) 
+{
+  lock_guard<mutex> lock(MUTEX_);
+  RESPONSE_VECTOR.push_back(value);
+}
+
+int VECTORDB_PYTHON_MUTEX::response_size() const
+{
+  lock_guard<mutex> lock(MUTEX_);
+  return RESPONSE_VECTOR.size();
+}
+
+void VECTORDB_PYTHON_MUTEX::get_response_to_vector(vector<string> &Receiving_Vector)
+{
+  lock_guard<mutex> lock(MUTEX_);
+
+  if (RESPONSE_VECTOR.size() > 0)
+  {
+    for (int i = 0; i < (int)RESPONSE_VECTOR.size(); ++i) 
+    {
+      Receiving_Vector.push_back(RESPONSE_VECTOR[i]);
+    }
+  }
+  
+  RESPONSE_VECTOR.clear();
+}
+
+// ------------------------------------------------------------------------- //
 
 string VECTORDB_PYTHON_API::exec(const char* cmd) 
 {
@@ -42,49 +121,57 @@ string VECTORDB_PYTHON_API::exec(const char* cmd)
   return result;
 }
 
-int VECTORDB_PYTHON_API::embedding_test_python_1()
+void VECTORDB_PYTHON_API::exec_thread_question() 
 {
-  string result = callPythonScript();
-  cout << "Result from Python script: " << result << endl;
+  array<char, 128> buffer;
+  unique_ptr<FILE, decltype(&pclose)> pipe(popen(PYTHON_QUESTION_RESPONSE_MUTEX.command_line().c_str(), "r"), pclose);
 
-  return 1;
+  PYTHON_QUESTION_RESPONSE_MUTEX.set_done(1);
+
+  if (!pipe) 
+  {
+    PYTHON_QUESTION_RESPONSE_MUTEX.set_done(0);
+    throw runtime_error("popen() failed!");
+  }
+  while (fgets(buffer.data(), buffer.size(), pipe.get()) != nullptr) 
+  {
+    PYTHON_QUESTION_RESPONSE_MUTEX.add_to_response(buffer.data());
+  }
+
+  PYTHON_QUESTION_RESPONSE_MUTEX.set_done(2);
 }
 
-int VECTORDB_PYTHON_API::embedding_test_python_2() 
+void VECTORDB_PYTHON_API::submit_question(unsigned long Time, string Question) 
 {
-  string command = "python3 ../python/script.py";
-  string result = exec(command.c_str());
-  cout << "Result from Python script: " << result << endl;
-    
-  return 1;
+  const string andand = "&& ";
+
+  string bcommand = PROPS.ENVIRONMENT + andand + PROPS.SCRIPT_SEARCH + Question;
+
+  if (PROPS.BASH_SHELL.size() > 0)
+  {
+    bcommand = PROPS.BASH_SHELL + bcommand + "'";
+  }
+
+  PYTHON_QUESTION_RESPONSE_MUTEX.set_command_line (bcommand);
+
+  if (PYTHON_QUESTION_RESPONSE_MUTEX.done() == 0)
+  {
+    exec_thread_question();
+  }
 }
 
-int VECTORDB_PYTHON_API::embedding_test_python_3() 
+string VECTORDB_PYTHON_API::update()
 {
-  string andand = "&& ";
+  string ret_response = "";
+  if (PYTHON_QUESTION_RESPONSE_MUTEX.response_size() > 0)
+  {
+    vector<string> result;
+    PYTHON_QUESTION_RESPONSE_MUTEX.get_response_to_vector(result);
+    ret_response = return_vector_as_string(result);
+  }
 
-  string bash = "bash -c '";
-
-  string environment = "source /home/briefn/py/venv/bin/activate ";
-  string script = "python3 ../python/search.py ";
-  string question = "what happened in tiawan?";
-
-  string enviornement_stop = "deactivate";
-
-  string command = environment + andand + script + question;
-  //string command = script + question;
-  //string command = environment;
-
-  string bcommand = bash + command + "'";
-
-  cout << bcommand << endl;
-
-  string result = exec(bcommand.c_str());
-  cout << "Result from Python script: " << result << endl;
-    
-  return 1;
+  return ret_response;
 }
-
 
 // ------------------------------------------------------------------------- //
 
