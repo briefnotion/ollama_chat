@@ -6,7 +6,7 @@ set(CMAKE_CXX_STANDARD_REQUIRED True)
 
 # Assign build type
 set(BUILD_RELEASE ON)
-set(BUILD_STRICT OFF)
+set(BUILD_STRICT ON)
 
 if(BUILD_RELEASE)
     set(CMAKE_BUILD_TYPE Release)
@@ -31,14 +31,8 @@ include_directories(
     ${HTTPLIB_INCLUDE_DIR} 
 )
 
-# Add the executable
-add_executable(chatapi
-    #//../../chromadb_client/cJSON.c
-    helper.cpp
-    stringthings.cpp
-    tty_io.cpp
-    fled_time.cpp
-    threading.cpp
+# Create a target for files that include ollama.hpp with non-strict options
+add_library(ollama_files STATIC
     ollama_helper.cpp
     ollama_api.cpp
     vectordb_python_api.cpp
@@ -46,15 +40,29 @@ add_executable(chatapi
     main.cpp
 )
 
+target_include_directories(ollama_files PRIVATE ${OllamaHPP_INCLUDE_DIR})
+
+# Always set compile options for ollama_files to strict off
+if(CMAKE_COMPILER_IS_GNUCC OR CMAKE_COMPILER_IS_GNUCXX)
+    target_compile_options(ollama_files PRIVATE -Wall -Wextra)
+elseif(CMAKE_CXX_COMPILER_ID MATCHES "Clang")
+    target_compile_options(ollama_files PRIVATE -Weverything)
+endif()
+
+# Add the executable for remaining files
+add_executable(chatapi
+    helper.cpp
+    stringthings.cpp
+    tty_io.cpp
+    fled_time.cpp
+    threading.cpp
+)
+
 target_include_directories(chatapi PRIVATE
     ${OllamaHPP_INCLUDE_DIR}
 )
 
-target_link_libraries(chatapi 
-    OpenSSL::SSL 
-    OpenSSL::Crypto
-)
-
+# Set compile options for chatapi based on BUILD_STRICT variable
 if(BUILD_STRICT)
     if(CMAKE_COMPILER_IS_GNUCC OR CMAKE_COMPILER_IS_GNUCXX)
         target_compile_options(chatapi PRIVATE -Wall -Wextra -Werror)
@@ -68,3 +76,9 @@ else()
         target_compile_options(chatapi PRIVATE -Weverything)
     endif()
 endif()
+
+target_link_libraries(chatapi PRIVATE 
+    OpenSSL::SSL 
+    OpenSSL::Crypto
+    ollama_files
+)

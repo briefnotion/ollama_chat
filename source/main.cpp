@@ -127,6 +127,7 @@ int main()
 
         // Close all completed and active threads after sleep cycle is complete.
         sdSystem.OLLAMA_RESPONSE_THREAD.check_for_completition();
+        sdSystem.VECTORDB_SYSTEM.PYTHON_QUESTION_RESPONSE_THREAD.check_for_completition();
       }
 
       {
@@ -156,7 +157,11 @@ int main()
 
           sdSystem.OUTPUT_CLOCK.clear();
           sdSystem.OUTPUT_CLOCK.redraw();
-          sdSystem.OUTPUT_CLOCK.add_to(linemerge_left_justify("---------------------------------", clock + " INPUT:"), sdSystem.OUTPUT_FOCUS);
+          sdSystem.OUTPUT_CLOCK.add_to(linemerge_left_justify("---------------------------------", 
+                                        "(" + clock + ") " +
+                                        "(" + to_string(sdSystem.OLLAMA_SYSTEM.get_status()) + ") " + 
+                                        "(" + to_string(sdSystem.VECTORDB_SYSTEM.get_status()) + ") " + 
+                                        "INPUT:"), sdSystem.OUTPUT_FOCUS);
         }
       }
 
@@ -214,7 +219,7 @@ int main()
       //  Never comment this out or the system will never sleep
       if (sdSystem.EMBEDDING_SLEEP_TIMER.is_ready(sdSystem.PROGRAM_TIME.current_frame_time()) == true)
       {
-        sdSystem.OUTPUT_OLLAMA_RESPONSE.add_to(sdSystem.VECTORDB_SYSTEM.update(), sdSystem.OUTPUT_FOCUS);
+        sdSystem.OUTPUT_OLLAMA_RESPONSE.add_to(sdSystem.VECTORDB_SYSTEM.process(), sdSystem.OUTPUT_FOCUS);
       }
 
       // ------------------------------------------------------------------------- //
@@ -289,10 +294,10 @@ int main()
 
     // Shutdown any open threads process
     // Restore the terminal
-    sdSystem.OLLAMA_RESPONSE_THREAD.wait_for_thread_to_finish();
-    //sdSystem.VECTORDB_SYSTEM.wait_for_thread_to_finish();
+    sdSystem.OLLAMA_RESPONSE_THREAD.wait_for_thread_to_finish("OLLAMA_RESPONSE_THREAD");
+    sdSystem.VECTORDB_SYSTEM.PYTHON_QUESTION_RESPONSE_THREAD.wait_for_thread_to_finish("PYTHON_QUESTION_RESPONSE_THREAD");
+    
     sdSystem.INPUT.restore_terminal_settings();
-
   }
   else
   {

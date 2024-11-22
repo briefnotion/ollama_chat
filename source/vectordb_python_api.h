@@ -72,7 +72,6 @@ class VECTORDB_PYTHON_API
 {
   private:
 
-  THREADING_INFO  PYTHON_QUESTION_RESPONSE_THREAD;
   VECTORDB_PYTHON_MUTEX PYTHON_QUESTION_RESPONSE_MUTEX;
 
   string exec(const char* cmd);
@@ -83,9 +82,13 @@ class VECTORDB_PYTHON_API
 
   VECTORDB_PYTHON_API_PROPERTIES PROPS;
 
+  THREADING_INFO  PYTHON_QUESTION_RESPONSE_THREAD;
+
+  int get_status();
+
   void submit_question(unsigned long Time, string Question);
 
-  string update();
+  string process();
 
 };
 

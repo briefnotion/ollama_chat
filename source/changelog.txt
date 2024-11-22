@@ -1,3 +1,7 @@
+0.013-241122
+  - A simple RAG call is wrapped in a thread.
+  - Made a few changes to the CMakeList.txt file.
+  
 0.012-241121
   - Started wrapping embedding into a thread.
 

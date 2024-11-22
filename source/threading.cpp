@@ -62,25 +62,25 @@ void THREADING_INFO::start_render_thread(std::function<void()> Function)
   IS_RUNNING = true;
 }
 
-void THREADING_INFO::wait_for_thread_to_finish()
+void THREADING_INFO::wait_for_thread_to_finish(string Name_Or_Description)
 {
   if(IS_RUNNING == true)
   // Check to see if render thread was started before checking the completion status.
   {
-    cout << endl << "Closing open threads ..." << endl;
+    cout  << "Closing open threads ... (" << Name_Or_Description << ")" << endl;
 
     while(RENDER_THREAD.wait_for(10ms) != future_status::ready)
     {
       //cout << "Waiting for Render Thread to finish" << endl;
     }
 
-    cout << "  Thread Closed" << endl << endl;
+    cout << "  Thread Closed"  << endl;
 
     IS_RUNNING = false;
   }
   else
   {
-    cout << endl << "No open threads to close" << endl << endl;
+    cout << "No open threads to close ... (" << Name_Or_Description << ")" << endl;
   }
 }
 

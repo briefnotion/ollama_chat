@@ -32,7 +32,7 @@ ollama::response OLLAMA_API_MUTEX::get_complete_response_after_done()
   return ret_response;
 }
 
-bool OLLAMA_API_MUTEX::complete_respoonse_ready_after_done() const
+bool OLLAMA_API_MUTEX::complete_response_ready_after_done() const
 {
   lock_guard<mutex> lock(MUTEX_);
 
@@ -141,6 +141,11 @@ void VECTORDB_PYTHON_API::exec_thread_question()
   PYTHON_QUESTION_RESPONSE_MUTEX.set_done(2);
 }
 
+int VECTORDB_PYTHON_API::get_status()
+{
+  return PYTHON_QUESTION_RESPONSE_MUTEX.done();
+}
+
 void VECTORDB_PYTHON_API::submit_question(unsigned long Time, string Question) 
 {
   const string andand = "&& ";
@@ -156,11 +161,15 @@ void VECTORDB_PYTHON_API::submit_question(unsigned long Time, string Question)
 
   if (PYTHON_QUESTION_RESPONSE_MUTEX.done() == 0)
   {
-    exec_thread_question();
+    //exec_thread_question();
+
+    // Be careful with this because it looks like black magic to me.
+    PYTHON_QUESTION_RESPONSE_THREAD.start_render_thread([&]() 
+                  {  exec_thread_question();  });
   }
 }
 
-string VECTORDB_PYTHON_API::update()
+string VECTORDB_PYTHON_API::process()
 {
   string ret_response = "";
   if (PYTHON_QUESTION_RESPONSE_MUTEX.response_size() > 0)
@@ -170,6 +179,14 @@ string VECTORDB_PYTHON_API::update()
     ret_response = return_vector_as_string(result);
   }
 
+  // Post Process
+  if (PYTHON_QUESTION_RESPONSE_MUTEX.done() == 2)
+  {
+    // Post Process Here
+    PYTHON_QUESTION_RESPONSE_MUTEX.set_done(0);
+  }
+
+  // change to addto
   return ret_response;
 }
 
