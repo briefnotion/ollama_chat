@@ -86,19 +86,19 @@ class countdown_timer
 
   bool CHECKED = false;
 
-  unsigned long TIME_START;
-  unsigned long TIME_END;
-  unsigned long DURATION;
+  double TIME_START;
+  double TIME_END;
+  double DURATION;
 
   public:
-  void set_timer(unsigned long Current_Time_millis, int Seconds);
+  void set_timer(double Current_Time_millis, int Seconds);
   // Starts a timer with the Current_Time_millis to be triggered in 
   //  Seconds.
 
   bool is_active();
   // Returns true of timer is rinning.
 
-  void update(unsigned long Current_Time_millis);
+  void update(double Current_Time_millis);
   // Updates values based on time.
 
   bool is_triggered();
@@ -110,13 +110,13 @@ class countdown_timer
   void end();
   // Resets the timer.
 
-  unsigned long duration();
+  double duration();
   // returns duration of timer set at start.
 
-  long elapsed_time(unsigned long Current_Time_millis);
+  long elapsed_time(double Current_Time_millis);
   // returns amount of time passed from start, in milliseconds.
 
-  float timer_position(unsigned long Current_Time_millis);
+  float timer_position(double Current_Time_millis);
   // returns percentage of time passed, from start to finish.
   // e.g.  0  = no passed time.
   //      .5  = half way complete.
@@ -291,7 +291,7 @@ struct MIN_MAX_TIME_SLICE_SIMPLE
   float MEAN_VALUE = 0;
   float MIN_VALUE = 0;
   float MAX_VALUE = 0;
-  unsigned long TIME_CREATED;
+  double TIME_CREATED;
 };
 
 // ---------------------------------------------------------------------------------------
@@ -301,7 +301,7 @@ class MIN_MAX_TIME_SLICE
 {
   private:
 
-  unsigned long TIME_CREATED;
+  double TIME_CREATED;
   bool ACTIVE = false;
   float VALUE = 0;
   int SAMPLES = 0;
@@ -312,9 +312,9 @@ class MIN_MAX_TIME_SLICE
 
   public:
 
-  unsigned long time_created();
+  double time_created();
 
-  void clear(unsigned long tmeFrame_Time);
+  void clear(double tmeFrame_Time);
   // Resets value to be used again as new.
 
   void store_value(float Value);
@@ -344,7 +344,7 @@ class MIN_MAX_TIME_PROPERTIES
   public:
 
   int SLICES = 0;                     // Number of slices to retain
-  unsigned long TIME_SPAN = 0;                  // TOTAL TIME
+  double TIME_SPAN = 0;                  // TOTAL TIME
                                       // Elaped time from first to last slice.
                                       //  e.g: 10,000ms over 5 slices = 1 slice per 2 sec
                                       // Measured in ms.  1000 = 1 sec.
@@ -366,23 +366,23 @@ class MIN_MAX_TIME
   private:
 
   bool ENABLED = false;
-  unsigned long SLICE_TIME = 0;
+  double SLICE_TIME = 0;
 
   deque<MIN_MAX_TIME_SLICE> TIME_SLICES;
 
-  unsigned long TIME_SLICE_CREATED_FRAME_TIME = 0;
+  double TIME_SLICE_CREATED_FRAME_TIME = 0;
 
   void create();
 
-  unsigned long old_expired_frames_check_time = 0;
+  double old_expired_frames_check_time = 0;
 
-  void remove_old_expired_frames(unsigned long tmeFrame_Time);
+  void remove_old_expired_frames(double tmeFrame_Time);
 
   public:
 
   MIN_MAX_TIME_PROPERTIES PROP;
 
-  void put_value(float Value, unsigned long tmeFrame_Time);
+  void put_value(float Value, double tmeFrame_Time);
   // Stores value in time slice
   //  Creates new slice if slice time has passed.
 
@@ -427,7 +427,7 @@ struct IMPACT_RESISTANCE_VALUE
 // For each letter, assign a behavior and type for it.
 {
   float VALUE;
-  unsigned long ENTRY_TIME;
+  double ENTRY_TIME;
 };
 
 class IMPACT_RESISTANCE_FLOAT_PROPERTIES
@@ -436,7 +436,7 @@ class IMPACT_RESISTANCE_FLOAT_PROPERTIES
   public:
 
   int SIZE = 10;                    // Max Size of Entries
-  unsigned long ALIVE_TIME = 150;   // Measured in ms
+  double ALIVE_TIME = 150;   // Measured in ms
   
   // With Standard Deviations
   // 1 - About 68% of the data falls within one standard deviation from the mean.
@@ -465,7 +465,7 @@ class IMPACT_RESISTANCE_FLOAT
   float LATEST_VALUE = 0.0f;
 
   bool CHANGED = true;
-  unsigned long OLDEST_ENTRY_TIME = 0;
+  double OLDEST_ENTRY_TIME = 0;
 
   public:
 
@@ -477,17 +477,17 @@ class IMPACT_RESISTANCE_FLOAT
   void set_size(int Size);
   // sets size of IMPACT_RESISTANCE_VALUE queue
 
-  void set_alive_time(unsigned long Alive_Time);
+  void set_alive_time(double Alive_Time);
   // When calculating, discards items older than time allowed
   // dont forget to corelate size with time.
 
-  void set_value(unsigned long Time, float Value);
+  void set_value(double Time, float Value);
   // enteres a new value
 
   float latest();
   // returns last value entered into the queue.
 
-  float impact(unsigned long Time);
+  float impact(double Time);
   // Runs through all calculations.
 
 };
@@ -502,7 +502,7 @@ class IMPACT_RESISTANCE_FLOAT
 // ---------------------------------------------------------------------------------------
 
 // Debug Walker
-float walker_float(unsigned long Time, float One_Second_Value, float Max_value);
+float walker_float(double Time, float One_Second_Value, float Max_value);
 // Time based value walker for debugging. 
 // Max_value not yet implemented.
 

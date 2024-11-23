@@ -146,11 +146,34 @@ int VECTORDB_PYTHON_API::get_status()
   return PYTHON_QUESTION_RESPONSE_MUTEX.done();
 }
 
-void VECTORDB_PYTHON_API::submit_question(unsigned long Time, string Question) 
+void VECTORDB_PYTHON_API::submit_question(double Time, string Question) 
 {
   const string andand = "&& ";
 
   string bcommand = PROPS.ENVIRONMENT + andand + PROPS.SCRIPT_SEARCH + Question;
+
+  if (PROPS.BASH_SHELL.size() > 0)
+  {
+    bcommand = PROPS.BASH_SHELL + bcommand + "'";
+  }
+
+  PYTHON_QUESTION_RESPONSE_MUTEX.set_command_line (bcommand);
+
+  if (PYTHON_QUESTION_RESPONSE_MUTEX.done() == 0)
+  {
+    //exec_thread_question();
+
+    // Be careful with this because it looks like black magic to me.
+    PYTHON_QUESTION_RESPONSE_THREAD.start_render_thread([&]() 
+                  {  exec_thread_question();  });
+  }
+}
+
+void VECTORDB_PYTHON_API::submit_file_to_embed(string File)
+{
+  const string andand = "&& ";
+
+  string bcommand = PROPS.ENVIRONMENT + andand + PROPS.SCRIPT_EMBED_FILE + File;
 
   if (PROPS.BASH_SHELL.size() > 0)
   {
@@ -189,6 +212,8 @@ string VECTORDB_PYTHON_API::process()
   // change to addto
   return ret_response;
 }
+
+
 
 // ------------------------------------------------------------------------- //
 

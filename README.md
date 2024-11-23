@@ -1,3 +1,12 @@
+This is not a fully functional program.  It is a placeholder to work with and develop libraries 
+  based on Ollama.
+
+  References and sources are scattered throughout the code.
+  
+  All apologies for anyone or anybody who was looking for a program well defined and documented.
+
+--- 
+
 Compile Notes:
   "ollama-hpp" should be in the same directory as "ollama_chat"
 

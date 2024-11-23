@@ -103,25 +103,25 @@ void FLED_TIME_VAR::update_time()
   TIME_UPDATED = true;
 }
 
-void FLED_TIME_VAR::put_seconds(unsigned long Seconds)
+void FLED_TIME_VAR::put_seconds(double Seconds)
 {
   SECONDS = Seconds;
   TIME_UPDATED = false;
 }
 
-void FLED_TIME_VAR::put_deciseconds(int Deciseconds)
+void FLED_TIME_VAR::put_deciseconds(double Deciseconds)
 {
   MICRO_SECONDS = Deciseconds *100000;
   TIME_UPDATED = false;
 }
 
-void FLED_TIME_VAR::put_miliseconds(int Miliseconds)
+void FLED_TIME_VAR::put_miliseconds(double Miliseconds)
 {
   MICRO_SECONDS = Miliseconds *1000;
   TIME_UPDATED = false;
 }
 
-unsigned long FLED_TIME_VAR::get_seconds()
+double FLED_TIME_VAR::get_seconds()
 {
   return SECONDS;
 }
@@ -200,9 +200,9 @@ int FLED_TIME_VAR::get_second()
 
 // -------------------------------------------------------------------------------------
 
-void FLED_TIME::request_ready_time(unsigned long Ready_Time)
+void FLED_TIME::request_ready_time(double Ready_Time)
 {
-  int requested_sleep_time = Ready_Time - now();
+  double requested_sleep_time = Ready_Time - now();
 
   if (requested_sleep_time > 0)
   {
@@ -217,9 +217,9 @@ void FLED_TIME::request_ready_time(unsigned long Ready_Time)
   }
 }
 
-void FLED_TIME::request_ready_time(unsigned long Ready_Time, char ID)
+void FLED_TIME::request_ready_time(double Ready_Time, char ID)
 {
-  int requested_sleep_time = Ready_Time - now();
+  double requested_sleep_time = Ready_Time - now();
   if (requested_sleep_time <= 0)
   {
     cout << ID << flush;
@@ -237,12 +237,14 @@ void FLED_TIME::clear_error()
   ERROR_EXIST = false;
 }
 
-unsigned long FLED_TIME::now()
+double FLED_TIME::now()
 {
   // Returns now time in milliseconds.
-  // Should be Unsigned Long.
-  std::chrono::time_point<std::chrono::system_clock> tmeNow = std::chrono::system_clock::now();
-  std::chrono::duration<double>  dur = tmeNow - TIME_START;
+  // Should be double.
+  //std::chrono::time_point<std::chrono::system_clock> tmeNow = std::chrono::system_clock::now();
+  //std::chrono::duration<double>  dur = tmeNow - TIME_START;
+  auto tmeNow = std::chrono::steady_clock::now();
+  std::chrono::duration<double> dur = tmeNow - TIME_START;
 
   double nowtime = dur.count();
 
@@ -252,22 +254,22 @@ unsigned long FLED_TIME::now()
   //  that, somehow, aren't fooled by this little hack.  Not sure why yet.
 
   // Check for error
-  if ((abs(nowtime - OLD_NOW_TIME)) > ERROR_TOLERANCE)
+  if (std::abs(nowtime - OLD_NOW_TIME) > ERROR_TOLERANCE)
   {
     ERROR = nowtime - OLD_NOW_TIME;
     ERROR_EXIST = true;
   }
   
   OLD_NOW_TIME = nowtime;
-  nowtime = (nowtime - ERROR) * 1000.0 ;
-  
-  return (unsigned long)nowtime;
+  nowtime = (nowtime - ERROR) * 1000.0; // convert to milliseconds
+
+  return nowtime;
 }
 
 void FLED_TIME::create()
 {
   // Initialize as Start of Program Time.
-  TIME_START = std::chrono::system_clock::now();
+  TIME_START = std::chrono::steady_clock::now();
 
   EFFIC_TIMER.start_timer(now());
 }
@@ -292,9 +294,9 @@ double FLED_TIME::tmeFrameElapse()
   return elapsed;
 }
 
-unsigned long FLED_TIME::current_frame_time()
+double FLED_TIME::current_frame_time()
 {
-  return (unsigned long)CURRENT_FRAME_TIME;
+  return CURRENT_FRAME_TIME;
 }
 
 void FLED_TIME::sleep_till_next_frame()
@@ -342,7 +344,7 @@ bool TIMED_IS_READY::is_set()
   }
 }
 
-void TIMED_IS_READY::set(unsigned long current_time, int delay)
+void TIMED_IS_READY::set(double current_time, double delay)
 // Prep the TIMED_IS_READY varable
 // delay is measured in ms.
 {
@@ -350,7 +352,7 @@ void TIMED_IS_READY::set(unsigned long current_time, int delay)
   INTREVAL        = delay;
 }
 
-void TIMED_IS_READY::set(int delay)
+void TIMED_IS_READY::set(double delay)
 // Prep the TIMED_IS_READY varable
 //  If current time isn't available
 // delay is measured in ms.
@@ -359,13 +361,13 @@ void TIMED_IS_READY::set(int delay)
   INTREVAL        = delay;
 }
 
-unsigned long TIMED_IS_READY::get_ready_time()
+double TIMED_IS_READY::get_ready_time()
 // Return the time value of when the variable will be ready. 
 {
   return READY_TIME;
 }
 
-bool TIMED_IS_READY::is_ready(unsigned long current_time)
+bool TIMED_IS_READY::is_ready(double current_time)
 {
   // Check to see if enough time has passed.
   //  Returns true if interval time has passed.
@@ -385,7 +387,7 @@ bool TIMED_IS_READY::is_ready(unsigned long current_time)
   }
 }
 
-bool TIMED_IS_READY::is_ready_no_reset(unsigned long current_time)
+bool TIMED_IS_READY::is_ready_no_reset(double current_time)
 {
   // Check to see if enough time has passed.
   //  Returns true if interval time has passed.
@@ -404,7 +406,7 @@ bool TIMED_IS_READY::is_ready_no_reset(unsigned long current_time)
   }
 }
 
-void TIMED_IS_READY::set_earliest_ready_time(unsigned long current_time)
+void TIMED_IS_READY::set_earliest_ready_time(double current_time)
 // Manually set the ready time of the variable. 
 // Does not change time if time to set is later than the already set time.
 {
@@ -421,12 +423,12 @@ bool TIMED_PING::enabled()
   return ENABLED;
 }
 
-unsigned long TIMED_PING::start_time()
+double TIMED_PING::start_time()
 {
   return START_TIME;
 }
 
-void TIMED_PING::ping_up(unsigned long current_time, int delay)
+void TIMED_PING::ping_up(double current_time, double delay)
 // Start the timer for the event that needs to be triggered.
 {
   START_TIME      = current_time;
@@ -434,7 +436,7 @@ void TIMED_PING::ping_up(unsigned long current_time, int delay)
   ENABLED         = true;
 }
 
-bool TIMED_PING::ping_down(unsigned long current_time)
+bool TIMED_PING::ping_down(double current_time)
 {
   // Check for the event triggered time.
   // Returns true if interval time has not passed, and ping is enabled.
@@ -458,7 +460,7 @@ bool TIMED_PING::ping_down(unsigned long current_time)
   }
 }
 
-bool TIMED_PING::blip_visible(unsigned long current_time)
+bool TIMED_PING::blip_visible(double current_time)
 {
   // Check for the event triggered time.
   // Returns true if interval time has not passed, and ping is enabled.
@@ -473,7 +475,7 @@ bool TIMED_PING::blip_visible(unsigned long current_time)
   }
 }
 
-bool TIMED_PING::blip_moved(unsigned long current_time)
+bool TIMED_PING::blip_moved(double current_time)
 // Check to see if return ping has changed from false to true or true to false.
 // Returns true if changed.
 // Returns false if not changed or not enabled.

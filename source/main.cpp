@@ -103,6 +103,13 @@ int main()
     sdSystem.OUTPUT_OLLAMA_RESPONSE.output(sdSystem.OUTPUT_FOCUS);
 
     // ------------------------------------------------------------------------- //
+
+    FLED_TIME_VAR time; 
+    std::chrono::time_point<std::chrono::system_clock> tmeNow = std::chrono::system_clock::now();
+    std::chrono::duration<double>  dur = tmeNow.time_since_epoch();
+
+    time.put_seconds(dur.count());
+
     // ------------------------------------------------------------------------- //
 
     // Main Thread Loop
@@ -155,13 +162,28 @@ int main()
             clock = "|";
           }
 
+          tmeNow = std::chrono::system_clock::now();
+          dur = tmeNow.time_since_epoch();
+
+          time.put_seconds(dur.count());
+
           sdSystem.OUTPUT_CLOCK.clear();
           sdSystem.OUTPUT_CLOCK.redraw();
           sdSystem.OUTPUT_CLOCK.add_to(linemerge_left_justify("---------------------------------", 
                                         "(" + clock + ") " +
                                         "(" + to_string(sdSystem.OLLAMA_SYSTEM.get_status()) + ") " + 
                                         "(" + to_string(sdSystem.VECTORDB_SYSTEM.get_status()) + ") " + 
-                                        "INPUT:"), sdSystem.OUTPUT_FOCUS);
+                                        "(" + to_string(sdSystem.PROGRAM_TIME.current_frame_time()) + ") " + 
+                                        
+                                        "(" + to_string(time.get_year()) + "." + 
+                                              to_string(time.get_month()) + "." + 
+                                              to_string(time.get_day()) + "." + 
+                                              to_string(time.get_hour()) + "." + 
+                                              to_string(time.get_minute()) + "." + 
+                                              to_string(time.get_second()) + "." + 
+                                              to_string(time.get_miliseconds()) + ")" + 
+                                        
+                                        " INPUT:"), sdSystem.OUTPUT_FOCUS);
         }
       }
 
@@ -248,8 +270,13 @@ int main()
                 if (input_entered[0] == 'e')
                 {
                   input_entered.erase(0, 1);
-                  //sdSystem.OUTPUT_OLLAMA_RESPONSE.add_to(sdSystem.VECTORDB_SYSTEM.submit_question(input_entered), sdSystem.OUTPUT_FOCUS); 
                   sdSystem.VECTORDB_SYSTEM.submit_question(sdSystem.PROGRAM_TIME.current_frame_time(), input_entered);
+                  sdSystem.OUTPUT_INPUT.clear();
+                }
+                else if (input_entered[0] == 'm')
+                {
+                  input_entered.erase(0, 1);
+                  sdSystem.VECTORDB_SYSTEM.submit_file_to_embed(input_entered);
                   sdSystem.OUTPUT_INPUT.clear();
                 }
                 else

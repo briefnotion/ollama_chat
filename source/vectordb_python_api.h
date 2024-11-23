@@ -61,11 +61,10 @@ class VECTORDB_PYTHON_API_PROPERTIES
   public:
 
   // Command Line Input
-  string BASH_SHELL = "bash -c '";
-  string ENVIRONMENT = "source /home/briefn/py/venv/bin/activate ";
-  string SCRIPT_SEARCH = "python3 ../python/search.py ";
-
-
+  string BASH_SHELL =         "bash -c '";
+  string ENVIRONMENT =        "source /home/briefn/py/venv/bin/activate ";
+  string SCRIPT_SEARCH =      "python3 ../python/search.py ";
+  string SCRIPT_EMBED_FILE =  "python3 ../python/import_sp.py ";
 };
 
 class VECTORDB_PYTHON_API
@@ -86,7 +85,9 @@ class VECTORDB_PYTHON_API
 
   int get_status();
 
-  void submit_question(unsigned long Time, string Question);
+  void submit_question(double Time, string Question);
+
+  void submit_file_to_embed(string Question);
 
   string process();
 

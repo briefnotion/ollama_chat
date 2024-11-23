@@ -80,12 +80,16 @@ class EFFICIANTCY_TIMER
 
 // -------------------------------------------------------------------------------------
 // Time Variable
+
+// Stores a time that can be retreived in components, such as minutes hours and so on. 
+//  This routine is not complete. Different results depending on put call.
+
 class FLED_TIME_VAR
 {
   private:
   // time starts at jan 1 1970
-  unsigned long SECONDS = 0;
-  int MICRO_SECONDS = 0;   // 1*10^-6 Seconds
+  double SECONDS = 0;
+  double MICRO_SECONDS = 0;   // 1*10^-6 Seconds //!!!
 
   time_t THE_TIME;
   tm *PTM;
@@ -94,11 +98,11 @@ class FLED_TIME_VAR
   void update_time();
 
   public:
-  void put_seconds(unsigned long Seconds);
-  void put_deciseconds(int Deciseconds);
-  void put_miliseconds(int Miliseconds);
+  void put_seconds(double Seconds);
+  void put_deciseconds(double Deciseconds);
+  void put_miliseconds(double Miliseconds);
 
-  unsigned long get_seconds();
+  double get_seconds();
 
   int get_deciseconds();
 
@@ -127,7 +131,7 @@ class FLED_TIME_VAR
 class FLED_TIME
 {
   private:
-  std::chrono::time_point<std::chrono::system_clock> TIME_START;
+  std::chrono::time_point<std::chrono::steady_clock> TIME_START;
 
   EFFICIANTCY_TIMER EFFIC_TIMER;           // Diagnostic timer to measure cycle times.
 
@@ -141,7 +145,7 @@ class FLED_TIME
   bool test = false;
 
   // How long sleep will occure
-  int SLEEP_TIME = 1000;
+  double SLEEP_TIME = 1000;
 
   public:
   STAT_DATA_DOUBLE COMPUTETIME;   // Loop time spent while only proceessing.
@@ -149,15 +153,15 @@ class FLED_TIME
   STAT_DATA_DOUBLE PREVSLEEPTIME; // Stored value returned on prev sleep cycle.
 
   public:
-  void request_ready_time(unsigned long Ready_Time);          // Set sleep time to loweset
-  void request_ready_time(unsigned long Ready_Time, char ID); // For debugging. will print id if 
+  void request_ready_time(double Ready_Time);          // Set sleep time to loweset
+  void request_ready_time(double Ready_Time, char ID); // For debugging. will print id if 
                                                               // id if sleep time requested is <=0
  
   double error();
 
   void clear_error();
 
-  unsigned long now();
+  double now();
 
   void create();
 
@@ -165,7 +169,7 @@ class FLED_TIME
 
   double tmeFrameElapse();
 
-  unsigned long current_frame_time();
+  double current_frame_time();
 
   void sleep_till_next_frame();
 };
@@ -175,26 +179,26 @@ class TIMED_IS_READY
 // Class to manage conditions of when something needs to be ran.
 {
   private:
-  unsigned long TRIGGERED_TIME  = 0;  //  Most recent time the ready was activated
-  unsigned long LAST_ASKED_TIME = 0;  //  Most recent time the variable was asked if was ready.
-  unsigned long READY_TIME      = 0;  //  Calculated time of when variable will be ready.
-  int           INTREVAL        = 0;  //  Time in miliseconds between ready.
+  double TRIGGERED_TIME  = 0;  //  Most recent time the ready was activated
+  double LAST_ASKED_TIME = 0;  //  Most recent time the variable was asked if was ready.
+  double READY_TIME      = 0;  //  Calculated time of when variable will be ready.
+  double           INTREVAL        = 0;  //  Time in miliseconds between ready.
 
   public:
 
   bool is_set();
 
-  void set(unsigned long current_time, int delay);
+  void set(double current_time, double delay);
 
-  void set(int delay);
+  void set(double delay);
 
-  unsigned long get_ready_time();
+  double get_ready_time();
 
-  bool is_ready(unsigned long current_time);
+  bool is_ready(double current_time);
   
-  bool is_ready_no_reset(unsigned long current_time);
+  bool is_ready_no_reset(double current_time);
   
-  void set_earliest_ready_time(unsigned long current_time);
+  void set_earliest_ready_time(double current_time);
 };
 
 // ---------------------------------------------------------------------------------------
@@ -206,8 +210,8 @@ class TIMED_PING
 //  Simplified version of is_ready_timer.
 {
   private:
-  unsigned long START_TIME      = 0;  //  Calculated time of when variable will be ready.
-  unsigned long READY_TIME      = 0;  //  Calculated time of when variable will be ready.
+  double START_TIME      = 0;  //  Calculated time of when variable will be ready.
+  double READY_TIME      = 0;  //  Calculated time of when variable will be ready.
   bool          ENABLED         = false;  // Determine if the timer is active.
   bool          BLIP_POS        = false;
   
@@ -217,28 +221,28 @@ class TIMED_PING
   // Retruns enabled;
   // DO NOT CALL UNLESS PASSIVELY PROBING, PING DOWN RESULTS THE SAME.
 
-  unsigned long start_time();
+  double start_time();
   // Returns Start Time.
 
-  void ping_up(unsigned long current_time, int delay);
+  void ping_up(double current_time, double delay);
   // Like, sending a ping signal out.
   // Start the timer for the event that needs to be triggered.
   // If already running, resets the trigger time.
 
-  bool ping_down(unsigned long current_time);
+  bool ping_down(double current_time);
   // Like, did the sent signal get back yet.
   // Check for the event triggered time.
   // Returns true if interval time has not passed, and ping is enabled.
   //  Disables after returning false.
   // Returns false on all other conditions.
 
-  bool blip_visible(unsigned long current_time);
+  bool blip_visible(double current_time);
   // Check for the event triggered time.
   // Returns true if interval time has not passed, and ping is enabled.
   //  Enabled remains true.
   // Returns false on all other conditions.
   
-  bool blip_moved(unsigned long current_time);
+  bool blip_moved(double current_time);
   // Check to see if return ping has changed from false to true or true to false.
   // Returns true if changed.
   // Returns false if not changed or not enabled.

@@ -17,7 +17,7 @@ void THREADING_INFO::create(int Time_in_FPS)
   THREAD_TIMER.set( 1000 / Time_in_FPS );
 }
 
-unsigned long THREADING_INFO::get_ready_time()
+double THREADING_INFO::get_ready_time()
 {
   return THREAD_TIMER.get_ready_time();
 }
@@ -40,7 +40,7 @@ void THREADING_INFO::check_for_completition()
   }
 }
 
-bool THREADING_INFO::check_to_run_routine_on_thread(unsigned long Time_Frame)
+bool THREADING_INFO::check_to_run_routine_on_thread(double Time_Frame)
 {
   bool ret_ready = false;
 

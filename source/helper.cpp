@@ -45,7 +45,7 @@ void stupid_2d::clear()
 // -------------------------------------------------------------------------------------
 // Countdown Timer
 
-void countdown_timer::set_timer(unsigned long Current_Time_millis, int Seconds)
+void countdown_timer::set_timer(double Current_Time_millis, int Seconds)
 {
   TIME_START = Current_Time_millis;
   DURATION = Seconds * 1000;
@@ -62,7 +62,7 @@ bool countdown_timer::is_active()
   return ACTIVE;
 }
 
-void countdown_timer::update(unsigned long Current_Time_millis)
+void countdown_timer::update(double Current_Time_millis)
 {
   if (ACTIVE == true)
   {
@@ -107,12 +107,12 @@ void countdown_timer::end()
   DURATION = 0;
 }
 
-unsigned long countdown_timer::duration()
+double countdown_timer::duration()
 {
   return DURATION;
 }
 
-long countdown_timer::elapsed_time(unsigned long Current_Time_millis)
+long countdown_timer::elapsed_time(double Current_Time_millis)
 {
   if (ACTIVE == true)
   {
@@ -124,14 +124,14 @@ long countdown_timer::elapsed_time(unsigned long Current_Time_millis)
   }
 }
 
-float countdown_timer::timer_position(unsigned long Current_Time_millis)
+float countdown_timer::timer_position(double Current_Time_millis)
 {
   if (ACTIVE == true)
   {
     if (DURATION <= 0)
       return 0;
 
-    unsigned long elapsed = Current_Time_millis - TIME_START;
+    double elapsed = Current_Time_millis - TIME_START;
     float pos = (float)elapsed / (float)DURATION;
 
     if (pos > 1)
@@ -403,12 +403,12 @@ bool BOOL_BOUNCE::bounce()
 // ---------------------------------------------------------------------------------------
 // Min Max Time Classes
 
-unsigned long MIN_MAX_TIME_SLICE::time_created()
+double MIN_MAX_TIME_SLICE::time_created()
 {
   return TIME_CREATED;
 }
 
-void MIN_MAX_TIME_SLICE::clear(unsigned long tmeFrame_Time)
+void MIN_MAX_TIME_SLICE::clear(double tmeFrame_Time)
 {
   TIME_CREATED = tmeFrame_Time;
   ACTIVE = false;
@@ -485,7 +485,7 @@ void MIN_MAX_TIME::create()
   }
 }
 
-void MIN_MAX_TIME::remove_old_expired_frames(unsigned long tmeFrame_Time)
+void MIN_MAX_TIME::remove_old_expired_frames(double tmeFrame_Time)
 {
   if (PROP.SAMPLE_LIMITED_SPANS == false)
   {
@@ -511,7 +511,7 @@ int MIN_MAX_TIME::slice_size_max()
   return PROP.SLICES;
 }
 
-void MIN_MAX_TIME::put_value(float Value, unsigned long tmeFrame_Time)
+void MIN_MAX_TIME::put_value(float Value, double tmeFrame_Time)
 {
   // If no slices, create new slice.
   if (TIME_SLICES.size() == 0)
@@ -722,12 +722,12 @@ void IMPACT_RESISTANCE_FLOAT::set_size(int Size)
   FIRST_RUN = true;
 }
 
-void IMPACT_RESISTANCE_FLOAT::set_alive_time(unsigned long Alive_Time)
+void IMPACT_RESISTANCE_FLOAT::set_alive_time(double Alive_Time)
 {
   PROPS.ALIVE_TIME = Alive_Time;
 }
 
-void IMPACT_RESISTANCE_FLOAT::set_value(unsigned long Time, float Value)
+void IMPACT_RESISTANCE_FLOAT::set_value(double Time, float Value)
 {
   IMPACT_RESISTANCE_VALUE new_value;
 
@@ -768,7 +768,7 @@ float IMPACT_RESISTANCE_FLOAT::latest()
   }
 }
 
-float IMPACT_RESISTANCE_FLOAT::impact(unsigned long Time)
+float IMPACT_RESISTANCE_FLOAT::impact(double Time)
 {
   //float ret_impact_value = 0.0f;
   float mean = 0.0f;
@@ -872,7 +872,7 @@ float IMPACT_RESISTANCE_FLOAT::impact(unsigned long Time)
 // ---------------------------------------------------------------------------------------
 
 // Debug Walker
-float walker_float(unsigned long Time, float One_Second_Value, float Max_value)
+float walker_float(double Time, float One_Second_Value, float Max_value)
 {
   float ret_value = (float(Time) / 1000.0f) * One_Second_Value;
 
@@ -1248,7 +1248,7 @@ string file_format_system_time()
   std::chrono::time_point<std::chrono::system_clock> tmeNow = std::chrono::system_clock::now();
   std::chrono::duration<double>  dur = tmeNow.time_since_epoch();
 
-  time.put_seconds((unsigned long)dur.count());
+  time.put_seconds(dur.count());
 
   ret_date_time = linemerge_right_justify(4, "0000", to_string(time.get_year())) + 
                   linemerge_right_justify(2, "00", to_string(time.get_month())) + 
@@ -1271,7 +1271,7 @@ string file_format_system_date()
   std::chrono::time_point<std::chrono::system_clock> tmeNow = std::chrono::system_clock::now();
   std::chrono::duration<double>  dur = tmeNow.time_since_epoch();
 
-  time.put_seconds((unsigned long)dur.count());
+  time.put_seconds(dur.count());
 
   ret_date_time = linemerge_right_justify(4, "0000", to_string(time.get_year())) + 
                   linemerge_right_justify(2, "00", to_string(time.get_month())) + 
@@ -1288,7 +1288,7 @@ string file_format_system_hour_minutes_seconds()
   std::chrono::time_point<std::chrono::system_clock> tmeNow = std::chrono::system_clock::now();
   std::chrono::duration<double>  dur = tmeNow.time_since_epoch();
 
-  time.put_seconds((unsigned long)dur.count());
+  time.put_seconds(dur.count());
 
   ret_date_time = linemerge_right_justify(2, "00", to_string(time.get_hour())) + 
                   "." + 

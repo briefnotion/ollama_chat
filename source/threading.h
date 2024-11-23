@@ -38,7 +38,7 @@ class THREADING_INFO
 
   // Returns the ready time of the thread, in milliseconds.
   // @return The ready time of the thread.
-  unsigned long get_ready_time();
+  double get_ready_time();
 
   // Checks whether the rendering thread has completed its execution.
   void check_for_completition();
@@ -50,7 +50,7 @@ class THREADING_INFO
   // Checks whether it's time to run the routine on the thread, based on a specified time frame.
   // @param Time_Frame The time frame (in milliseconds) within which to check for running the routine.
   // @return A boolean indicating whether it's time to run the routine on the thread.
-  bool check_to_run_routine_on_thread(unsigned long Time_Frame);
+  bool check_to_run_routine_on_thread(double Time_Frame);
 
   // Waits for the rendering thread to finish its execution.
   // Call at program closing.
