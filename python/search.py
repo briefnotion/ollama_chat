@@ -5,7 +5,7 @@ from utilities import getconfig
 #mainmodel = getconfig()["mainmodel"]
 
 embedmodel = "nomic-embed-text"
-mainmodel = "llama3.1:8b"
+mainmodel = "llama3.2:latest"
 
 chroma = chromadb.HttpClient(host="localhost", port=8000)
 collection = chroma.get_or_create_collection("buildragwithpython")

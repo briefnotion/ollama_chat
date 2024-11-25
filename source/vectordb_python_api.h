@@ -10,6 +10,14 @@
 #include "ollama_api.h"
 #include "threading.h"
 
+#define  VECTORDB_API_RESPONSE_THREAD_TIMER_DELAY   60   // This will be in frames per second (fps)
+
+#define VECTORDB_API_READY_FOR_REQUEST      0
+//#define VECTORDB_API_WRITING_REQUEST        1
+//#define VECTORDB_API_REQUEST_SUBMITTED      2 
+#define VECTORDB_API_RESPONS_GENERATING     3
+#define VECTORDB_API_RESPONSE_DONE          4
+
 using namespace std;
 
 // ------------------------------------------------------------------------- //
@@ -20,13 +28,7 @@ class VECTORDB_PYTHON_MUTEX
   mutable mutex MUTEX_;
 
   vector<string> RESPONSE_VECTOR;
-  int DONE = 0;
-                  // 0 - not doing anything
-                  // 1 - getting data
-                  // 2 - data complete, needs grabbing.
-
-  //ollama::response COMPLETE_RESPONSE_AFTER_DONE;
-  //bool COMPLETE_RESPONSE_READY_AFTER_DONE = false;
+  int DONE = VECTORDB_API_READY_FOR_REQUEST;
 
   string COMMAND_LINE = "";
 
@@ -61,10 +63,12 @@ class VECTORDB_PYTHON_API_PROPERTIES
   public:
 
   // Command Line Input
-  string BASH_SHELL =         "bash -c '";
-  string ENVIRONMENT =        "source /home/briefn/py/venv/bin/activate ";
-  string SCRIPT_SEARCH =      "python3 ../python/search.py ";
-  string SCRIPT_EMBED_FILE =  "python3 ../python/import_sp.py ";
+  string BASH_SHELL =             "bash -c '";
+  string ENVIRONMENT =            "source /home/briefn/py/venv/bin/activate ";
+  string SCRIPT_SEARCH =          "python3 ../python/search.py ";
+  string SCRIPT_EMBED_FILE =      "python3 ../python/import_sp.py ";
+  string SCRIPT_CLEAR_DATABASE =  "python3 ../python/clear_database.py";
+  string SCRIPT_LIST_DATABASE =  "python3 ../python/list_database.py";
 };
 
 class VECTORDB_PYTHON_API
@@ -74,8 +78,8 @@ class VECTORDB_PYTHON_API
   VECTORDB_PYTHON_MUTEX PYTHON_QUESTION_RESPONSE_MUTEX;
 
   string exec(const char* cmd);
-
   void exec_thread_question();
+  void thread();
 
   public:
 
@@ -85,11 +89,12 @@ class VECTORDB_PYTHON_API
 
   int get_status();
 
-  void submit_question(double Time, string Question);
+  void submit_question(string Question);
+  void submit_file_to_embed(string File);
+  void submit_clear_database();
+  void submit_list_database();
 
-  void submit_file_to_embed(string Question);
-
-  string process();
+  void process(TTY_OUTPUT &Output, TTY_OUTPUT_FOCUS &Focus);
 
 };
 

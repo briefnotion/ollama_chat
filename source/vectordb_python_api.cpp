@@ -126,11 +126,11 @@ void VECTORDB_PYTHON_API::exec_thread_question()
   array<char, 128> buffer;
   unique_ptr<FILE, decltype(&pclose)> pipe(popen(PYTHON_QUESTION_RESPONSE_MUTEX.command_line().c_str(), "r"), pclose);
 
-  PYTHON_QUESTION_RESPONSE_MUTEX.set_done(1);
+  PYTHON_QUESTION_RESPONSE_MUTEX.set_done(VECTORDB_API_RESPONS_GENERATING);
 
   if (!pipe) 
   {
-    PYTHON_QUESTION_RESPONSE_MUTEX.set_done(0);
+    PYTHON_QUESTION_RESPONSE_MUTEX.set_done(VECTORDB_API_READY_FOR_REQUEST);
     throw runtime_error("popen() failed!");
   }
   while (fgets(buffer.data(), buffer.size(), pipe.get()) != nullptr) 
@@ -138,7 +138,19 @@ void VECTORDB_PYTHON_API::exec_thread_question()
     PYTHON_QUESTION_RESPONSE_MUTEX.add_to_response(buffer.data());
   }
 
-  PYTHON_QUESTION_RESPONSE_MUTEX.set_done(2);
+  PYTHON_QUESTION_RESPONSE_MUTEX.set_done(VECTORDB_API_RESPONSE_DONE);
+}
+
+void VECTORDB_PYTHON_API::thread()
+{
+  if (PYTHON_QUESTION_RESPONSE_MUTEX.done() == VECTORDB_API_READY_FOR_REQUEST)
+  {
+    //exec_thread_question();
+
+    // Be careful with this because it looks like black magic to me.
+    PYTHON_QUESTION_RESPONSE_THREAD.start_render_thread([&]() 
+                  {  exec_thread_question();  });
+  }
 }
 
 int VECTORDB_PYTHON_API::get_status()
@@ -146,7 +158,7 @@ int VECTORDB_PYTHON_API::get_status()
   return PYTHON_QUESTION_RESPONSE_MUTEX.done();
 }
 
-void VECTORDB_PYTHON_API::submit_question(double Time, string Question) 
+void VECTORDB_PYTHON_API::submit_question(string Question) 
 {
   const string andand = "&& ";
 
@@ -158,15 +170,7 @@ void VECTORDB_PYTHON_API::submit_question(double Time, string Question)
   }
 
   PYTHON_QUESTION_RESPONSE_MUTEX.set_command_line (bcommand);
-
-  if (PYTHON_QUESTION_RESPONSE_MUTEX.done() == 0)
-  {
-    //exec_thread_question();
-
-    // Be careful with this because it looks like black magic to me.
-    PYTHON_QUESTION_RESPONSE_THREAD.start_render_thread([&]() 
-                  {  exec_thread_question();  });
-  }
+  thread();
 }
 
 void VECTORDB_PYTHON_API::submit_file_to_embed(string File)
@@ -181,18 +185,41 @@ void VECTORDB_PYTHON_API::submit_file_to_embed(string File)
   }
 
   PYTHON_QUESTION_RESPONSE_MUTEX.set_command_line (bcommand);
-
-  if (PYTHON_QUESTION_RESPONSE_MUTEX.done() == 0)
-  {
-    //exec_thread_question();
-
-    // Be careful with this because it looks like black magic to me.
-    PYTHON_QUESTION_RESPONSE_THREAD.start_render_thread([&]() 
-                  {  exec_thread_question();  });
-  }
+  thread();
 }
 
-string VECTORDB_PYTHON_API::process()
+
+void VECTORDB_PYTHON_API::submit_clear_database()
+{
+  const string andand = "&& ";
+
+  string bcommand = PROPS.ENVIRONMENT + andand + PROPS.SCRIPT_CLEAR_DATABASE;
+
+  if (PROPS.BASH_SHELL.size() > 0)
+  {
+    bcommand = PROPS.BASH_SHELL + bcommand + "'";
+  }
+
+  PYTHON_QUESTION_RESPONSE_MUTEX.set_command_line (bcommand);
+  thread();
+}
+
+void VECTORDB_PYTHON_API::submit_list_database()
+{
+  const string andand = "&& ";
+
+  string bcommand = PROPS.ENVIRONMENT + andand + PROPS.SCRIPT_LIST_DATABASE;
+
+  if (PROPS.BASH_SHELL.size() > 0)
+  {
+    bcommand = PROPS.BASH_SHELL + bcommand + "'";
+  }
+
+  PYTHON_QUESTION_RESPONSE_MUTEX.set_command_line (bcommand);
+  thread();
+}
+
+void VECTORDB_PYTHON_API::process(TTY_OUTPUT &Output, TTY_OUTPUT_FOCUS &Focus)
 {
   string ret_response = "";
   if (PYTHON_QUESTION_RESPONSE_MUTEX.response_size() > 0)
@@ -202,15 +229,16 @@ string VECTORDB_PYTHON_API::process()
     ret_response = return_vector_as_string(result);
   }
 
-  // Post Process
-  if (PYTHON_QUESTION_RESPONSE_MUTEX.done() == 2)
-  {
-    // Post Process Here
-    PYTHON_QUESTION_RESPONSE_MUTEX.set_done(0);
-  }
+  Output.add_to(ret_response, Focus);
 
-  // change to addto
-  return ret_response;
+  // Post Process
+  if (PYTHON_QUESTION_RESPONSE_MUTEX.done() == VECTORDB_API_RESPONSE_DONE)
+  {
+    Output.add_to("\n\n-----\n", Focus);
+    
+    // Post Process Here
+    PYTHON_QUESTION_RESPONSE_MUTEX.set_done(VECTORDB_API_READY_FOR_REQUEST);
+  }
 }
 
 

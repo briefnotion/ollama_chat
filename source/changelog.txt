@@ -1,3 +1,8 @@
+0.015-241125
+  - Rearranged some components.
+  - Added a few of the scipts that I call to start things.
+  - Added a few more python scipts.
+
 0.014-241123
   - Changed fled_time to work with double instead of unsigned long.  Increases accuray.
   - The program time clock has been changed from system_clock to steady_clock.  Increases stability.

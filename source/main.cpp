@@ -61,7 +61,8 @@ int main()
   bool main_loop_exit = false;
 
   // Only run main look if connection to server is sucessful.
-  sdSystem.OLLAMA_SYSTEM.PROPS.MODEL = "llama3.1:8b";
+  //sdSystem.OLLAMA_SYSTEM.PROPS.MODEL = "llama3.1:8b";
+  sdSystem.OLLAMA_SYSTEM.PROPS.MODEL = "llama3.2:latest";
   sdSystem.OLLAMA_SYSTEM.PROPS.URL = "http://localhost:11434";
     
   // Print Revision
@@ -79,7 +80,7 @@ int main()
     sdSystem.OUTPUT_CLOCK.PROPS.LINES = 1;
     sdSystem.OUTPUT_CLOCK.create(0);
     string clock = "-";
-    int clock_clounter = 0;
+    int clock_clounter = 101;
 
     //sdSystem.OUTPUT_INPUT.PROPS.TITLE = "  INPUT";
     sdSystem.OUTPUT_INPUT.PROPS.POSITION_X = 0;
@@ -97,7 +98,8 @@ int main()
 
     // ------------------------------------------------------------------------- //
 
-    sdSystem.OLLAMA_RESPONSE_THREAD.create(OLLAMA_RESPONSE_THREAD_TIMER_DELAY);
+    sdSystem.OLLAMA_SYSTEM.OLLAMA_RESPONSE_THREAD.create(OLLAMA_RESPONSE_THREAD_TIMER_DELAY);
+    sdSystem.VECTORDB_SYSTEM.PYTHON_QUESTION_RESPONSE_THREAD.create(VECTORDB_API_RESPONSE_THREAD_TIMER_DELAY);
 
     // Send the output of the create to the screen.
     sdSystem.OUTPUT_OLLAMA_RESPONSE.output(sdSystem.OUTPUT_FOCUS);
@@ -114,8 +116,8 @@ int main()
 
     // Main Thread Loop
     while (main_loop_exit == false)
-    //while (exit == false && sdSystem.PROGRAM_TIME.current_frame_time() < 15000)
     {
+      // ------------------------------------------------------------------------- //
       {
         // Main loop set up and start
         if (sdSystem.PROGRAM_TIME.setframetime() == true)
@@ -124,18 +126,14 @@ int main()
           sdSystem.PROGRAM_TIME.clear_error();
         }
 
-        // ------------------------------------------------------------------------- //
-
-        //cout << "Main Loop Start: " << to_string(sdSystem.PROGRAM_TIME.current_frame_time()) << endl;
-        //cout << "." << flush;
-        
         // Threading
-        // ------------------------------------------------------------------------- //
 
         // Close all completed and active threads after sleep cycle is complete.
-        sdSystem.OLLAMA_RESPONSE_THREAD.check_for_completition();
+        sdSystem.OLLAMA_SYSTEM.OLLAMA_RESPONSE_THREAD.check_for_completition();
         sdSystem.VECTORDB_SYSTEM.PYTHON_QUESTION_RESPONSE_THREAD.check_for_completition();
       }
+
+      // ------------------------------------------------------------------------- //
 
       {
         clock_clounter++;
@@ -173,15 +171,17 @@ int main()
                                         "(" + clock + ") " +
                                         "(" + to_string(sdSystem.OLLAMA_SYSTEM.get_status()) + ") " + 
                                         "(" + to_string(sdSystem.VECTORDB_SYSTEM.get_status()) + ") " + 
-                                        "(" + to_string(sdSystem.PROGRAM_TIME.current_frame_time()) + ") " + 
                                         
-                                        "(" + to_string(time.get_year()) + "." + 
-                                              to_string(time.get_month()) + "." + 
-                                              to_string(time.get_day()) + "." + 
-                                              to_string(time.get_hour()) + "." + 
-                                              to_string(time.get_minute()) + "." + 
-                                              to_string(time.get_second()) + "." + 
-                                              to_string(time.get_miliseconds()) + ")" + 
+                                        /*
+                                        "(" + to_string(sdSystem.PROGRAM_TIME.current_frame_time()) + ") " + 
+                                        */
+
+                                        "(" + to_string(time.get_year()) + "-" + 
+                                              to_string(time.get_month()) + "-" + 
+                                              to_string(time.get_day()) + " " + 
+                                              to_string(time.get_hour()) + ":" + 
+                                              to_string(time.get_minute()) + ":" + 
+                                              to_string(time.get_second()) + ") " + 
                                         
                                         " INPUT:"), sdSystem.OUTPUT_FOCUS);
         }
@@ -193,47 +193,8 @@ int main()
       //  Never comment this out or the system will never sleep
       if (sdSystem.OLLAMA_SLEEP_TIMER.is_ready(sdSystem.PROGRAM_TIME.current_frame_time()) == true)
       {
-        // Print Responses that may arrive.
-        if (sdSystem.OLLAMA_SYSTEM.check_response() > 0)
-        {
-          sdSystem.OUTPUT_OLLAMA_RESPONSE.add_to(return_vector_as_string(sdSystem.OLLAMA_SYSTEM.RESPONSE_STRING_VECTOR), 
-                                                                          sdSystem.OUTPUT_FOCUS);
-        }
-
-        // Get to next line if response found and ask another question
-        if (sdSystem.OLLAMA_SYSTEM.get_status() == OLLAMA_API_RESPONSE_DONE)
-        {
-          sdSystem.OUTPUT_OLLAMA_RESPONSE.add_to("\n\n-----\n", sdSystem.OUTPUT_FOCUS);
-          sdSystem.OLLAMA_SYSTEM.set_status(OLLAMA_API_READY_FOR_REQUEST);
-        }
-
-        // preparations for next question
-        if (sdSystem.OLLAMA_SYSTEM.get_status() == OLLAMA_API_READY_FOR_REQUEST)
-        {
-          sdSystem.OUTPUT_INPUT.clear();
-          sdSystem.OLLAMA_SYSTEM.set_status(OLLAMA_API_WRITING_REQUEST);
-        }
-
-        sdSystem.OLLAMA_SYSTEM.check_response_done();
+        sdSystem.OLLAMA_SYSTEM.process(sdSystem.OUTPUT_OLLAMA_RESPONSE, sdSystem.OUTPUT_FOCUS);
       }
-
-      //cout << to_string(sdSystem.OLLAMA_SYSTEM.get_status()) << flush;
-
-      // ------------------------------------------------------------------------- //
-      // Ollama thread update check
-
-      // Run async Ollama if question waiting and async not running.
-      //  Never comment this out or the system will never sleep
-      if(sdSystem.OLLAMA_RESPONSE_THREAD.check_to_run_routine_on_thread(sdSystem.PROGRAM_TIME.current_frame_time()))
-      {
-        if (sdSystem.OLLAMA_SYSTEM.get_status() == OLLAMA_API_REQUEST_SUBMITTED)
-        {
-          // Be careful with this because it looks like black magic to me.
-          sdSystem.OLLAMA_RESPONSE_THREAD.start_render_thread([&]() 
-                        {  sdSystem.OLLAMA_SYSTEM.proc_render_thread();  });
-        }
-      }
-
 
       // ------------------------------------------------------------------------- //
       // Embedding check routine
@@ -241,7 +202,7 @@ int main()
       //  Never comment this out or the system will never sleep
       if (sdSystem.EMBEDDING_SLEEP_TIMER.is_ready(sdSystem.PROGRAM_TIME.current_frame_time()) == true)
       {
-        sdSystem.OUTPUT_OLLAMA_RESPONSE.add_to(sdSystem.VECTORDB_SYSTEM.process(), sdSystem.OUTPUT_FOCUS);
+        sdSystem.VECTORDB_SYSTEM.process(sdSystem.OUTPUT_OLLAMA_RESPONSE, sdSystem.OUTPUT_FOCUS);
       }
 
       // ------------------------------------------------------------------------- //
@@ -258,6 +219,9 @@ int main()
           {
             string input_entered = sdSystem.OUTPUT_INPUT.value();
 
+            sdSystem.OUTPUT_OLLAMA_RESPONSE.add_to("ENTERED: " + input_entered, sdSystem.OUTPUT_FOCUS);
+            sdSystem.OUTPUT_OLLAMA_RESPONSE.add_to("\n\n-----\n", sdSystem.OUTPUT_FOCUS);
+
             if (input_entered.size() > 0)
             {
               if (input_entered == "exit" || input_entered == "bye")
@@ -270,7 +234,7 @@ int main()
                 if (input_entered[0] == 'e')
                 {
                   input_entered.erase(0, 1);
-                  sdSystem.VECTORDB_SYSTEM.submit_question(sdSystem.PROGRAM_TIME.current_frame_time(), input_entered);
+                  sdSystem.VECTORDB_SYSTEM.submit_question(input_entered);
                   sdSystem.OUTPUT_INPUT.clear();
                 }
                 else if (input_entered[0] == 'm')
@@ -279,11 +243,23 @@ int main()
                   sdSystem.VECTORDB_SYSTEM.submit_file_to_embed(input_entered);
                   sdSystem.OUTPUT_INPUT.clear();
                 }
+                else if (input_entered[0] == 'b')
+                {
+                  input_entered.erase(0, 1);
+                  sdSystem.VECTORDB_SYSTEM.submit_clear_database();
+                  sdSystem.OUTPUT_INPUT.clear();
+                }
+                else if (input_entered[0] == 'd')
+                {
+                  input_entered.erase(0, 1);
+                  sdSystem.VECTORDB_SYSTEM.submit_list_database();
+                  sdSystem.OUTPUT_INPUT.clear();
+                }
                 else
                 {
                   // submit request
-                  sdSystem.OLLAMA_SYSTEM.set_status(OLLAMA_API_RESPONS_GENERATING);
-                  sdSystem.OLLAMA_SYSTEM.set_request(input_entered);
+                  sdSystem.OLLAMA_SYSTEM.submit_question(input_entered);
+                  sdSystem.OUTPUT_INPUT.clear();
                 }
               }
             }
@@ -306,8 +282,12 @@ int main()
       //sdSystem.PROGRAM_TIME.request_ready_time(sdSystem.EMBEDDING_SLEEP_TIMER.get_ready_time(), 'd');
       sdSystem.PROGRAM_TIME.request_ready_time(sdSystem.SCREENIO_SLEEP_TIMER.get_ready_time());
       sdSystem.PROGRAM_TIME.request_ready_time(sdSystem.OLLAMA_SLEEP_TIMER.get_ready_time());
-      sdSystem.PROGRAM_TIME.request_ready_time(sdSystem.OLLAMA_RESPONSE_THREAD.get_ready_time());
       sdSystem.PROGRAM_TIME.request_ready_time(sdSystem.EMBEDDING_SLEEP_TIMER.get_ready_time());
+
+      // Not necessary at this time because pacing is handled by mutex.  If implemented be sure to 
+      //  call thread.check_to_run_routine_on_thread(double Time_Frame)
+      //sdSystem.PROGRAM_TIME.request_ready_time(sdSystem.OLLAMA_SYSTEM.OLLAMA_RESPONSE_THREAD.get_ready_time());
+      //sdSystem.PROGRAM_TIME.request_ready_time(sdSystem.VECTORDB_SYSTEM.PYTHON_QUESTION_RESPONSE_THREAD.get_ready_time());
 
       sdSystem.PROGRAM_TIME.sleep_till_next_frame();
 
@@ -321,7 +301,7 @@ int main()
 
     // Shutdown any open threads process
     // Restore the terminal
-    sdSystem.OLLAMA_RESPONSE_THREAD.wait_for_thread_to_finish("OLLAMA_RESPONSE_THREAD");
+    sdSystem.OLLAMA_SYSTEM.OLLAMA_RESPONSE_THREAD.wait_for_thread_to_finish("OLLAMA_RESPONSE_THREAD");
     sdSystem.VECTORDB_SYSTEM.PYTHON_QUESTION_RESPONSE_THREAD.wait_for_thread_to_finish("PYTHON_QUESTION_RESPONSE_THREAD");
     
     sdSystem.INPUT.restore_terminal_settings();

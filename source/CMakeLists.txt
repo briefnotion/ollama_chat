@@ -33,7 +33,6 @@ include_directories(
 
 # Create a target for files that include ollama.hpp with non-strict options
 add_library(ollama_files STATIC
-    ollama_helper.cpp
     ollama_api.cpp
     vectordb_python_api.cpp
     system.cpp

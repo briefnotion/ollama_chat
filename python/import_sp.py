@@ -4,6 +4,8 @@ from mattsollamatools import chunker, chunk_text_by_sentences
 import nltk
 nltk.download('punkt_tab')
 
+print("Importing into Database")
+
 collectionname="buildragwithpython"
 
 chroma = chromadb.HttpClient(host="localhost", port=8000)
@@ -37,3 +39,4 @@ for filename in filenames:
 
   print("--- %s seconds ---" % (time.time() - starttime))
 
+print("")

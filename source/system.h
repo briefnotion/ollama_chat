@@ -9,7 +9,7 @@
   For more details visit: https://github.com/jmont-dev/ollama-hpp
 */
 
-#include <nlohmann/json.hpp>
+//#include <nlohmann/json.hpp>
 
 #include "stringthings.h"
 
@@ -54,7 +54,7 @@ class SYSTEM
 
   // Ollama System
   OLLAMA_API      OLLAMA_SYSTEM;
-  THREADING_INFO  OLLAMA_RESPONSE_THREAD;
+  //THREADING_INFO  OLLAMA_RESPONSE_THREAD;
 
   // ChromaDB System
   VECTORDB_PYTHON_API VECTORDB_SYSTEM;

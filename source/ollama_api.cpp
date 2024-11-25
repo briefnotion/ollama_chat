@@ -7,6 +7,90 @@ using namespace std;
 
 // ------------------------------------------------------------------------- //
 
+void OLLAMA_API_MUTEX::set_complete_response_after_done(ollama::response Response)
+{
+  lock_guard<mutex> lock(MUTEX_);
+
+  COMPLETE_RESPONSE_AFTER_DONE = Response;
+  COMPLETE_RESPONSE_READY_AFTER_DONE = true;
+}
+
+ollama::response OLLAMA_API_MUTEX::get_complete_response_after_done()
+{
+  lock_guard<mutex> lock(MUTEX_);
+
+  ollama::response ret_response = COMPLETE_RESPONSE_AFTER_DONE;
+
+  // Clear the response.
+  COMPLETE_RESPONSE_AFTER_DONE = ollama::response();
+  COMPLETE_RESPONSE_READY_AFTER_DONE = false;
+
+  CHANGED = false;
+
+  return ret_response;
+}
+
+bool OLLAMA_API_MUTEX::complete_respoonse_ready_after_done() const
+{
+  lock_guard<mutex> lock(MUTEX_);
+
+  if (CHANGED)
+  {
+    return COMPLETE_RESPONSE_READY_AFTER_DONE;
+  }
+  else
+  {
+    return false;
+  }
+}
+
+int OLLAMA_API_MUTEX::done() const
+{
+  lock_guard<mutex> lock(MUTEX_);
+  return DONE;
+}
+
+void OLLAMA_API_MUTEX::set_done(int Done)
+{
+  lock_guard<mutex> lock(MUTEX_);
+  DONE = Done;
+
+  if (DONE == OLLAMA_API_RESPONSE_DONE)
+  {
+    CHANGED = true;
+  }
+}
+
+void OLLAMA_API_MUTEX::add_to_response(const string& value) 
+{
+  lock_guard<mutex> lock(MUTEX_);
+  RESPONSE_VECTOR.push_back(value);
+}
+
+int OLLAMA_API_MUTEX::response_size() const
+{
+  lock_guard<mutex> lock(MUTEX_);
+  return RESPONSE_VECTOR.size();
+}
+
+void OLLAMA_API_MUTEX::get_response_to_vector(vector<string> &Receiving_Vector)
+{
+  lock_guard<mutex> lock(MUTEX_);
+
+  if (RESPONSE_VECTOR.size() > 0)
+  {
+    for (int i = 0; i < (int)RESPONSE_VECTOR.size(); ++i) 
+    {
+      Receiving_Vector.push_back(RESPONSE_VECTOR[i]);
+    }
+  }
+  
+  RESPONSE_VECTOR.clear();
+}
+
+// ------------------------------------------------------------------------- //
+// ------------------------------------------------------------------------- //
+
 void OLLAMA_API::on_receive_response(const ollama::response& response) 
 {
   if (response.as_json()["done"] == true) 
@@ -95,6 +179,8 @@ bool OLLAMA_API::create(TTY_OUTPUT &Output_Container, TTY_OUTPUT_FOCUS &Output_F
 
   if (OLLAMA.is_running())
   {
+    bool success = true;  // Not implemented.
+
     string thing = "";
 
     Output_Container.add_to("Version: " + OLLAMA.get_version() + "\n", Output_Focus);
@@ -103,7 +189,16 @@ bool OLLAMA_API::create(TTY_OUTPUT &Output_Container, TTY_OUTPUT_FOCUS &Output_F
     // This can optionally be used to deliberately load a model into memory prior to use. 
     // This occurs automatically when a request is made for an unloaded model, but can be 
     // useful for loading a model in advance.
-    // bool model_loaded = OLLAMA.load_model("llama3:8b");
+
+    success = OLLAMA.load_model(PROPS.MODEL);
+    Output_Container.add_to( "l:" + to_string(success) + "\n", Output_Focus);
+
+
+    //string em = "claude-3-5-sonnet-20240620";
+    //string em = "nomic-embed-text";
+    //success = OLLAMA.load_model(em);
+    //OLLAMA.load_model(em);
+    //Output_Container.add_to( "l:" + to_string(success) + "\n", Output_Focus);
 
     // Pull a model by specifying a model name.
     // bool model_pulled = OLLAMA.pull_model("llama3:8b");
@@ -280,6 +375,13 @@ bool OLLAMA_API::create(TTY_OUTPUT &Output_Container, TTY_OUTPUT_FOCUS &Output_F
   return ret_running;
 }
 
+void OLLAMA_API::exec_question()
+{
+  // Be careful with this because it looks like black magic to me.
+  OLLAMA_RESPONSE_THREAD.start_render_thread([&]() 
+                {  proc_render_thread();  });
+}
+
 int OLLAMA_API::get_status()
 {
   return OLLAMA_MUTEX.done();
@@ -290,10 +392,14 @@ void OLLAMA_API::set_status(int Status)
   OLLAMA_MUTEX.set_done(Status);
 }
 
-void OLLAMA_API::set_request(const string& Request)
+void OLLAMA_API::submit_question(const string& Question)
 {
-  REQUEST = Request;
-  OLLAMA_MUTEX.set_done(OLLAMA_API_REQUEST_SUBMITTED);
+  if (OLLAMA_MUTEX.done() == OLLAMA_API_READY_FOR_REQUEST)
+  {
+    REQUEST = Question;
+
+    exec_question();
+  }
 }
 
 int OLLAMA_API::check_response()
@@ -309,6 +415,24 @@ void OLLAMA_API::check_response_done()
     RESPONSE = OLLAMA_MUTEX.get_complete_response_after_done();
     CONTEXT = RESPONSE;
   }
+}
+
+void OLLAMA_API::process(TTY_OUTPUT &Output, TTY_OUTPUT_FOCUS &Focus)
+{
+  // Print Responses that may arrive.
+  if (check_response() > 0)
+  {
+    Output.add_to(return_vector_as_string(RESPONSE_STRING_VECTOR), Focus);
+  }
+
+  // Get to next line if response found and ask another question
+  if (get_status() == OLLAMA_API_RESPONSE_DONE)
+  {
+    Output.add_to("\n\n-----\n", Focus);
+    set_status(OLLAMA_API_READY_FOR_REQUEST);
+  }
+
+  check_response_done();
 }
 
 #endif  // OLLAMA_API_CPP
