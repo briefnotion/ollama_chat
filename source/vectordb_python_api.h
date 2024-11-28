@@ -9,6 +9,7 @@
 
 #include "ollama_api.h"
 #include "threading.h"
+#include "stringthings.h"
 
 #define  VECTORDB_API_RESPONSE_THREAD_TIMER_DELAY   60   // This will be in frames per second (fps)
 
@@ -28,6 +29,8 @@ class VECTORDB_PYTHON_MUTEX
   mutable mutex MUTEX_;
 
   vector<string> RESPONSE_VECTOR;
+  string COMPLETE_RESPONSE = "";
+
   int DONE = VECTORDB_API_READY_FOR_REQUEST;
 
   string COMMAND_LINE = "";
@@ -43,10 +46,7 @@ class VECTORDB_PYTHON_MUTEX
   string command_line() const;
 
   // Getting a copy of the response afte it is done.
-  //void set_complete_response_after_done(ollama::response Response);
-
-  //ollama::response get_complete_response_after_done();
-  //bool complete_respoonse_ready_after_done() const;
+  string get_complete_response() const;
 
   // Generating Response Complete
   int done() const;
@@ -63,12 +63,13 @@ class VECTORDB_PYTHON_API_PROPERTIES
   public:
 
   // Command Line Input
-  string BASH_SHELL =             "bash -c '";
-  string ENVIRONMENT =            "source /home/briefn/py/venv/bin/activate ";
-  string SCRIPT_SEARCH =          "python3 ../python/search.py ";
-  string SCRIPT_EMBED_FILE =      "python3 ../python/import_sp.py ";
-  string SCRIPT_CLEAR_DATABASE =  "python3 ../python/clear_database.py";
-  string SCRIPT_LIST_DATABASE =  "python3 ../python/list_database.py";
+  string BASH_SHELL =               "bash -c '";
+  string ENVIRONMENT =              "source /home/briefn/py/venv/bin/activate ";
+  string SCRIPT_SEARCH =            "python3 ../python/search.py ";
+  string SCRIPT_SEARCH_DOCS_ONLY =  "python3 ../python/search_docs_only.py ";
+  string SCRIPT_EMBED_FILE =        "python3 ../python/import_sp.py ";
+  string SCRIPT_CLEAR_DATABASE =    "python3 ../python/clear_database.py";
+  string SCRIPT_LIST_DATABASE =     "python3 ../python/list_database.py";
 };
 
 class VECTORDB_PYTHON_API
@@ -81,20 +82,25 @@ class VECTORDB_PYTHON_API
   void exec_thread_question();
   void thread();
 
+  string QUESTION = "";
+
   public:
 
   VECTORDB_PYTHON_API_PROPERTIES PROPS;
 
   THREADING_INFO  PYTHON_QUESTION_RESPONSE_THREAD;
 
+  int DOCS_ONLY = false;
+
   int get_status();
 
   void submit_question(string Question);
+  void submit_question_to_ollama(string Question);
   void submit_file_to_embed(string File);
   void submit_clear_database();
   void submit_list_database();
 
-  void process(TTY_OUTPUT &Output, TTY_OUTPUT_FOCUS &Focus);
+  void process(TTY_OUTPUT &Output, TTY_OUTPUT_FOCUS &Focus, OLLAMA_API &Ollama_System);
 
 };
 

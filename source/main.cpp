@@ -202,7 +202,7 @@ int main()
       //  Never comment this out or the system will never sleep
       if (sdSystem.EMBEDDING_SLEEP_TIMER.is_ready(sdSystem.PROGRAM_TIME.current_frame_time()) == true)
       {
-        sdSystem.VECTORDB_SYSTEM.process(sdSystem.OUTPUT_OLLAMA_RESPONSE, sdSystem.OUTPUT_FOCUS);
+        sdSystem.VECTORDB_SYSTEM.process(sdSystem.OUTPUT_OLLAMA_RESPONSE, sdSystem.OUTPUT_FOCUS, sdSystem.OLLAMA_SYSTEM);
       }
 
       // ------------------------------------------------------------------------- //
@@ -253,6 +253,12 @@ int main()
                 {
                   input_entered.erase(0, 1);
                   sdSystem.VECTORDB_SYSTEM.submit_list_database();
+                  sdSystem.OUTPUT_INPUT.clear();
+                }
+                else if (input_entered[0] == 'i')
+                {
+                  input_entered.erase(0, 1);
+                  sdSystem.VECTORDB_SYSTEM.submit_question_to_ollama(input_entered);
                   sdSystem.OUTPUT_INPUT.clear();
                 }
                 else

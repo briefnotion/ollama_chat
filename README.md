@@ -73,3 +73,8 @@ pip3 install nltk
 export OLLAMA_NUM_PARALLEL=3
 export OLLAMA_MAX_LOADED_MODELS=3
 
+---
+
+Model manager
+Page doesnt load on my system 
+https://smcleod.net/2024/06/gollama-ollama-model-manager/

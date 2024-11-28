@@ -1,3 +1,20 @@
+0.016-241128
+  - Did some more work with embedding.  Current test routines are as follows:
+    Simple embedding tools were added, accessed by the first character of the input line:
+      Example:
+        eTell Me about rubber ducks.              Call python script to handle question and answer question.
+        m~/testdocs/rubberduckdetails.txt         Import document into the database
+        b                                         Completely erase all data in embedding database.
+        d                                         List topics in database.
+        iTell Me about rubber ducks.              Call python script to gather documents with question, 
+                                                  then forwards thos docs to chat_ollama to answer while 
+                                                  preserving context.  Also, faster because model doesn'test
+                                                  need to be loaded in python system.
+
+      Provided that you have an enviornment properly set up and configured via VECTORDB_SYSTEM.PROPS, 
+        results should be displayed.  My defaults are in "vectordb_python_api.h" in the 
+        "VECTORDB_PYTHON_API_PROPERTIES" class.
+
 0.015-241125
   - Rearranged some components.
   - Added a few of the scipts that I call to start things.

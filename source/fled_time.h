@@ -182,7 +182,7 @@ class TIMED_IS_READY
   double TRIGGERED_TIME  = 0;  //  Most recent time the ready was activated
   double LAST_ASKED_TIME = 0;  //  Most recent time the variable was asked if was ready.
   double READY_TIME      = 0;  //  Calculated time of when variable will be ready.
-  double           INTREVAL        = 0;  //  Time in miliseconds between ready.
+  double INTREVAL        = 0;  //  Time in miliseconds between ready.
 
   public:
 

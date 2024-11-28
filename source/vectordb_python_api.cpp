@@ -8,48 +8,17 @@ using namespace std;
 
 // ------------------------------------------------------------------------- //
 
-/*
-void OLLAMA_API_MUTEX::set_complete_response_after_done(ollama::response Response)
+string VECTORDB_PYTHON_MUTEX::get_complete_response() const
 {
   lock_guard<mutex> lock(MUTEX_);
 
-  COMPLETE_RESPONSE_AFTER_DONE = Response;
-  COMPLETE_RESPONSE_READY_AFTER_DONE = true;
+  return COMPLETE_RESPONSE;
 }
-
-ollama::response OLLAMA_API_MUTEX::get_complete_response_after_done()
-{
-  lock_guard<mutex> lock(MUTEX_);
-
-  ollama::response ret_response = COMPLETE_RESPONSE_AFTER_DONE;
-
-  // Clear the response.
-  COMPLETE_RESPONSE_AFTER_DONE = ollama::response();
-  COMPLETE_RESPONSE_READY_AFTER_DONE = false;
-
-  CHANGED = false;
-
-  return ret_response;
-}
-
-bool OLLAMA_API_MUTEX::complete_response_ready_after_done() const
-{
-  lock_guard<mutex> lock(MUTEX_);
-
-  if (CHANGED)
-  {
-    return COMPLETE_RESPONSE_READY_AFTER_DONE;
-  }
-  else
-  {
-    return false;
-  }
-}
-*/
 
 void VECTORDB_PYTHON_MUTEX::set_command_line(string Command)
 {
   lock_guard<mutex> lock(MUTEX_);
+  COMPLETE_RESPONSE = "";
   COMMAND_LINE = Command;
 }
 
@@ -70,7 +39,7 @@ void VECTORDB_PYTHON_MUTEX::set_done(int Done)
   lock_guard<mutex> lock(MUTEX_);
   DONE = Done;
 
-  if (DONE == OLLAMA_API_RESPONSE_DONE)
+  if (DONE == VECTORDB_API_RESPONSE_DONE)
   {
     CHANGED = true;
   }
@@ -80,6 +49,7 @@ void VECTORDB_PYTHON_MUTEX::add_to_response(const string& value)
 {
   lock_guard<mutex> lock(MUTEX_);
   RESPONSE_VECTOR.push_back(value);
+  COMPLETE_RESPONSE += value;
 }
 
 int VECTORDB_PYTHON_MUTEX::response_size() const
@@ -160,9 +130,30 @@ int VECTORDB_PYTHON_API::get_status()
 
 void VECTORDB_PYTHON_API::submit_question(string Question) 
 {
+  QUESTION = Question;
+  DOCS_ONLY = false;
+
   const string andand = "&& ";
 
-  string bcommand = PROPS.ENVIRONMENT + andand + PROPS.SCRIPT_SEARCH + Question;
+  string bcommand = PROPS.ENVIRONMENT + andand + PROPS.SCRIPT_SEARCH + QUESTION;
+
+  if (PROPS.BASH_SHELL.size() > 0)
+  {
+    bcommand = PROPS.BASH_SHELL + bcommand + "'";
+  }
+
+  PYTHON_QUESTION_RESPONSE_MUTEX.set_command_line (bcommand);
+  thread();
+}
+
+void VECTORDB_PYTHON_API::submit_question_to_ollama(string Question) 
+{
+  QUESTION = Question;
+  DOCS_ONLY = true;
+
+  const string andand = "&& ";
+
+  string bcommand = PROPS.ENVIRONMENT + andand + PROPS.SCRIPT_SEARCH_DOCS_ONLY + QUESTION;
 
   if (PROPS.BASH_SHELL.size() > 0)
   {
@@ -187,7 +178,6 @@ void VECTORDB_PYTHON_API::submit_file_to_embed(string File)
   PYTHON_QUESTION_RESPONSE_MUTEX.set_command_line (bcommand);
   thread();
 }
-
 
 void VECTORDB_PYTHON_API::submit_clear_database()
 {
@@ -219,25 +209,50 @@ void VECTORDB_PYTHON_API::submit_list_database()
   thread();
 }
 
-void VECTORDB_PYTHON_API::process(TTY_OUTPUT &Output, TTY_OUTPUT_FOCUS &Focus)
+void VECTORDB_PYTHON_API::process(TTY_OUTPUT &Output, TTY_OUTPUT_FOCUS &Focus, OLLAMA_API &Ollama_System)
 {
-  string ret_response = "";
-  if (PYTHON_QUESTION_RESPONSE_MUTEX.response_size() > 0)
+  if (DOCS_ONLY)
   {
-    vector<string> result;
-    PYTHON_QUESTION_RESPONSE_MUTEX.get_response_to_vector(result);
-    ret_response = return_vector_as_string(result);
+    if (PYTHON_QUESTION_RESPONSE_MUTEX.done() == VECTORDB_API_RESPONS_GENERATING)
+    {
+      //Output.add_to("generating docs", Focus);
+    }
+    else if (PYTHON_QUESTION_RESPONSE_MUTEX.done() == VECTORDB_API_RESPONSE_DONE)
+    {
+      //Output.add_to("\n\n-----\n", Focus);
+      // Post Process Here
+
+      string question_with_docs = QUESTION + " - Answer that question using the following text as a resource: " + PYTHON_QUESTION_RESPONSE_MUTEX.get_complete_response();
+
+      //Output.add_to(question_with_docs, Focus);
+      Ollama_System.submit_question(question_with_docs);
+
+      QUESTION = "";
+      PYTHON_QUESTION_RESPONSE_MUTEX.set_done(VECTORDB_API_READY_FOR_REQUEST);
+    }
   }
-
-  Output.add_to(ret_response, Focus);
-
-  // Post Process
-  if (PYTHON_QUESTION_RESPONSE_MUTEX.done() == VECTORDB_API_RESPONSE_DONE)
+  else
   {
-    Output.add_to("\n\n-----\n", Focus);
-    
-    // Post Process Here
-    PYTHON_QUESTION_RESPONSE_MUTEX.set_done(VECTORDB_API_READY_FOR_REQUEST);
+    string ret_response = "";
+
+    if (PYTHON_QUESTION_RESPONSE_MUTEX.response_size() > 0)
+    {
+      vector<string> result;
+      PYTHON_QUESTION_RESPONSE_MUTEX.get_response_to_vector(result);
+      ret_response = return_vector_as_string(result);
+    }
+
+    Output.add_to(ret_response, Focus);
+
+    // Post Process
+    if (PYTHON_QUESTION_RESPONSE_MUTEX.done() == VECTORDB_API_RESPONSE_DONE)
+    {
+      Output.add_to("\n\n-----\n", Focus);
+      
+      // Post Process Here
+      QUESTION = "";
+      PYTHON_QUESTION_RESPONSE_MUTEX.set_done(VECTORDB_API_READY_FOR_REQUEST);
+    }
   }
 }
 
