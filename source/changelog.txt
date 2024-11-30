@@ -1,3 +1,9 @@
+0.017-241130
+  - Added option n to the embedding access routines to attempt to pull and combine a response from 
+      both the Ollama LLM and the VectorDB.
+      Example:
+        nTell Me about rubber ducks. 
+
 0.016-241128
   - Did some more work with embedding.  Current test routines are as follows:
     Simple embedding tools were added, accessed by the first character of the input line:

@@ -91,11 +91,14 @@ class VECTORDB_PYTHON_API
   THREADING_INFO  PYTHON_QUESTION_RESPONSE_THREAD;
 
   int DOCS_ONLY = false;
+  string APP_TYPE = "";
 
   int get_status();
 
   void submit_question(string Question);
-  void submit_question_to_ollama(string Question);
+  void submit_question_to_ollama(string Question, string App_Type);
+  void submit_question_to_ollama_par(string Question, string App_Type, OLLAMA_API &Ollama_System);
+
   void submit_file_to_embed(string File);
   void submit_clear_database();
   void submit_list_database();

@@ -130,6 +130,8 @@ int VECTORDB_PYTHON_API::get_status()
 
 void VECTORDB_PYTHON_API::submit_question(string Question) 
 {
+  APP_TYPE = "e";
+
   QUESTION = Question;
   DOCS_ONLY = false;
 
@@ -146,8 +148,10 @@ void VECTORDB_PYTHON_API::submit_question(string Question)
   thread();
 }
 
-void VECTORDB_PYTHON_API::submit_question_to_ollama(string Question) 
+void VECTORDB_PYTHON_API::submit_question_to_ollama(string Question, string App_Type) 
 {
+  APP_TYPE = App_Type;
+  
   QUESTION = Question;
   DOCS_ONLY = true;
 
@@ -164,8 +168,38 @@ void VECTORDB_PYTHON_API::submit_question_to_ollama(string Question)
   thread();
 }
 
+void VECTORDB_PYTHON_API::submit_question_to_ollama_par(string Question, string App_Type, OLLAMA_API &Ollama_System) 
+{
+  {
+    Ollama_System.submit_question(Question);
+  }
+
+  {
+    APP_TYPE = App_Type;
+    
+    QUESTION = Question;
+    DOCS_ONLY = true;
+
+    const string andand = "&& ";
+
+    string bcommand = PROPS.ENVIRONMENT + andand + PROPS.SCRIPT_SEARCH_DOCS_ONLY + QUESTION;
+
+    if (PROPS.BASH_SHELL.size() > 0)
+    {
+      bcommand = PROPS.BASH_SHELL + bcommand + "'";
+    }
+
+    PYTHON_QUESTION_RESPONSE_MUTEX.set_command_line (bcommand);
+    thread();
+  }
+}
+
 void VECTORDB_PYTHON_API::submit_file_to_embed(string File)
 {
+  DOCS_ONLY = false;
+
+  APP_TYPE = "m";
+  
   const string andand = "&& ";
 
   string bcommand = PROPS.ENVIRONMENT + andand + PROPS.SCRIPT_EMBED_FILE + File;
@@ -181,6 +215,10 @@ void VECTORDB_PYTHON_API::submit_file_to_embed(string File)
 
 void VECTORDB_PYTHON_API::submit_clear_database()
 {
+  DOCS_ONLY = false;
+
+  APP_TYPE = "b";
+  
   const string andand = "&& ";
 
   string bcommand = PROPS.ENVIRONMENT + andand + PROPS.SCRIPT_CLEAR_DATABASE;
@@ -196,6 +234,10 @@ void VECTORDB_PYTHON_API::submit_clear_database()
 
 void VECTORDB_PYTHON_API::submit_list_database()
 {
+  DOCS_ONLY = true;
+
+  APP_TYPE = "d";
+  
   const string andand = "&& ";
 
   string bcommand = PROPS.ENVIRONMENT + andand + PROPS.SCRIPT_LIST_DATABASE;
@@ -211,6 +253,7 @@ void VECTORDB_PYTHON_API::submit_list_database()
 
 void VECTORDB_PYTHON_API::process(TTY_OUTPUT &Output, TTY_OUTPUT_FOCUS &Focus, OLLAMA_API &Ollama_System)
 {
+  // For Responses that pull information from vector database, close
   if (DOCS_ONLY)
   {
     if (PYTHON_QUESTION_RESPONSE_MUTEX.done() == VECTORDB_API_RESPONS_GENERATING)
@@ -219,18 +262,79 @@ void VECTORDB_PYTHON_API::process(TTY_OUTPUT &Output, TTY_OUTPUT_FOCUS &Focus, O
     }
     else if (PYTHON_QUESTION_RESPONSE_MUTEX.done() == VECTORDB_API_RESPONSE_DONE)
     {
-      //Output.add_to("\n\n-----\n", Focus);
-      // Post Process Here
+      if (APP_TYPE == "d")
+      {
+        
+        string ret_response = "";
 
-      string question_with_docs = QUESTION + " - Answer that question using the following text as a resource: " + PYTHON_QUESTION_RESPONSE_MUTEX.get_complete_response();
+        if (PYTHON_QUESTION_RESPONSE_MUTEX.response_size() > 0)
+        {
+          vector<string> result;
+          PYTHON_QUESTION_RESPONSE_MUTEX.get_response_to_vector(result);
+          ret_response = return_vector_as_string(result);
+        }
 
-      //Output.add_to(question_with_docs, Focus);
-      Ollama_System.submit_question(question_with_docs);
+        Output.add_to(ret_response, Focus);
 
-      QUESTION = "";
-      PYTHON_QUESTION_RESPONSE_MUTEX.set_done(VECTORDB_API_READY_FOR_REQUEST);
+        // Post Process Here
+        if (Ollama_System.get_status() == OLLAMA_API_READY_FOR_REQUEST)
+        {
+          string request_to_summerize = "Summerize the following console output: " + PYTHON_QUESTION_RESPONSE_MUTEX.get_complete_response();
+          
+          Ollama_System.submit_question(request_to_summerize);
+          
+          QUESTION = "";
+          PYTHON_QUESTION_RESPONSE_MUTEX.set_done(VECTORDB_API_READY_FOR_REQUEST);
+        }
+      }
+      else if (APP_TYPE == "i")
+      {
+        //Output.add_to("\n\n-----\n", Focus);
+        // Post Process Here
+
+        string question_with_docs = QUESTION + " - Answer that question using the following text as a resource: " + PYTHON_QUESTION_RESPONSE_MUTEX.get_complete_response();
+
+        //Output.add_to(question_with_docs, Focus);
+        Ollama_System.submit_question(question_with_docs);
+
+        QUESTION = "";
+        PYTHON_QUESTION_RESPONSE_MUTEX.set_done(VECTORDB_API_READY_FOR_REQUEST);
+      }
+      else if (APP_TYPE == "n")
+      {
+        //Output.add_to("\n\n-----\n", Focus);
+        
+        // Post Process Here
+        if (Ollama_System.get_status() == OLLAMA_API_READY_FOR_REQUEST)
+        {
+          //string question_with_docs = "Continue only relvevant information from the following text as a resource: " + PYTHON_QUESTION_RESPONSE_MUTEX.get_complete_response();
+          //string question_with_docs = "Continue with '" + QUESTION + "' from the following text as a resource: " + PYTHON_QUESTION_RESPONSE_MUTEX.get_complete_response();
+          //string question_with_docs = "Stay relevat when and continue with following text as a resource: " + PYTHON_QUESTION_RESPONSE_MUTEX.get_complete_response();
+          //string question_with_docs = "Also include the following text as a resource: " + PYTHON_QUESTION_RESPONSE_MUTEX.get_complete_response();
+          //string question_with_docs = "While responding to \"" + QUESTION + "\" with the following text. Don't repeat anything already said and " + 
+          //                              "stay relevant to the topic. The following text is: " + PYTHON_QUESTION_RESPONSE_MUTEX.get_complete_response();
+
+          string question_with_docs = "While responding to \"" + QUESTION + "\" with the following text. Don't repeat anything already said and " + 
+                                        "filter out anything not relevant to the topic. The following text is: " + PYTHON_QUESTION_RESPONSE_MUTEX.get_complete_response();
+
+          //string question_with_docs = "While responding to \"" + QUESTION + "\" with the following text. Don't repeat anything already said and " + 
+          //                              "filter out anything not relevant to the topic. The following text is: " + PYTHON_QUESTION_RESPONSE_MUTEX.get_complete_response();
+
+          //Testing
+          Output.add_to("\n\n-----\n", Focus);
+          Output.add_to(question_with_docs, Focus);
+          Output.add_to("\n\n-----\n", Focus);
+
+          Ollama_System.submit_question(question_with_docs);
+
+          QUESTION = "";
+          PYTHON_QUESTION_RESPONSE_MUTEX.set_done(VECTORDB_API_READY_FOR_REQUEST);
+        }
+      }
     }
   }
+  
+  // These are inline resonses not associated to docs only, closes regardless of type.
   else
   {
     string ret_response = "";

@@ -396,6 +396,18 @@ void OLLAMA_API::submit_question(const string& Question)
 {
   if (OLLAMA_MUTEX.done() == OLLAMA_API_READY_FOR_REQUEST)
   {
+    CONTEXT_RETAIN = true;
+    REQUEST = Question;
+
+    exec_question();
+  }
+}
+
+void OLLAMA_API::submit_question_internally(const string& Question)
+{
+  if (OLLAMA_MUTEX.done() == OLLAMA_API_READY_FOR_REQUEST)
+  {
+    CONTEXT_RETAIN = false;
     REQUEST = Question;
 
     exec_question();
@@ -413,7 +425,11 @@ void OLLAMA_API::check_response_done()
   if (OLLAMA_MUTEX.complete_respoonse_ready_after_done())
   {
     RESPONSE = OLLAMA_MUTEX.get_complete_response_after_done();
-    CONTEXT = RESPONSE;
+    
+    if (CONTEXT_RETAIN)
+    {
+      CONTEXT = RESPONSE;
+    }
   }
 }
 

@@ -258,7 +258,13 @@ int main()
                 else if (input_entered[0] == 'i')
                 {
                   input_entered.erase(0, 1);
-                  sdSystem.VECTORDB_SYSTEM.submit_question_to_ollama(input_entered);
+                  sdSystem.VECTORDB_SYSTEM.submit_question_to_ollama(input_entered, "i");
+                  sdSystem.OUTPUT_INPUT.clear();
+                }
+                else if (input_entered[0] == 'n')
+                {
+                  input_entered.erase(0, 1);
+                  sdSystem.VECTORDB_SYSTEM.submit_question_to_ollama_par(input_entered, "n", sdSystem.OLLAMA_SYSTEM);
                   sdSystem.OUTPUT_INPUT.clear();
                 }
                 else

@@ -93,6 +93,9 @@ class OLLAMA_API
   ollama::response RESPONSE;
   ollama::response CONTEXT;
 
+  // Different types of ask.
+  bool CONTEXT_RETAIN = true;
+
   public:
 
   OLLAMA_API_PROPS PROPS;
@@ -113,6 +116,7 @@ class OLLAMA_API
   void set_status(int Status);
 
   void submit_question(const string& Question);
+  void submit_question_internally(const string& Question);
 
   int check_response();
 
