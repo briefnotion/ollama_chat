@@ -261,10 +261,16 @@ int main()
                   sdSystem.OLLAMA_SYSTEM.submit_question(input_entered);
                   sdSystem.OUTPUT_INPUT.clear();
                 }
+                else if (input_entered.substr(0, 2) == " n")
+                {
+                  input_entered.erase(0, 2);
+                  sdSystem.VECTORDB_SYSTEM.submit_question_to_ollama_par(input_entered, "n", sdSystem.OLLAMA_SYSTEM);
+                  sdSystem.OUTPUT_INPUT.clear();
+                }
                 else
                 {
                   // submit request
-                  sdSystem.VECTORDB_SYSTEM.submit_question_to_ollama_par(input_entered, "n", sdSystem.OLLAMA_SYSTEM);
+                  sdSystem.VECTORDB_SYSTEM.submit_question_to_ollama_cos(input_entered, "g", sdSystem.OLLAMA_SYSTEM);
                   sdSystem.OUTPUT_INPUT.clear();
                 }
               }

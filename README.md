@@ -69,6 +69,9 @@ pip3 install --upgrade package
 
 pip3 install nltk
 
+pip install scikit-learn
+https://scikit-learn.org/stable/modules/generated/sklearn.metrics.pairwise_distances.html?form=MG0AV3
+
 
 export OLLAMA_NUM_PARALLEL=3
 export OLLAMA_MAX_LOADED_MODELS=3

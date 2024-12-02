@@ -1,3 +1,6 @@
+0.019-241202
+  - Made some progress with the RAG support.
+
 0.018-241201
   - Started looking for solutions to combine embedded text results with the llm results.
   - Commands changed again to avoid conflicts with normal text.  They are:
