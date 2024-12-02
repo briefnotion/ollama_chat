@@ -30,7 +30,7 @@ ollama::response OLLAMA_API_MUTEX::get_complete_response_after_done()
   return ret_response;
 }
 
-bool OLLAMA_API_MUTEX::complete_respoonse_ready_after_done() const
+bool OLLAMA_API_MUTEX::complete_response_ready_after_done() const
 {
   lock_guard<mutex> lock(MUTEX_);
 
@@ -396,8 +396,9 @@ void OLLAMA_API::submit_question(const string& Question)
 {
   if (OLLAMA_MUTEX.done() == OLLAMA_API_READY_FOR_REQUEST)
   {
-    CONTEXT_RETAIN = true;
+    REMEMBER_CONTEXT = true;
     REQUEST = Question;
+    RESPONSE_FULL = "";
 
     exec_question();
   }
@@ -407,8 +408,9 @@ void OLLAMA_API::submit_question_internally(const string& Question)
 {
   if (OLLAMA_MUTEX.done() == OLLAMA_API_READY_FOR_REQUEST)
   {
-    CONTEXT_RETAIN = false;
+    REMEMBER_CONTEXT = false;
     REQUEST = Question;
+    RESPONSE_FULL = "";
 
     exec_question();
   }
@@ -422,15 +424,20 @@ int OLLAMA_API::check_response()
 
 void OLLAMA_API::check_response_done()
 {
-  if (OLLAMA_MUTEX.complete_respoonse_ready_after_done())
+  if (OLLAMA_MUTEX.complete_response_ready_after_done())
   {
     RESPONSE = OLLAMA_MUTEX.get_complete_response_after_done();
     
-    if (CONTEXT_RETAIN)
+    if (REMEMBER_CONTEXT)
     {
       CONTEXT = RESPONSE;
     }
   }
+}
+
+string OLLAMA_API::get_complete_text_response()
+{
+  return RESPONSE_FULL;
 }
 
 void OLLAMA_API::process(TTY_OUTPUT &Output, TTY_OUTPUT_FOCUS &Focus)
@@ -438,13 +445,23 @@ void OLLAMA_API::process(TTY_OUTPUT &Output, TTY_OUTPUT_FOCUS &Focus)
   // Print Responses that may arrive.
   if (check_response() > 0)
   {
-    Output.add_to(return_vector_as_string(RESPONSE_STRING_VECTOR), Focus);
+    string tmp_response = return_vector_as_string(RESPONSE_STRING_VECTOR);
+    
+    if (REMEMBER_CONTEXT)
+    {
+      Output.add_to(tmp_response, Focus);
+    }
+
+    RESPONSE_FULL += tmp_response;
   }
 
   // Get to next line if response found and ask another question
   if (get_status() == OLLAMA_API_RESPONSE_DONE)
   {
-    Output.add_to("\n\n-----\n", Focus);
+    if (REMEMBER_CONTEXT)
+    {
+      Output.seperater(Focus);
+    }
     set_status(OLLAMA_API_READY_FOR_REQUEST);
   }
 

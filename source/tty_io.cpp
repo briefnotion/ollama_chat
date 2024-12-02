@@ -215,6 +215,11 @@ void TTY_OUTPUT::add_to(string Text, TTY_OUTPUT_FOCUS &Output_Focus)
   }
 }
 
+void TTY_OUTPUT::seperater(TTY_OUTPUT_FOCUS &Output_Focus)
+{
+  add_to("\n-----\n", Output_Focus);
+}
+
 bool TTY_OUTPUT::pressed_enter()
 {
   if (ENTER_RECEIVED)

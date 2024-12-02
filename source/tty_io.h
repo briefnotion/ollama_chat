@@ -100,6 +100,8 @@ class TTY_OUTPUT
   bool add_to(int Character, TTY_OUTPUT_FOCUS &Output_Focus);
   void add_to(string Text, TTY_OUTPUT_FOCUS &Output_Focus);
 
+  void seperater(TTY_OUTPUT_FOCUS &Output_Focus);
+
   bool pressed_enter();
   // READ ONCE
   // Clears after being read.

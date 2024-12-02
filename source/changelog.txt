@@ -1,3 +1,15 @@
+0.018-241201
+  - Started looking for solutions to combine embedded text results with the llm results.
+  - Commands changed again to avoid conflicts with normal text.  They are:
+      " embeding"
+      " import"
+      " erase"
+      " list"
+      " i"
+      " o"
+
+      I plan to do away with all these eventually.
+
 0.017-241130
   - Added option n to the embedding access routines to attempt to pull and combine a response from 
       both the Ollama LLM and the VectorDB.

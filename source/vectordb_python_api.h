@@ -90,8 +90,9 @@ class VECTORDB_PYTHON_API
 
   THREADING_INFO  PYTHON_QUESTION_RESPONSE_THREAD;
 
-  int DOCS_ONLY = false;
+  bool DOCS_ONLY = false;
   string APP_TYPE = "";
+  int STAGE = 0;
 
   int get_status();
 

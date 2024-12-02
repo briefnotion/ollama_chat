@@ -11,6 +11,7 @@ int main()
 {
   string version_info = Revision;
   version_info = "Ollama Chat Revision: " + version_info + "\n\n";
+  
   // ------------------------------------------------------------------------- //
 
   // Main System Varibles
@@ -29,17 +30,10 @@ int main()
 
   int ret_code = 0;
   
-  //ret_code = sdSystem.VECTORDB_SYSTEM.embedding_test_python_1();
-  //ret_code = sdSystem.VECTORDB_SYSTEM.embedding_test_python_2();
-  //ret_code = sdSystem.VECTORDB_SYSTEM.embedding_test_python_3();
-
-  //ret_code = sdSystem.VECTORDB_SYSTEM.embedding_test_1();
-  //ret_code = sdSystem.VECTORDB_SYSTEM.embedding_test_2();
-  //ret_code = sdSystem.VECTORDB_SYSTEM.embedding_test_3();
-  
-  //ret_code = sdSystem.CHROMADB_SYSTEM.embedding_test_1();
-
-  //if (ret_code == 1 || ret_code == 0)
+  // Testing code at start. Return 1 if fail.
+  /*
+    TEST CODE HERE
+  */
 
   if (ret_code == 1)
   {
@@ -220,7 +214,7 @@ int main()
             string input_entered = sdSystem.OUTPUT_INPUT.value();
 
             sdSystem.OUTPUT_OLLAMA_RESPONSE.add_to("ENTERED: " + input_entered, sdSystem.OUTPUT_FOCUS);
-            sdSystem.OUTPUT_OLLAMA_RESPONSE.add_to("\n\n-----\n", sdSystem.OUTPUT_FOCUS);
+            sdSystem.OUTPUT_OLLAMA_RESPONSE.seperater(sdSystem.OUTPUT_FOCUS);
 
             if (input_entered.size() > 0)
             {
@@ -231,46 +225,46 @@ int main()
               else
               {
                 // Testing
-                if (input_entered[0] == 'e')
+                if (input_entered.substr(0, 9) == " embeding")
                 {
-                  input_entered.erase(0, 1);
+                  input_entered.erase(0, 9);
                   sdSystem.VECTORDB_SYSTEM.submit_question(input_entered);
                   sdSystem.OUTPUT_INPUT.clear();
                 }
-                else if (input_entered[0] == 'm')
+                else if (input_entered.substr(0, 7) == " import")
                 {
-                  input_entered.erase(0, 1);
+                  input_entered.erase(0, 7);
                   sdSystem.VECTORDB_SYSTEM.submit_file_to_embed(input_entered);
                   sdSystem.OUTPUT_INPUT.clear();
                 }
-                else if (input_entered[0] == 'b')
+                else if (input_entered.substr(0, 6) == " erase")
                 {
-                  input_entered.erase(0, 1);
+                  input_entered.erase(0, 6);
                   sdSystem.VECTORDB_SYSTEM.submit_clear_database();
                   sdSystem.OUTPUT_INPUT.clear();
                 }
-                else if (input_entered[0] == 'd')
+                else if (input_entered.substr(0, 5) == " list")
                 {
-                  input_entered.erase(0, 1);
+                  input_entered.erase(0, 5);
                   sdSystem.VECTORDB_SYSTEM.submit_list_database();
                   sdSystem.OUTPUT_INPUT.clear();
                 }
-                else if (input_entered[0] == 'i')
+                else if (input_entered.substr(0, 2) == " i")
                 {
-                  input_entered.erase(0, 1);
+                  input_entered.erase(0, 2);
                   sdSystem.VECTORDB_SYSTEM.submit_question_to_ollama(input_entered, "i");
                   sdSystem.OUTPUT_INPUT.clear();
                 }
-                else if (input_entered[0] == 'n')
+                else if (input_entered.substr(0, 2) == " o")
                 {
-                  input_entered.erase(0, 1);
-                  sdSystem.VECTORDB_SYSTEM.submit_question_to_ollama_par(input_entered, "n", sdSystem.OLLAMA_SYSTEM);
+                  input_entered.erase(0, 2);
+                  sdSystem.OLLAMA_SYSTEM.submit_question(input_entered);
                   sdSystem.OUTPUT_INPUT.clear();
                 }
                 else
                 {
                   // submit request
-                  sdSystem.OLLAMA_SYSTEM.submit_question(input_entered);
+                  sdSystem.VECTORDB_SYSTEM.submit_question_to_ollama_par(input_entered, "n", sdSystem.OLLAMA_SYSTEM);
                   sdSystem.OUTPUT_INPUT.clear();
                 }
               }
@@ -288,10 +282,6 @@ int main()
       // Sleep till next cycle check.
       
       // Make sure non of these are commented out, or the system will never sleep.
-      //sdSystem.PROGRAM_TIME.request_ready_time(sdSystem.SCREENIO_SLEEP_TIMER.get_ready_time(), 'a');
-      //sdSystem.PROGRAM_TIME.request_ready_time(sdSystem.OLLAMA_SLEEP_TIMER.get_ready_time(), 'b');
-      //sdSystem.PROGRAM_TIME.request_ready_time(sdSystem.OLLAMA_RESPONSE_THREAD.get_ready_time(), 'c');
-      //sdSystem.PROGRAM_TIME.request_ready_time(sdSystem.EMBEDDING_SLEEP_TIMER.get_ready_time(), 'd');
       sdSystem.PROGRAM_TIME.request_ready_time(sdSystem.SCREENIO_SLEEP_TIMER.get_ready_time());
       sdSystem.PROGRAM_TIME.request_ready_time(sdSystem.OLLAMA_SLEEP_TIMER.get_ready_time());
       sdSystem.PROGRAM_TIME.request_ready_time(sdSystem.EMBEDDING_SLEEP_TIMER.get_ready_time());

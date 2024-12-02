@@ -305,6 +305,20 @@ string remove_first_and_last_characters(char Character, string Text)
   return Text;
 }
 
+bool string_contains_word(string String_Value, string Word)
+{
+  return (String_Value.find(Word) != string::npos);
+}
+
+string string_to_lower_case(string String_Value)
+{
+  std::string result = String_Value;
+  std::transform(result.begin(), result.end(), result.begin(), [](unsigned char c)  {
+                                                                                      return std::tolower(c);
+                                                                                    });
+  return result;
+}
+
 bool string_to_int(string String_Value, int &Int_Value)
 {
   try

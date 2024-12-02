@@ -43,7 +43,7 @@ class OLLAMA_API_MUTEX
   void set_complete_response_after_done(ollama::response Response);
 
   ollama::response get_complete_response_after_done();
-  bool complete_respoonse_ready_after_done() const;
+  bool complete_response_ready_after_done() const;
 
   // Generating Response Complete
   int done() const;
@@ -94,7 +94,7 @@ class OLLAMA_API
   ollama::response CONTEXT;
 
   // Different types of ask.
-  bool CONTEXT_RETAIN = true;
+  bool REMEMBER_CONTEXT = true;
 
   public:
 
@@ -103,6 +103,8 @@ class OLLAMA_API
   THREADING_INFO  OLLAMA_RESPONSE_THREAD;
 
   vector<string> RESPONSE_STRING_VECTOR;
+  string RESPONSE_FULL = "";  // RESPONSE.as_simple_string(); not working so
+                              //  as fall back
 
   // Sending
   string REQUEST = "";
@@ -119,8 +121,8 @@ class OLLAMA_API
   void submit_question_internally(const string& Question);
 
   int check_response();
-
   void check_response_done();
+  string get_complete_text_response();
 
   void process(TTY_OUTPUT &Output, TTY_OUTPUT_FOCUS &Focus);
 };

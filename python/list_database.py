@@ -6,7 +6,7 @@ chroma = chromadb.HttpClient(host="localhost", port=8000)
 # List all collections
 collections = chroma.list_collections()
 
-print("Listing Database")
+print("List Collections in ChromaDB")
 
 # Print all collection names
 for collection in collections:
