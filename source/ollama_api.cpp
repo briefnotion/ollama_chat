@@ -191,8 +191,7 @@ bool OLLAMA_API::create(TTY_OUTPUT &Output_Container, TTY_OUTPUT_FOCUS &Output_F
     // useful for loading a model in advance.
 
     success = OLLAMA.load_model(PROPS.MODEL);
-    Output_Container.add_to( "l:" + to_string(success) + "\n", Output_Focus);
-
+    //Output_Container.add_to( "l:" + to_string(success) + "\n", Output_Focus);
 
     //string em = "claude-3-5-sonnet-20240620";
     //string em = "nomic-embed-text";

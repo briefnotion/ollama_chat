@@ -398,9 +398,9 @@ void VECTORDB_PYTHON_API::process(TTY_OUTPUT &Output, TTY_OUTPUT_FOCUS &Focus, O
           PYTHON_QUESTION_RESPONSE_MUTEX.set_command_line (bcommand);
           thread();
 
-          Output.add_to(to_string(PYTHON_QUESTION_RESPONSE_MUTEX.done()) + "\n", Focus);
-          Output.add_to(bcommand, Focus);
-          Output.seperater(Focus);
+          //Output.add_to(to_string(PYTHON_QUESTION_RESPONSE_MUTEX.done()) + "\n", Focus);
+          //Output.add_to(bcommand, Focus);
+          //Output.seperater(Focus);
 
           STAGE = 1;
         }
@@ -412,8 +412,8 @@ void VECTORDB_PYTHON_API::process(TTY_OUTPUT &Output, TTY_OUTPUT_FOCUS &Focus, O
 
             if (PYTHON_QUESTION_RESPONSE_MUTEX.get_complete_response().size() >= 22)
             {
-              Output.add_to(PYTHON_QUESTION_RESPONSE_MUTEX.get_complete_response().substr(0, 22), Focus);
-              Output.seperater(Focus);
+              //Output.add_to(PYTHON_QUESTION_RESPONSE_MUTEX.get_complete_response().substr(0, 22), Focus);
+              //Output.seperater(Focus);
 
               if (PYTHON_QUESTION_RESPONSE_MUTEX.get_complete_response().substr(0, 22) != "!No Relevant Documents")
               {
@@ -423,17 +423,27 @@ void VECTORDB_PYTHON_API::process(TTY_OUTPUT &Output, TTY_OUTPUT_FOCUS &Focus, O
 
             if (relevant_documents)
             {
-              Output.add_to("RELEVANT DOCUMENTS\n", Focus);
-              Output.seperater(Focus);
+              //Output.add_to("RELEVANT DOCUMENTS\n", Focus);
+              //Output.seperater(Focus);
 
-              string nnew_question = QUESTION + " Use the following information provided: " + PYTHON_QUESTION_RESPONSE_MUTEX.get_complete_response();
+              //string new_question = QUESTION + " State and Note that the following infomations was sourced from local files, and use the following information provided: " + PYTHON_QUESTION_RESPONSE_MUTEX.get_complete_response();
+              //string new_question = QUESTION + "Use the following information provided: " + PYTHON_QUESTION_RESPONSE_MUTEX.get_complete_response();
 
-              Ollama_System.submit_question(QUESTION);
+              //string new_question = QUESTION + "Use the following information provided: " + PYTHON_QUESTION_RESPONSE_MUTEX.get_complete_response() + 
+              //                      "Mention \"The information provided was sourced from local files\"";
+
+              string new_question = QUESTION + "Use the following information, sourced from local files, provided: " + PYTHON_QUESTION_RESPONSE_MUTEX.get_complete_response();
+
+
+              //Output.add_to(new_question, Focus);
+              //Output.seperater(Focus);
+
+              Ollama_System.submit_question(new_question);
             }
             else
             {
-              Output.add_to("NO RELEVANT DOCUMENTS\n", Focus);
-              Output.seperater(Focus);
+              //Output.add_to("NO RELEVANT DOCUMENTS\n", Focus);
+              //Output.seperater(Focus);
 
               Ollama_System.submit_question(QUESTION);
             }

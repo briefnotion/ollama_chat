@@ -10,6 +10,16 @@ from mattsollamatools import chunker, chunk_text_by_sentences
 # Download NLTK data
 nltk.download('punkt')
 
+# Description
+print("""
+This program processes text files in a specified directory or a single file. 
+It reads the content, splits the text into chunks, and adds these chunks to a ChromaDB collection.
+The embedding model 'nomic-embed-text' is used to generate embeddings for each text chunk.
+If a directory is provided, the program processes each file in the directory.
+If a single file is provided, it processes only that file.
+Finally, the program prints the time taken to process all files.
+""")
+
 # Constants
 COLLECTION_NAME = "buildragwithpython"
 EMBED_MODEL = "nomic-embed-text"
@@ -42,20 +52,21 @@ def process_file(filename, collection):
 
     for index, chunk in enumerate(chunks):
         embed = ollama.embeddings(model=EMBED_MODEL, prompt=chunk)['embedding']
-        print(f"---   {chunk}   ---")
+        #print(f"---   {chunk}   ---")
         collection.add([f"{filename}{index}"], [embed], documents=[chunk], metadatas={"source": filename})
 
 if __name__ == "__main__":
-    filenames = sys.argv[1:]
-    if not filenames:
-        print("No files provided. Please provide filenames as command-line arguments.")
+    input_path = sys.argv[1]
+    if not input_path:
+        print("No input provided. Please provide a directory or filename as a command-line argument.")
+    elif os.path.isdir(input_path):
+        # If input is a directory, process each file in the directory
+        for filename in os.listdir(input_path):
+            file_path = os.path.join(input_path, filename)
+            if os.path.isfile(file_path):
+                main([file_path])
+    elif os.path.isfile(input_path):
+        # If input is a filename, process the single file
+        main([input_path])
     else:
-        # Process each file
-        for filename in filenames:
-            if os.path.isfile(filename):
-                main(filenames)
-            else:
-                print(f"File not found: {filename}")
-
-
-        
+        print(f"Input not found: {input_path}")
