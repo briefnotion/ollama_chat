@@ -6,6 +6,7 @@
 //#include "helper.h"
 //#include "stringthings.h"
 #include "system.h"
+#include "thoughts.h"
 //#include "ollama_helper.h"
 //#include "tty_io.h"
 

@@ -37,6 +37,7 @@ add_library(ollama_files STATIC
     vectordb_python_api.cpp
     system.cpp
     main.cpp
+    thoughts.cpp
 )
 
 target_include_directories(ollama_files PRIVATE ${OllamaHPP_INCLUDE_DIR})

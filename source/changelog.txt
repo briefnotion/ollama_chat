@@ -1,3 +1,6 @@
+0.021-241204
+  - Compartmentalized a few things to begin preparing for other functions. 
+
 0.020-241203
   - Made some progress with providing information from relevant documents when answering 
       questions.  Previouse attempt in .019 didn't work.

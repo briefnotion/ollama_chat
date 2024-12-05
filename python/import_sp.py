@@ -46,7 +46,8 @@ def process_file(filename, collection):
     """Process a single file and add chunks to the collection"""
     print(f"Processing file: {filename}")
     
-    text = readtext(filename)
+    text = "(The source of the following documentation is \"" + filename + "\")\n"
+    text = text + readtext(filename)
     chunks = chunk_text_by_sentences(source_text=text, sentences_per_chunk=7, overlap=0, language="english")
     print(f"File contains {len(chunks)} chunks")
 

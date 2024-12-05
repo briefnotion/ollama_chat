@@ -11,6 +11,10 @@
 #include "tty_io.h"
 #include "threading.h"
 
+#define OLLAMA_SERVER_NOT_CONNECTED     0
+#define OLLAMA_SERVER_CONNECTED         1
+#define OLLAMA_SERVER_CONNECTION_FAILED -1
+
 #define OLLAMA_RESPONSE_THREAD_TIMER_DELAY   60   // This will be in frames per second (fps)
 
 #define OLLAMA_API_READY_FOR_REQUEST      0
@@ -74,6 +78,9 @@ class OLLAMA_API
   
   OLLAMA_API_MUTEX OLLAMA_MUTEX;
 
+  int CONNECTION_STATUS = 0;
+  bool CONNECTION_STATUS_CHANGED = true;
+
   std::function<void(const ollama::response&)> response_callback;
   void on_receive_response(const ollama::response& Request);
 
@@ -109,7 +116,11 @@ class OLLAMA_API
   // Sending
   string REQUEST = "";
 
-  bool create(TTY_OUTPUT &Output_Container, TTY_OUTPUT_FOCUS &Output_Focus);
+  private:
+  void create();
+  
+  public:
+  void check();
 
   void exec_question();
 

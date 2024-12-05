@@ -163,9 +163,9 @@ void OLLAMA_API::proc_render_thread()
 
 // ------------------------------------------------------------------------- //
 
-bool OLLAMA_API::create(TTY_OUTPUT &Output_Container, TTY_OUTPUT_FOCUS &Output_Focus)
+void OLLAMA_API::create()
 {
-  bool ret_running = false;
+  bool connection_status = CONNECTION_STATUS;
 
   // Optional. By default, the server URL is set to http://localhost:11434. 
   // Use this function if your server resides at a different URL.
@@ -183,7 +183,7 @@ bool OLLAMA_API::create(TTY_OUTPUT &Output_Container, TTY_OUTPUT_FOCUS &Output_F
 
     string thing = "";
 
-    Output_Container.add_to("Version: " + OLLAMA.get_version() + "\n", Output_Focus);
+    RESPONSE_STRING_VECTOR.push_back("Version: " + OLLAMA.get_version() + "\n");
     //cout << "Version: " << OLLAMA.get_version() << endl;
 
     // This can optionally be used to deliberately load a model into memory prior to use. 
@@ -219,19 +219,19 @@ bool OLLAMA_API::create(TTY_OUTPUT &Output_Container, TTY_OUTPUT_FOCUS &Output_F
     {
       //cout << "Model family is " << model_info["details"]["family"] << endl;
       thing = model_info["details"]["family"];
-      Output_Container.add_to( "Model family is " + thing + "\n", Output_Focus);
+      RESPONSE_STRING_VECTOR.push_back( "Model family is " + thing + "\n");
 
       // List the models available locally in the OLLAMA server
       OLLAMA_MODELS_LIST = OLLAMA.list_models();
       //print_vector_with_title("Available models", OLLAMA_MODELS_LIST);
       thing = return_vector_as_string(OLLAMA_MODELS_LIST, true);
-      Output_Container.add_to( "Available models \n" + thing + "\n", Output_Focus);
+      RESPONSE_STRING_VECTOR.push_back( "Available models \n" + thing + "\n");
 
       // List the models available locally in the OLLAMA server
       OLLAMA_MODELS_RUNNING = OLLAMA.list_running_models();
       //print_vector_with_title("Running models", OLLAMA_MODELS_RUNNING);
       thing = return_vector_as_string(OLLAMA_MODELS_RUNNING, true);
-      Output_Container.add_to( "Running models \n" + thing + "\n", Output_Focus);
+      RESPONSE_STRING_VECTOR.push_back( "Running models \n" + thing + "\n");
 
       // Most calls will throw ollama::exception in the event of an error, with details on the exception that has occurred. Exceptions are enabled by default.    
       //try { 
@@ -358,20 +358,39 @@ bool OLLAMA_API::create(TTY_OUTPUT &Output_Container, TTY_OUTPUT_FOCUS &Output_F
       OPTIONS["num_ctx"] = 8192; 
       // increases the context window size to 8192 tokens. This means the model can consider up to 8192 tokens from the input context when generating responses, which can help improve the coherence and relevance of the output, especially for longer inputs.
       
-      ret_running = true;
+      connection_status = OLLAMA_SERVER_CONNECTED;
     } 
     else 
     {
       cout << "Model family is unknown" << endl;
-      Output_Container.add_to("Model family is unknown\n", Output_Focus);
-      ret_running = false;
+      RESPONSE_STRING_VECTOR.push_back("Model family is unknown\n");
+      connection_status = OLLAMA_SERVER_CONNECTION_FAILED;
     }
   }
 
   // -------------------------------------------------
+  
+  CONNECTION_STATUS =  connection_status;
+  CONNECTION_STATUS_CHANGED = true;
+}
+
+void OLLAMA_API::check()
+{
+  if (CONNECTION_STATUS_CHANGED == true)
+  {
+    if (CONNECTION_STATUS == OLLAMA_SERVER_NOT_CONNECTED)
+    {
+      create();
+    }
+    else if (CONNECTION_STATUS == OLLAMA_SERVER_CONNECTED)
+    {
+    }
+    else  // OLLAMA_SERVER_CONNECTION_FAILED
+    {
+    }
     
-  Output_Container.add_to( " -----\n\n", Output_Focus);
-  return ret_running;
+    CONNECTION_STATUS_CHANGED = false;
+  }
 }
 
 void OLLAMA_API::exec_question()
@@ -393,25 +412,31 @@ void OLLAMA_API::set_status(int Status)
 
 void OLLAMA_API::submit_question(const string& Question)
 {
-  if (OLLAMA_MUTEX.done() == OLLAMA_API_READY_FOR_REQUEST)
+  if (CONNECTION_STATUS == OLLAMA_SERVER_CONNECTED)
   {
-    REMEMBER_CONTEXT = true;
-    REQUEST = Question;
-    RESPONSE_FULL = "";
+    if (OLLAMA_MUTEX.done() == OLLAMA_API_READY_FOR_REQUEST)
+    {
+      REMEMBER_CONTEXT = true;
+      REQUEST = Question;
+      RESPONSE_FULL = "";
 
-    exec_question();
+      exec_question();
+    }
   }
 }
 
 void OLLAMA_API::submit_question_internally(const string& Question)
 {
-  if (OLLAMA_MUTEX.done() == OLLAMA_API_READY_FOR_REQUEST)
+  if (CONNECTION_STATUS == OLLAMA_SERVER_CONNECTED)
   {
-    REMEMBER_CONTEXT = false;
-    REQUEST = Question;
-    RESPONSE_FULL = "";
+    if (OLLAMA_MUTEX.done() == OLLAMA_API_READY_FOR_REQUEST)
+    {
+      REMEMBER_CONTEXT = false;
+      REQUEST = Question;
+      RESPONSE_FULL = "";
 
-    exec_question();
+      exec_question();
+    }
   }
 }
 
