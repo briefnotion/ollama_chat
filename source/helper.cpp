@@ -1342,6 +1342,64 @@ float EMPERICAL::mean()
   }
 }
 
+bool SIMPLE_MAIN_LOOP_PROCESSOR_USAGE::changed()
+{
+  string current = "";
+  time.put_seconds(dur.count());
+  clock_clounter++;
+
+  if (clock_clounter >= 100)
+  {
+    // tick - tock
+    clock_clounter = 0;
+
+    if (clock == "|")
+    {
+      clock = "/";
+    }
+    else if (clock == "/")
+    {
+      clock = "-";
+    }
+    else if (clock == "-")
+    {
+      clock = "\\";
+    }
+    else 
+    {
+      clock = "|";
+    }
+
+    tmeNow = std::chrono::system_clock::now();
+    dur = tmeNow.time_since_epoch();
+
+    time.put_seconds(dur.count());
+
+    current = 
+      "(" + clock + ") " +
+      "(" + to_string(time.get_year()) + "-" + 
+            to_string(time.get_month()) + "-" + 
+            to_string(time.get_day()) + " " + 
+            to_string(time.get_hour()) + ":" + 
+            to_string(time.get_minute()) + ":" + 
+            to_string(time.get_second()) + ")";
+
+    if (current != LATEST)
+    {
+      LATEST = current;
+      CHANGED = true;
+    }
+  }
+
+  return CHANGED;
+}
+
+string SIMPLE_MAIN_LOOP_PROCESSOR_USAGE::what_is_it()
+{
+  CHANGED = false;
+  return LATEST;
+}
+
 
 
 #endif

@@ -124,99 +124,105 @@ void VECTORDB_PYTHON_API::thread()
   }
 }
 
+void VECTORDB_PYTHON_API::set_status(int Status)
+{
+  PYTHON_QUESTION_RESPONSE_MUTEX.set_done(Status);
+}
+
 int VECTORDB_PYTHON_API::get_status()
 {
   return PYTHON_QUESTION_RESPONSE_MUTEX.done();
 }
 
-void VECTORDB_PYTHON_API::submit_question(string Question) 
+void VECTORDB_PYTHON_API::clear_thoughts()
 {
-  APP_TYPE = "e";
+  THINKING = false; 
+  ABOUT = "";
+  THINKING_STAGE = -1;
+  SUBJECT = "";
+  COLLECTION_NAME = "";
 
-  QUESTION = Question;
-  DOCS_ONLY = false;
+  GATHERED_DOCUMENTS_RELEVANT = false;
+  GATHERED_DOCUMENTS = "";
 
-  const string andand = "&& ";
-
-  string bcommand = PROPS.ENVIRONMENT + andand + PROPS.SCRIPT_SEARCH + QUESTION;
-
-  if (PROPS.BASH_SHELL.size() > 0)
-  {
-    bcommand = PROPS.BASH_SHELL + bcommand + "'";
-  }
-
-  PYTHON_QUESTION_RESPONSE_MUTEX.set_command_line (bcommand);
-  thread();
+  set_status(VECTORDB_API_READY_FOR_REQUEST);
 }
 
-void VECTORDB_PYTHON_API::submit_question_to_ollama(string Question, string App_Type) 
+void VECTORDB_PYTHON_API::process_gathering_information_stages()
 {
-  APP_TYPE = App_Type;
-  STAGE = 0;
-  QUESTION = Question;
-  DOCS_ONLY = true;
-
-  const string andand = "&& ";
-
-  string bcommand = PROPS.ENVIRONMENT + andand + PROPS.SCRIPT_SEARCH_DOCS_ONLY + QUESTION;
-
-  if (PROPS.BASH_SHELL.size() > 0)
+  if (THINKING_STAGE == 0)
   {
-    bcommand = PROPS.BASH_SHELL + bcommand + "'";
-  }
-
-  PYTHON_QUESTION_RESPONSE_MUTEX.set_command_line (bcommand);
-  thread();
-}
-
-void VECTORDB_PYTHON_API::submit_question_to_ollama_par(string Question, string App_Type, OLLAMA_API &Ollama_System) 
-{
-  STAGE = 0;
-
-  {
-    Ollama_System.submit_question(Question);
-  }
-
-  {
-    APP_TYPE = App_Type;
-    
-    QUESTION = Question;
-    DOCS_ONLY = true;
-
-    const string andand = "&& ";
-
-    string bcommand = PROPS.ENVIRONMENT + andand + PROPS.SCRIPT_SEARCH_DOCS_ONLY + QUESTION;
-
-    if (PROPS.BASH_SHELL.size() > 0)
+    // Submit call to search docs
+    if (get_status() == VECTORDB_API_READY_FOR_REQUEST)
     {
-      bcommand = PROPS.BASH_SHELL + bcommand + "'";
-    }
+      string bcommand = PROPS.ENVIRONMENT + aa + PROPS.SCRIPT_SEARCH_DOCS_ONLY_COS + sp + COLLECTION_NAME + sp + SUBJECT;
 
-    PYTHON_QUESTION_RESPONSE_MUTEX.set_command_line (bcommand);
-    thread();
+      if (PROPS.BASH_SHELL.size() > 0)
+      {
+        bcommand = PROPS.BASH_SHELL + bcommand + "'";
+      }
+
+      PYTHON_QUESTION_RESPONSE_MUTEX.set_command_line (bcommand);
+      thread();
+
+      THINKING_STAGE = 1;
+    }
+  }
+  else if (THINKING_STAGE == 1)
+  {
+    // Wait for response
+    if (get_status() == VECTORDB_API_RESPONSE_DONE)
+    {
+      // Determine if anything is relevant
+      bool relevant_documents = false;
+
+      if (PYTHON_QUESTION_RESPONSE_MUTEX.get_complete_response().size() >= 22)
+      {
+        if (PYTHON_QUESTION_RESPONSE_MUTEX.get_complete_response().substr(0, 22) != "!No Relevant Documents")
+        {
+          relevant_documents = true;
+        }
+      }
+
+      if (relevant_documents)
+      {
+        // If Documents are Relevant, put them in a container. Signify Completion.
+        GATHERED_DOCUMENTS_RELEVANT = true;
+        GATHERED_DOCUMENTS = PYTHON_QUESTION_RESPONSE_MUTEX.get_complete_response();
+      }
+      else
+      {
+        // If No Documents are Relevant. Signify Completion.
+        GATHERED_DOCUMENTS_RELEVANT = false;
+        GATHERED_DOCUMENTS = "";
+      }
+
+      set_status(VECTORDB_API_RESPONSE_READY_TO_GATHER);
+    }
   }
 }
 
-void VECTORDB_PYTHON_API::submit_question_to_ollama_cos(string Question, string App_Type, OLLAMA_API &Ollama_System) 
+/*
+void VECTORDB_PYTHON_API::submit_question_to_ollama_cos(string Question, string Collection_Name, string App_Type, OLLAMA_API &Ollama_System) 
 {
   STAGE = 0;
 
   APP_TYPE = App_Type;
-  QUESTION = Question;
   DOCS_ONLY = true;
+  QUESTION = Question;
+  COLLECTION_NAME = Collection_Name;
 
   PYTHON_QUESTION_RESPONSE_MUTEX.set_done(VECTORDB_API_WRITING_REQUEST);
 }
+*/
 
-void VECTORDB_PYTHON_API::submit_file_to_embed(string File)
+void VECTORDB_PYTHON_API::submit_file_to_embed(string Collection_Name, string File)
 {
-  DOCS_ONLY = true;
-
   APP_TYPE = "m";
-  
-  const string andand = "&& ";
+  DOCS_ONLY = true;
+  COLLECTION_NAME = Collection_Name;
 
-  string bcommand = PROPS.ENVIRONMENT + andand + PROPS.SCRIPT_EMBED_FILE + File;
+  string bcommand = PROPS.ENVIRONMENT + aa + PROPS.SCRIPT_EMBED_FILE + sp + COLLECTION_NAME + sp + File;
 
   if (PROPS.BASH_SHELL.size() > 0)
   {
@@ -229,13 +235,10 @@ void VECTORDB_PYTHON_API::submit_file_to_embed(string File)
 
 void VECTORDB_PYTHON_API::submit_clear_database()
 {
+  APP_TYPE = "b";
   DOCS_ONLY = true;
 
-  APP_TYPE = "b";
-  
-  const string andand = "&& ";
-
-  string bcommand = PROPS.ENVIRONMENT + andand + PROPS.SCRIPT_CLEAR_DATABASE;
+  string bcommand = PROPS.ENVIRONMENT + aa + PROPS.SCRIPT_CLEAR_DATABASE;
 
   if (PROPS.BASH_SHELL.size() > 0)
   {
@@ -248,13 +251,10 @@ void VECTORDB_PYTHON_API::submit_clear_database()
 
 void VECTORDB_PYTHON_API::submit_list_database()
 {
+  APP_TYPE = "d";
   DOCS_ONLY = true;
 
-  APP_TYPE = "d";
-  
-  const string andand = "&& ";
-
-  string bcommand = PROPS.ENVIRONMENT + andand + PROPS.SCRIPT_LIST_DATABASE;
+  string bcommand = PROPS.ENVIRONMENT + aa + PROPS.SCRIPT_LIST_DATABASE;
 
   if (PROPS.BASH_SHELL.size() > 0)
   {
@@ -265,8 +265,41 @@ void VECTORDB_PYTHON_API::submit_list_database()
   thread();
 }
 
+void VECTORDB_PYTHON_API::search_db_for_relevant_docs(string Search_Criteria, string Collection_Name)
+{
+  THINKING = true;
+  ABOUT = "gathering information";
+  THINKING_STAGE = 0;
+  SUBJECT = Search_Criteria;
+  COLLECTION_NAME = Collection_Name;
+}
+
+bool VECTORDB_PYTHON_API::get_gathered_documents(string &Documents_Gathered)
+{
+  if (GATHERED_DOCUMENTS_RELEVANT)
+  {
+    Documents_Gathered = GATHERED_DOCUMENTS;
+    clear_thoughts();
+    return true;
+  }
+  else
+  {
+    clear_thoughts();
+    return false;
+  }
+}
+
 void VECTORDB_PYTHON_API::process(TTY_OUTPUT &Output, TTY_OUTPUT_FOCUS &Focus, OLLAMA_API &Ollama_System)
 {
+  if (THINKING)
+  {
+    if (ABOUT == "gathering information")
+    {
+      process_gathering_information_stages();
+    }
+  }
+
+  /*
   // For Responses that pull information from vector database, close
   if (DOCS_ONLY)
   {
@@ -339,9 +372,6 @@ void VECTORDB_PYTHON_API::process(TTY_OUTPUT &Output, TTY_OUTPUT_FOCUS &Focus, O
           {
             string answer = Ollama_System.get_complete_text_response();
             
-            answer = trim(answer);
-            answer = string_to_lower_case(answer);
-
             if (string_contains_word(answer, "yes"))
             {
               STAGE = 2;
@@ -387,8 +417,7 @@ void VECTORDB_PYTHON_API::process(TTY_OUTPUT &Output, TTY_OUTPUT_FOCUS &Focus, O
       {
         if (STAGE == 0)
         {
-          const string andand = "&& ";
-          string bcommand = PROPS.ENVIRONMENT + andand + PROPS.SCRIPT_SEARCH_DOCS_ONLY_COS + QUESTION;
+          string bcommand = PROPS.ENVIRONMENT + aa + PROPS.SCRIPT_SEARCH_DOCS_ONLY_COS + sp + COLLECTION_NAME + sp + QUESTION;
 
           if (PROPS.BASH_SHELL.size() > 0)
           {
@@ -461,6 +490,7 @@ void VECTORDB_PYTHON_API::process(TTY_OUTPUT &Output, TTY_OUTPUT_FOCUS &Focus, O
       }
     }
   }
+
   
   // These are inline resonses not associated to docs only, closes regardless of type.
   else
@@ -487,9 +517,8 @@ void VECTORDB_PYTHON_API::process(TTY_OUTPUT &Output, TTY_OUTPUT_FOCUS &Focus, O
       PYTHON_QUESTION_RESPONSE_MUTEX.set_done(VECTORDB_API_READY_FOR_REQUEST);
     }
   }
+    */
 }
-
-
 
 // ------------------------------------------------------------------------- //
 

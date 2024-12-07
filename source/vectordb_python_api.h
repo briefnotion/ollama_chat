@@ -13,11 +13,12 @@
 
 #define  VECTORDB_API_RESPONSE_THREAD_TIMER_DELAY   60   // This will be in frames per second (fps)
 
-#define VECTORDB_API_READY_FOR_REQUEST      0
-#define VECTORDB_API_WRITING_REQUEST        1
+#define VECTORDB_API_READY_FOR_REQUEST          0
+#define VECTORDB_API_WRITING_REQUEST            1
 //#define VECTORDB_API_REQUEST_SUBMITTED      2 
-#define VECTORDB_API_RESPONS_GENERATING     3
-#define VECTORDB_API_RESPONSE_DONE          4
+#define VECTORDB_API_RESPONS_GENERATING         3
+#define VECTORDB_API_RESPONSE_DONE              4
+#define VECTORDB_API_RESPONSE_READY_TO_GATHER   5
 
 using namespace std;
 
@@ -64,11 +65,11 @@ class VECTORDB_PYTHON_API_PROPERTIES
 
   // Command Line Input
   string BASH_SHELL =                   "bash -c '";
-  string ENVIRONMENT =                  "source /home/briefn/py/venv/bin/activate ";
+  string ENVIRONMENT =                  "source /home/briefn/py/venv/bin/activate";
   string SCRIPT_SEARCH =                "python3 ../python/search.py ";
-  string SCRIPT_SEARCH_DOCS_ONLY =      "python3 ../python/search_docs_only.py ";
+  string SCRIPT_SEARCH_DOCS_ONLY =      "python3 ../python/search_docs_only.py";
   string SCRIPT_SEARCH_DOCS_ONLY_COS =  "python3 ../python/search_docs_only_cos.py ";
-  string SCRIPT_EMBED_FILE =            "python3 ../python/import_sp.py ";
+  string SCRIPT_EMBED_FILE =            "python3 ../python/import_sp.py";
   string SCRIPT_CLEAR_DATABASE =        "python3 ../python/clear_database.py";
   string SCRIPT_LIST_DATABASE =         "python3 ../python/list_database.py";
 };
@@ -83,7 +84,24 @@ class VECTORDB_PYTHON_API
   void exec_thread_question();
   void thread();
 
+  // Command Line Arguments
   string QUESTION = "";
+
+  // Constants for building the command line
+  const string aa = " && ";
+  const string sp = " ";
+
+  // Variables for starting new process
+  //  Answer all
+  bool THINKING = false;        // Active Process
+  string ABOUT = "";            // Active Process Name
+  int THINKING_STAGE = -1;      // Stage of Process. -1 = off
+  string SUBJECT = "";          // Criteria
+  string COLLECTION_NAME = "";  // Name of Target Collection
+
+  // On Completion
+  bool GATHERED_DOCUMENTS_RELEVANT = false;
+  string GATHERED_DOCUMENTS = "";
 
   public:
 
@@ -95,16 +113,25 @@ class VECTORDB_PYTHON_API
   string APP_TYPE = "";
   int STAGE = 0;
 
+  void set_status(int Status);
+
+  public:
   int get_status();
 
-  void submit_question(string Question);
-  void submit_question_to_ollama(string Question, string App_Type);
-  void submit_question_to_ollama_par(string Question, string App_Type, OLLAMA_API &Ollama_System);
-  void submit_question_to_ollama_cos(string Question, string App_Type, OLLAMA_API &Ollama_System);
+  private:
+  void clear_thoughts();
+  void process_gathering_information_stages();
 
-  void submit_file_to_embed(string File);
+  public:
+
+  //void submit_question_to_ollama_cos(string Question, string Collection_Name, string App_Type, OLLAMA_API &Ollama_System);
+
+  void submit_file_to_embed(string Collection_Name, string File);
   void submit_clear_database();
   void submit_list_database();
+
+  void search_db_for_relevant_docs(string Search_Criteria, string Collection_Name);
+  bool get_gathered_documents(string &Documents_Gathered);
 
   void process(TTY_OUTPUT &Output, TTY_OUTPUT_FOCUS &Focus, OLLAMA_API &Ollama_System);
 

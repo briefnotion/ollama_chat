@@ -13,12 +13,13 @@ EMBED_MODEL = "nomic-embed-text"
 MAIN_MODEL = "llama3.2:latest"
 
 def main():
+    # Get the query from command-line arguments
+    collection_name = sys.argv[1]
+    query = " ".join(sys.argv[2:])
+
     # Initialize ChromaDB client and collection
     chroma = chromadb.HttpClient(host="localhost", port=8000)
-    collection = chroma.get_or_create_collection("buildragwithpython")
-
-    # Get the query from command-line arguments
-    query = " ".join(sys.argv[1:])
+    collection = chroma.get_or_create_collection(collection_name)
 
     # Ensure the query is not empty
     if not query.strip():

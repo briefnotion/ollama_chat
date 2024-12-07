@@ -3,7 +3,7 @@
 
 //#include <unistd.h>
 
-//#include "helper.h"
+#include "helper.h"
 //#include "stringthings.h"
 #include "system.h"
 #include "thoughts.h"

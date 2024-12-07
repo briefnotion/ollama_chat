@@ -305,8 +305,14 @@ string remove_first_and_last_characters(char Character, string Text)
   return Text;
 }
 
-bool string_contains_word(string String_Value, string Word)
+bool string_contains_word(string String_Value, string Word, bool Case_Sensitive)
 {
+  if (Case_Sensitive == false)
+  {
+    String_Value = string_to_lower_case(String_Value);
+    Word = string_to_lower_case(Word);
+  }
+
   return (String_Value.find(Word) != string::npos);
 }
 
@@ -607,8 +613,5 @@ bool STRING_FLOAT::conversion_success()
 {
   return CONVERSION_SUCCESS;
 }
-
-
-
 
 #endif

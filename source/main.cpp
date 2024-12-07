@@ -63,8 +63,8 @@ int main()
   {
     // Only run main look if connection to server is sucessful.
     //sdSystem.OLLAMA_SYSTEM.PROPS.MODEL = "llama3.1:8b";
-    sdSystem.OLLAMA_SYSTEM.PROPS.MODEL = "llama3.2:latest";
-    sdSystem.OLLAMA_SYSTEM.PROPS.URL = "http://localhost:11434";
+    THOUGHTS_SYSTEM.OLLAMA_SYSTEM.PROPS.MODEL = "llama3.2:latest";
+    THOUGHTS_SYSTEM.OLLAMA_SYSTEM.PROPS.URL = "http://localhost:11434";
   }
 
   // ------------------------------------------------------------------------- //
@@ -100,26 +100,15 @@ int main()
 
   // ------------------------------------------------------------------------- //
 
-  sdSystem.OLLAMA_SYSTEM.OLLAMA_RESPONSE_THREAD.create(OLLAMA_RESPONSE_THREAD_TIMER_DELAY);
-  sdSystem.VECTORDB_SYSTEM.PYTHON_QUESTION_RESPONSE_THREAD.create(VECTORDB_API_RESPONSE_THREAD_TIMER_DELAY);
+  THOUGHTS_SYSTEM.OLLAMA_SYSTEM.OLLAMA_RESPONSE_THREAD.create(OLLAMA_RESPONSE_THREAD_TIMER_DELAY);
+  THOUGHTS_SYSTEM.VECTORDB_SYSTEM.PYTHON_QUESTION_RESPONSE_THREAD.create(VECTORDB_API_RESPONSE_THREAD_TIMER_DELAY);
 
   // Send the output of the create to the screen.
   sdSystem.OUTPUT_OLLAMA_RESPONSE.output(sdSystem.OUTPUT_FOCUS);
 
   // ------------------------------------------------------------------------- //
 
-  FLED_TIME_VAR time; 
-  std::chrono::time_point<std::chrono::system_clock> tmeNow = std::chrono::system_clock::now();
-  std::chrono::duration<double>  dur = tmeNow.time_since_epoch();
-
-  time.put_seconds(dur.count());
-
-  // ------------------------------------------------------------------------- //
-
-  int clock_clounter = 101;
-  string clock = "-";
-
-  // ------------------------------------------------------------------------- //
+  SIMPLE_MAIN_LOOP_PROCESSOR_USAGE processor;
 
   // Main Thread Loop
   while (main_loop_exit == false)
@@ -136,62 +125,26 @@ int main()
       // Threading
 
       // Close all completed and active threads after sleep cycle is complete.
-      sdSystem.OLLAMA_SYSTEM.OLLAMA_RESPONSE_THREAD.check_for_completition();
-      sdSystem.VECTORDB_SYSTEM.PYTHON_QUESTION_RESPONSE_THREAD.check_for_completition();
+      THOUGHTS_SYSTEM.OLLAMA_SYSTEM.OLLAMA_RESPONSE_THREAD.check_for_completition();
+      THOUGHTS_SYSTEM.VECTORDB_SYSTEM.PYTHON_QUESTION_RESPONSE_THREAD.check_for_completition();
     }
 
     // ------------------------------------------------------------------------- //
 
+    if (processor.changed())
     {
-      clock_clounter++;
+      sdSystem.OUTPUT_CLOCK.clear();
+      sdSystem.OUTPUT_CLOCK.redraw();
+      sdSystem.OUTPUT_CLOCK.add_to(linemerge_left_justify("---------------------------------", 
+                                    processor.what_is_it() +
+                                    " (" + to_string(THOUGHTS_SYSTEM.OLLAMA_SYSTEM.get_status()) + ")" + 
+                                    "(" + to_string(THOUGHTS_SYSTEM.VECTORDB_SYSTEM.get_status()) + ")" + 
+                                    
+                                    /*
+                                    "(" + to_string(sdSystem.PROGRAM_TIME.current_frame_time()) + ") " + 
+                                    */
 
-      if (clock_clounter >= 100)
-      {
-        // tick - tock
-        clock_clounter = 0;
-
-        if (clock == "|")
-        {
-          clock = "/";
-        }
-        else if (clock == "/")
-        {
-          clock = "-";
-        }
-        else if (clock == "-")
-        {
-          clock = "\\";
-        }
-        else 
-        {
-          clock = "|";
-        }
-
-        tmeNow = std::chrono::system_clock::now();
-        dur = tmeNow.time_since_epoch();
-
-        time.put_seconds(dur.count());
-
-        sdSystem.OUTPUT_CLOCK.clear();
-        sdSystem.OUTPUT_CLOCK.redraw();
-        sdSystem.OUTPUT_CLOCK.add_to(linemerge_left_justify("---------------------------------", 
-                                      "(" + clock + ") " +
-                                      "(" + to_string(sdSystem.OLLAMA_SYSTEM.get_status()) + ") " + 
-                                      "(" + to_string(sdSystem.VECTORDB_SYSTEM.get_status()) + ") " + 
-                                      
-                                      /*
-                                      "(" + to_string(sdSystem.PROGRAM_TIME.current_frame_time()) + ") " + 
-                                      */
-
-                                      "(" + to_string(time.get_year()) + "-" + 
-                                            to_string(time.get_month()) + "-" + 
-                                            to_string(time.get_day()) + " " + 
-                                            to_string(time.get_hour()) + ":" + 
-                                            to_string(time.get_minute()) + ":" + 
-                                            to_string(time.get_second()) + ") " + 
-                                      
-                                      " INPUT:"), sdSystem.OUTPUT_FOCUS);
-      }
+                                    " INPUT:"), sdSystem.OUTPUT_FOCUS);
     }
 
     // ------------------------------------------------------------------------- //
@@ -200,8 +153,7 @@ int main()
     //  Never comment this out or the system will never sleep
     if (sdSystem.OLLAMA_SLEEP_TIMER.is_ready(sdSystem.PROGRAM_TIME.current_frame_time()) == true)
     {
-      sdSystem.OLLAMA_SYSTEM.check();
-      sdSystem.OLLAMA_SYSTEM.process(sdSystem.OUTPUT_OLLAMA_RESPONSE, sdSystem.OUTPUT_FOCUS);
+      THOUGHTS_SYSTEM.OLLAMA_SYSTEM.check();
     }
 
     // ------------------------------------------------------------------------- //
@@ -210,7 +162,7 @@ int main()
     //  Never comment this out or the system will never sleep
     if (sdSystem.EMBEDDING_SLEEP_TIMER.is_ready(sdSystem.PROGRAM_TIME.current_frame_time()) == true)
     {
-      sdSystem.VECTORDB_SYSTEM.process(sdSystem.OUTPUT_OLLAMA_RESPONSE, sdSystem.OUTPUT_FOCUS, sdSystem.OLLAMA_SYSTEM);
+      //sdSystem.VECTORDB_SYSTEM.process(sdSystem.OUTPUT_OLLAMA_RESPONSE, sdSystem.OUTPUT_FOCUS, sdSystem.OLLAMA_SYSTEM);
     }
 
     // ------------------------------------------------------------------------- //
@@ -282,8 +234,8 @@ int main()
 
   // Shutdown any open threads process
   // Restore the terminal
-  sdSystem.OLLAMA_SYSTEM.OLLAMA_RESPONSE_THREAD.wait_for_thread_to_finish("OLLAMA_RESPONSE_THREAD");
-  sdSystem.VECTORDB_SYSTEM.PYTHON_QUESTION_RESPONSE_THREAD.wait_for_thread_to_finish("PYTHON_QUESTION_RESPONSE_THREAD");
+  THOUGHTS_SYSTEM.OLLAMA_SYSTEM.OLLAMA_RESPONSE_THREAD.wait_for_thread_to_finish("OLLAMA_RESPONSE_THREAD");
+  THOUGHTS_SYSTEM.VECTORDB_SYSTEM.PYTHON_QUESTION_RESPONSE_THREAD.wait_for_thread_to_finish("PYTHON_QUESTION_RESPONSE_THREAD");
   
   sdSystem.INPUT.restore_terminal_settings();
 

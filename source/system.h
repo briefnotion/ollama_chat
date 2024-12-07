@@ -19,9 +19,6 @@
 #include "tty_io.h"
 #include "threading.h"
 
-#include "ollama_api.h"
-#include "vectordb_python_api.h"
-
 using namespace std;
 
 // -------------------------------------------------------------------------------------
@@ -52,13 +49,6 @@ class SYSTEM
 
   // Program Clock
   FLED_TIME        PROGRAM_TIME;
-
-  // Ollama System
-  OLLAMA_API      OLLAMA_SYSTEM;
-
-  // ChromaDB System
-  VECTORDB_PYTHON_API VECTORDB_SYSTEM;
-
 };
 
 // ------------------------------------------------------------------------- //

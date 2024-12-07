@@ -1,3 +1,10 @@
+0.022-241205
+  - Moved some things around, reorganized some things, and rewrote some other things,
+      because things were not going to work the way they were.
+  
+      Lost some functionallity with database manangement, but that was going to be rewitten 
+      anyway.
+
 0.021-241204
   - Compartmentalized a few things to begin preparing for other functions. 
 

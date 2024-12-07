@@ -650,4 +650,30 @@ class EMPERICAL
   float mean();
 };
 
+class SIMPLE_MAIN_LOOP_PROCESSOR_USAGE
+// The faster it spins, the more it is being accessed.
+// Shows how things are moving along.
+{
+  private:
+
+  int clock_clounter = -1;
+  string clock = "-";
+
+  string LATEST = "";
+  
+  FLED_TIME_VAR time; 
+
+  std::chrono::time_point<std::chrono::system_clock> tmeNow = std::chrono::system_clock::now();
+  std::chrono::duration<double>  dur = tmeNow.time_since_epoch();
+
+  bool CHANGED = false;
+
+  public:
+
+  bool changed();
+
+  string what_is_it();
+
+};
+
 #endif

@@ -98,7 +98,7 @@ string remove_first_and_last_characters(char Character, string Text);
 // For removing things like start and ending quotes.
 // Value will be trimmed.
 
-bool string_contains_word(string String_Value, string Word);
+bool string_contains_word(string String_Value, string Word, bool Case_Sensitive = false);
 // Returns true if Word is in String_Value
 
 string string_to_lower_case(string String_Value);
