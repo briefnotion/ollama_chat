@@ -5,39 +5,46 @@
 
 using namespace std;
 
-bool keyword_search(string Input)
+// Function to check for multiple words using an initializer list
+bool keyword_search(const string &Input, initializer_list<string> Words) 
 {
-  if (string_contains_word(Input, "maintenance") && string_contains_word(Input, "mode"))
+  for (const auto &word : Words) 
   {
-    return true;
+    if (!string_contains_word(Input, word)) 
+    {
+      return false;
+    }
   }
-  else
-  {
-    return false;
-  }
+  return true;
 }
 
 // ------------------------------------------------------------------------- //
 
-void THOUGHTS::clear_thoughts()
+/*
+void THOUGHT::clear_thoughts()
 {
   THINKING = false;
   ABOUT = "";
   THINKING_STAGE = -1;      // Stage of Process. -1 = off
   SUBJECT = "";    
 }
+*/
 
-void THOUGHTS::process_new_input_stages(SYSTEM &System)
+// ------------------------------------------------------------------------- //
+
+bool THOUGHTS::process_new_input_stages(SYSTEM &System, THOUGHT &Tidbit)
 {
-  if (THINKING_STAGE == 0)
+  bool ret_keep_this = true;
+  
+  if (Tidbit.THINKING_STAGE == 0)
   {
     // submit request for docuentation
 
-    VECTORDB_SYSTEM.search_db_for_relevant_docs(SUBJECT, "buildragwithpython");
+    VECTORDB_SYSTEM.search_db_for_relevant_docs(Tidbit.SUBJECT, "buildragwithpython");
 
-    THINKING_STAGE = 1;
+    Tidbit.THINKING_STAGE = 1;
   }
-  else if (THINKING_STAGE == 1)
+  else if (Tidbit.THINKING_STAGE == 1)
   {
     if (VECTORDB_SYSTEM.get_status() == VECTORDB_API_RESPONSE_READY_TO_GATHER)
     {
@@ -45,36 +52,61 @@ void THOUGHTS::process_new_input_stages(SYSTEM &System)
       if (VECTORDB_SYSTEM.get_gathered_documents(gathered_documents))
       {
         System.OUTPUT_OLLAMA_RESPONSE.add_to("Documentation was found.\n", System.OUTPUT_FOCUS);  // Temporary Note for debugging
-        string new_question = SUBJECT + " Use the following information, sourced from local files, provided: " + gathered_documents;
+        string new_question = Tidbit.SUBJECT + " Use the following information, sourced from local files, provided: " + gathered_documents;
         OLLAMA_SYSTEM.submit_question(new_question);
       }
       else
       {
-        OLLAMA_SYSTEM.submit_question(SUBJECT);
+        OLLAMA_SYSTEM.submit_question(Tidbit.SUBJECT);
       }
 
-      clear_thoughts();
+      ret_keep_this = false;
 
     }
   }
+
+  return ret_keep_this;
 }
 
 void THOUGHTS::input(string Input)
 {
-  //CHANGED = true;
-  THINKING = true;
-  ABOUT = "new input";
-  THINKING_STAGE = 0;
-  SUBJECT = Input;
+  THOUGHT new_thought;
+
+  INPUT_CHANGED = true;
+
+  new_thought.THINKING = true;
+  new_thought.ABOUT = "new input";
+  new_thought.THINKING_STAGE = 0;
+  new_thought.SUBJECT = Input;
+
+  TIDBITS.push_back(new_thought);
 }
 
-/*
 void THOUGHTS::process_input(SYSTEM &System)
 {
   // Accept and call and prepare the appropriate function based on the input
-
-  if (CHANGED)
+  
+  if (INPUT_CHANGED)
   {
+    // First Check for keyword search. Run special conditions.
+    if (keyword_search(TIDBITS.back().SUBJECT, {"maintenance", "mode"}))
+    {
+      // Testing
+      SYSTEM_MAITENANCE_MODE = true;
+      System.OUTPUT_OLLAMA_RESPONSE.add_to("MAINTEANCEMODE set to true", System.OUTPUT_FOCUS);
+      System.OUTPUT_OLLAMA_RESPONSE.seperater(System.OUTPUT_FOCUS);
+    }
+    else
+    {
+      System.OUTPUT_OLLAMA_RESPONSE.add_to("MAINTEANCEMODE set to false", System.OUTPUT_FOCUS);
+      System.OUTPUT_OLLAMA_RESPONSE.seperater(System.OUTPUT_FOCUS);
+    }
+
+    System.OUTPUT_INPUT.clear();
+    INPUT_CHANGED = false;
+  }
+
+  /*
     // Check to see if in maintenance mode
     if (SYSTEM_MAITENANCE_MODE)
     {
@@ -85,7 +117,6 @@ void THOUGHTS::process_input(SYSTEM &System)
       //  System.VECTORDB_SYSTEM.submit_question(INPUT);
       //  System.OUTPUT_INPUT.clear();
       //}
-      /*
       if (INPUT.substr(0, 7) == " import")
       {
         INPUT.erase(0, 7);
@@ -143,26 +174,33 @@ void THOUGHTS::process_input(SYSTEM &System)
     CHANGED = false;
     //INPUT = "";
   }
-
-  
+  */
 }
-*/
 
 void THOUGHTS::process_thinking(SYSTEM &System)
 {
-  // Route direction
-  if (THINKING)
+  if (TIDBITS.size() > 0)
   {
-    if (ABOUT == "new input")
+    // Route direction
+    if (TIDBITS.back().THINKING)
     {
-      process_new_input_stages(System);
-      System.OUTPUT_INPUT.clear();
+      if (TIDBITS.back().ABOUT == "new input")
+      {
+        if (process_new_input_stages(System, TIDBITS.back()) == false)
+        {
+          // Erase the thought if it is done thinking.
+          TIDBITS.pop_back();
+        }
+      }
     }
   }
 }
 
 void THOUGHTS::process(SYSTEM &System)
 {
+  // Check new input for special conditions.
+  process_input(System);
+
   // Thinking
   process_thinking(System);
 
