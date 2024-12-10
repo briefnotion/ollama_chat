@@ -1,3 +1,6 @@
+0.024-241210
+  - Continued work on generating a maintenace mode.
+
 0.023-241209
   - Put some work on generating a maintenace mode.
 

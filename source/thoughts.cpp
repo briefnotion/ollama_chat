@@ -32,10 +32,8 @@ void THOUGHT::clear_thoughts()
 
 // ------------------------------------------------------------------------- //
 
-bool THOUGHTS::process_new_input_stages(SYSTEM &System, THOUGHT &Tidbit)
+void THOUGHTS::process_new_input_stages(SYSTEM &System, THOUGHT &Tidbit)
 {
-  bool ret_keep_this = true;
-  
   if (Tidbit.THINKING_STAGE == 0)
   {
     // submit request for docuentation
@@ -60,15 +58,14 @@ bool THOUGHTS::process_new_input_stages(SYSTEM &System, THOUGHT &Tidbit)
         OLLAMA_SYSTEM.submit_question(Tidbit.SUBJECT);
       }
 
-      ret_keep_this = false;
-
+      Tidbit.RESOLUTION_SIMPLE = -1;
+      Tidbit.RESOLOLUTION_FULL = OLLAMA_SYSTEM.RESPONSE_FULL;
+      Tidbit.RESOLOLUTION_FOUND = true;
     }
   }
-
-  return ret_keep_this;
 }
 
-void THOUGHTS::input(string Input)
+void THOUGHTS::input(string Input, bool Keyword_Search)
 {
   THOUGHT new_thought;
 
@@ -79,31 +76,59 @@ void THOUGHTS::input(string Input)
   new_thought.THINKING_STAGE = 0;
   new_thought.SUBJECT = Input;
 
-  TIDBITS.push_back(new_thought);
+  new_thought.KEYWORD_SEARCH = Keyword_Search;
+
+  TRAIN_OF_THOUGH.push_back(new_thought);
 }
 
-void THOUGHTS::process_input(SYSTEM &System)
+bool THOUGHTS::thoughts_exist(vector<THOUGHT> &Train_of_Thoughts)
+{
+  if (Train_of_Thoughts.size() > 0)
+  {
+    return true;
+  }
+  else
+  {
+    return false;
+  }
+}
+
+THOUGHT& THOUGHTS::get_latest_thought(vector<THOUGHT> &Train_of_Thoughts)
+{
+  return Train_of_Thoughts.back();
+}
+
+void THOUGHTS::process_input(SYSTEM &System, THOUGHT &Current_Thought)
 {
   // Accept and call and prepare the appropriate function based on the input
   
   if (INPUT_CHANGED)
   {
-    // First Check for keyword search. Run special conditions.
-    if (keyword_search(TIDBITS.back().SUBJECT, {"maintenance", "mode"}))
+    INPUT_CHANGED = false;
+
+    if (Current_Thought.KEYWORD_SEARCH)
     {
-      // Testing
-      SYSTEM_MAITENANCE_MODE = true;
-      System.OUTPUT_OLLAMA_RESPONSE.add_to("MAINTEANCEMODE set to true", System.OUTPUT_FOCUS);
-      System.OUTPUT_OLLAMA_RESPONSE.seperater(System.OUTPUT_FOCUS);
-    }
-    else
-    {
-      System.OUTPUT_OLLAMA_RESPONSE.add_to("MAINTEANCEMODE set to false", System.OUTPUT_FOCUS);
-      System.OUTPUT_OLLAMA_RESPONSE.seperater(System.OUTPUT_FOCUS);
+      // First Check for keyword search. Run special conditions.
+      if (keyword_search(Current_Thought.SUBJECT, {"maintenance", "mode"}))
+      {
+        // Testing
+        //SYSTEM_MAITENANCE_MODE = true;
+
+        string question = "Simply answer yes or no. If i say " + Current_Thought.SUBJECT + ". Am I asking you to enter the maintenance system?";
+
+        System.OUTPUT_OLLAMA_RESPONSE.add_to(question, System.OUTPUT_FOCUS);
+        System.OUTPUT_OLLAMA_RESPONSE.seperater(System.OUTPUT_FOCUS);
+
+        input(question, false);
+      }
+      else
+      {
+        //System.OUTPUT_OLLAMA_RESPONSE.add_to("MAINTEANCEMODE set to false", System.OUTPUT_FOCUS);
+        //System.OUTPUT_OLLAMA_RESPONSE.seperater(System.OUTPUT_FOCUS);
+      }
     }
 
     System.OUTPUT_INPUT.clear();
-    INPUT_CHANGED = false;
   }
 
   /*
@@ -177,32 +202,45 @@ void THOUGHTS::process_input(SYSTEM &System)
   */
 }
 
-void THOUGHTS::process_thinking(SYSTEM &System)
+void THOUGHTS::process_thinking(SYSTEM &System, THOUGHT &Current_Thought)
 {
-  if (TIDBITS.size() > 0)
+  // Route direction
+  if (Current_Thought.THINKING)
   {
-    // Route direction
-    if (TIDBITS.back().THINKING)
+    if (Current_Thought.ABOUT == "new input")
     {
-      if (TIDBITS.back().ABOUT == "new input")
-      {
-        if (process_new_input_stages(System, TIDBITS.back()) == false)
-        {
-          // Erase the thought if it is done thinking.
-          TIDBITS.pop_back();
-        }
-      }
+      process_new_input_stages(System, Current_Thought);
     }
+  }
+}
+
+void THOUGHTS::process_resolution(vector<THOUGHT> &Train_of_Thoughts)
+{
+  if (TRAIN_OF_THOUGH.back().RESOLOLUTION_FOUND)
+  {
+    TRAIN_OF_THOUGH.pop_back();
   }
 }
 
 void THOUGHTS::process(SYSTEM &System)
 {
-  // Check new input for special conditions.
-  process_input(System);
+  if (thoughts_exist(TRAIN_OF_THOUGH))
+  {
+    //THOUGHT& latest_thought = get_latest_thought(TRAIN_OF_THOUGH);
 
-  // Thinking
-  process_thinking(System);
+    // Check new input for special conditions.
+    process_input(System, get_latest_thought(TRAIN_OF_THOUGH));
+
+    // Avoid current thought if another input has been made, to work on latest thought
+    if (INPUT_CHANGED == false)
+    {
+      // Thinking
+      process_thinking(System, get_latest_thought(TRAIN_OF_THOUGH));
+
+      // Resolutions
+      process_resolution(TRAIN_OF_THOUGH);
+    }
+  }
 
   // Handle Output
   VECTORDB_SYSTEM.process(System.OUTPUT_OLLAMA_RESPONSE, System.OUTPUT_FOCUS, OLLAMA_SYSTEM);
