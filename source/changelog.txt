@@ -1,3 +1,6 @@
+0.025-241211
+  - Continued work on generating a maintenace mode.
+
 0.024-241210
   - Continued work on generating a maintenace mode.
 
@@ -8,14 +11,14 @@
   - Moved some things around, reorganized some things, and rewrote some other things,
       because things were not going to work the way they were.
   
-      Lost some functionallity with database manangement, but that was going to be rewitten 
+      Lost some functionallity with database manangement, but that was going to be rewitten
       anyway.
 
 0.021-241204
-  - Compartmentalized a few things to begin preparing for other functions. 
+  - Compartmentalized a few things to begin preparing for other functions.
 
 0.020-241203
-  - Made some progress with providing information from relevant documents when answering 
+  - Made some progress with providing information from relevant documents when answering
       questions.  Previouse attempt in .019 didn't work.
 
 0.019-241202
@@ -34,10 +37,10 @@
       I plan to do away with all these eventually.
 
 0.017-241130
-  - Added option n to the embedding access routines to attempt to pull and combine a response from 
+  - Added option n to the embedding access routines to attempt to pull and combine a response from
       both the Ollama LLM and the VectorDB.
       Example:
-        nTell Me about rubber ducks. 
+        nTell Me about rubber ducks.
 
 0.016-241128
   - Did some more work with embedding.  Current test routines are as follows:
@@ -47,13 +50,13 @@
         m~/testdocs/rubberduckdetails.txt         Import document into the database
         b                                         Completely erase all data in embedding database.
         d                                         List topics in database.
-        iTell Me about rubber ducks.              Call python script to gather documents with question, 
-                                                  then forwards thos docs to chat_ollama to answer while 
+        iTell Me about rubber ducks.              Call python script to gather documents with question,
+                                                  then forwards thos docs to chat_ollama to answer while
                                                   preserving context.  Also, faster because model doesn'test
                                                   need to be loaded in python system.
 
-      Provided that you have an enviornment properly set up and configured via VECTORDB_SYSTEM.PROPS, 
-        results should be displayed.  My defaults are in "vectordb_python_api.h" in the 
+      Provided that you have an enviornment properly set up and configured via VECTORDB_SYSTEM.PROPS,
+        results should be displayed.  My defaults are in "vectordb_python_api.h" in the
         "VECTORDB_PYTHON_API_PROPERTIES" class.
 
 0.015-241125
@@ -70,8 +73,8 @@
         m~/testdocs/rubberduckdetails.txt         Import document into the database
         eWrite a quick story about rubber ducks.  Request info about the documents in the database.
 
-      Provided that you have an enviornment properly set up and configured via VECTORDB_SYSTEM.PROPS, 
-        results should be displayed.  My defaults are in "vectordb_python_api.h" in the 
+      Provided that you have an enviornment properly set up and configured via VECTORDB_SYSTEM.PROPS,
+        results should be displayed.  My defaults are in "vectordb_python_api.h" in the
         "VECTORDB_PYTHON_API_PROPERTIES" class.
 
 0.013-241122
@@ -86,16 +89,16 @@
   - Clean up some tty_io routines.
 
 0.010-241114
-  - Slow progress. Embedding with RAG support still doesn't work.  I'm updating git 
+  - Slow progress. Embedding with RAG support still doesn't work.  I'm updating git
       with the latest progress.
 
 0.009-241105
-  - Slow progress. Embedding with RAG support still doesn't work.  I'm updating git 
+  - Slow progress. Embedding with RAG support still doesn't work.  I'm updating git
       with the latest progress.
 
 0.008-241028
   - THIS BUILD DOES NOT WORK:
-      On line 8 of ollama_api.h, if (#include "ollama.hpp") is not commented out, 
+      On line 8 of ollama_api.h, if (#include "ollama.hpp") is not commented out,
         line 54 of chromadb_api.cpp (chromadb::Client client("http", "localhost", "8000");)
         will throw the exceotion:
           Include this for: Fatal glibc error: pthread_mutex_lock.c:94 (___pthread_mutex_lock): assertion failed: mutex->__data.__owner == 0
@@ -104,10 +107,10 @@
   - Restoration after system migration
   
 0.006-241015
-- Created a simple TTY_Interface. 
-    Its not finished, and i didnt put any limit on the size of the text 
+- Created a simple TTY_Interface.
+    Its not finished, and i didnt put any limit on the size of the text
     box.  Works ok.  Probably spent more time on it than I should've.
-- Changed other parts of the code.       
+- Changed other parts of the code.
 
 0.005_241014
   - Code is running better.
@@ -119,7 +122,7 @@
   - built threading
 
 0.003_241012
-  - Async communication to Ollama is working but still needs 
+  - Async communication to Ollama is working but still needs
       attention.
   - Corrected an errer if fled_time.
 

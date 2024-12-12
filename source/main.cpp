@@ -135,10 +135,11 @@ int main()
     {
       sdSystem.OUTPUT_CLOCK.clear();
       sdSystem.OUTPUT_CLOCK.redraw();
-      sdSystem.OUTPUT_CLOCK.add_to(linemerge_left_justify("---------------------------------", 
+      sdSystem.OUTPUT_CLOCK.add_to(linemerge_left_justify("-------------------------------------------------------------------------", 
                                     processor.what_is_it() +
-                                    " (" + to_string(THOUGHTS_SYSTEM.OLLAMA_SYSTEM.get_status()) + ")" + 
-                                    "(" + to_string(THOUGHTS_SYSTEM.VECTORDB_SYSTEM.get_status()) + ")" + 
+                                    " (ct:" + to_string(THOUGHTS_SYSTEM.thought_count()) + ")" + 
+                                    " (ol:" + to_string(THOUGHTS_SYSTEM.OLLAMA_SYSTEM.get_status()) + ")" + 
+                                    " (db:" + to_string(THOUGHTS_SYSTEM.VECTORDB_SYSTEM.get_status()) + ")" + 
                                     
                                     /*
                                     "(" + to_string(sdSystem.PROGRAM_TIME.current_frame_time()) + ") " + 

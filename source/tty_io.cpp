@@ -262,7 +262,8 @@ void TTY_OUTPUT::output(TTY_OUTPUT_FOCUS &Output_Focus)
 
       if (DRAW_TITLE)
       {
-        cout << linemerge_left_justify("---------------------------------", PROPS.TITLE) << endl;
+        cout << linemerge_left_justify("-------------------------------------------------------------------------", 
+                                        PROPS.TITLE) << endl;
         cout << OUTPUT_STRING << flush;
       }
       else
