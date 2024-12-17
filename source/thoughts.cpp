@@ -58,7 +58,7 @@ void THOUGHTS::process_input_stages(SYSTEM &System)
       string gathered_documents = "";
       if (VECTORDB_SYSTEM.get_gathered_documents(gathered_documents))
       {
-        System.OUTPUT_OLLAMA_RESPONSE.add_to("   *---- Documentation was found.\n", System.OUTPUT_FOCUS);  // Temporary Note for debugging
+        System.OUTPUT_OLLAMA_RESPONSE.add_to("   *---- DOCUMENTATION WAS FOUND\n", System.OUTPUT_FOCUS);  // Temporary Note for debugging
         string new_question = TRAIN_OF_THOUGH.back().SUBJECT + " Use the following information, sourced from local files, provided: " + gathered_documents;
         OLLAMA_SYSTEM.submit_question(new_question);
       }
@@ -141,67 +141,148 @@ void THOUGHTS::process_maintenance_mode_stages(SYSTEM &System)
 
 void THOUGHTS::process_maintenance_mode_cycle(SYSTEM &System)
 {
-  if (TRAIN_OF_THOUGH.back().THINKING_STAGE == 0)
+  if (TRAIN_OF_THOUGH.back().THINKING_STAGE == 0) // Open the system and lock it in till it's exited
   {
-    System.OUTPUT_OLLAMA_RESPONSE.add_to("   *---- Entering Maintetnance Cycle\n", System.OUTPUT_FOCUS);
+    System.OUTPUT_OLLAMA_RESPONSE.add_to("   *---- ENTERING MAINTENANCE MODE CYCLE\n", System.OUTPUT_FOCUS);
 
     TRAIN_OF_THOUGH.back().THINKING_STAGE = 1;
+    TRAIN_OF_THOUGH.back().ISOLATE_INPUT_TO_THOUGHT = true;
+    TRAIN_OF_THOUGH.back().SUBJECT = "";
 
-    string introduction = "Say: You are now entering the maintenance system. Then provide the following list of commands related to maintaining a ChromaDB database and Retrieval Augmented Generation, also known as RAG support: embeding, import, erase, list";
-    introduction += "Also, say that non of this is working yet";
+    //string introduction = "Say: You are now entering the maintenance system. Then provide the following list of commands related to maintaining a ChromaDB database and Retrieval Augmented Generation, also known as RAG support: embeding, import, erase, list";
+
+    string introduction = R"(
+Ollama, please list the ChromaDB commands for Retrieval Augmented Generation (RAG) support as follows:
+
+1. **search <search terms or sentence>**
+   - Searches the vector database for related documents.
+   - **Example**: `search tell me about the quantumflux capacitor`
+
+2. **embed <filename or directory>**
+   - Imports all files, or a single file, into the vector database.
+   - **Example**: `embed ~/testdocs`
+
+3. **erase**
+   - Erases all entries in the vector database.
+   - **Example**: `erase`
+
+4. **list**
+   - Lists all entries in the vector database.
+   - **Example**: `list`
+
+Please make sure to keep it concise and in the specified format.
+)";
 
     OLLAMA_SYSTEM.submit_question(introduction);
+  }
+  else if(TRAIN_OF_THOUGH.back().THINKING_STAGE == 1) // Find exit or process commands
+  {
+    if (OLLAMA_SYSTEM.get_status() == OLLAMA_API_READY_FOR_REQUEST)
+    {
+      if (TRAIN_OF_THOUGH.back().SUBJECT != "")
+      {
+        if (keyword_search(TRAIN_OF_THOUGH.back().SUBJECT, {"exit"}))
+        {
+          TRAIN_OF_THOUGH.back().THINKING_STAGE = 99;
+          simple_ask(TRAIN_OF_THOUGH.back().SUBJECT, "exit the maintenance mode");
+        }
+        else 
+        {
+          TRAIN_OF_THOUGH.back().THINKING_STAGE = 10;
+        }
+      }
+    }
+  }
+  else if(TRAIN_OF_THOUGH.back().THINKING_STAGE == 10)  // Process Commands
+  {
+
+    if (TRAIN_OF_THOUGH.back().SUBJECT.substr(0, 6) == "search")    // Search Command
+    {
+      TRAIN_OF_THOUGH.back().THINKING_STAGE = 11;
+      TRAIN_OF_THOUGH.back().SUBJECT.erase(0, 6);
+      VECTORDB_SYSTEM.search_db_for_relevant_docs(TRAIN_OF_THOUGH.back().SUBJECT, "buildragwithpython");
+    }
+
+    else if (TRAIN_OF_THOUGH.back().SUBJECT.substr(0, 4) == "list") // List Command
+    {
+      TRAIN_OF_THOUGH.back().THINKING_STAGE = 11;
+      TRAIN_OF_THOUGH.back().SUBJECT.erase(0, 4);
+      VECTORDB_SYSTEM.submit_list_database();
+    }
+
+    else if (TRAIN_OF_THOUGH.back().SUBJECT.substr(0, 5) == "embed") // List Command
+    {
+      TRAIN_OF_THOUGH.back().THINKING_STAGE = 11;
+      TRAIN_OF_THOUGH.back().SUBJECT.erase(0, 5);
+      VECTORDB_SYSTEM.submit_file_to_embed("buildragwithpython", TRAIN_OF_THOUGH.back().SUBJECT);
+    }
+
+    else if (TRAIN_OF_THOUGH.back().SUBJECT.substr(0, 5) == "erase") // List Command
+    {
+      TRAIN_OF_THOUGH.back().THINKING_STAGE = 11;
+      TRAIN_OF_THOUGH.back().SUBJECT.erase(0, 5);
+      VECTORDB_SYSTEM.submit_clear_database();
+    }
+
+    else                                                            // Unknown Command
+    {
+      System.OUTPUT_OLLAMA_RESPONSE.add_to("   *---- UNKNOWN COMMAND\n", System.OUTPUT_FOCUS);
+      TRAIN_OF_THOUGH.back().SUBJECT = "";
+      TRAIN_OF_THOUGH.back().THINKING_STAGE = 1;
+    }
+
+  }
+  else if(TRAIN_OF_THOUGH.back().THINKING_STAGE == 11)  // Clear
+  {
+    TRAIN_OF_THOUGH.back().SUBJECT = "";
+    TRAIN_OF_THOUGH.back().THINKING_STAGE = 12;
+  }
+  else if(TRAIN_OF_THOUGH.back().THINKING_STAGE == 12)  // Wait for Command Response
+  {
+
+    if (VECTORDB_SYSTEM.get_status() == VECTORDB_API_RESPONSE_READY_TO_GATHER)
+    {
+      TRAIN_OF_THOUGH.back().SUBJECT = "";
+      TRAIN_OF_THOUGH.back().THINKING_STAGE = 1;
+
+      string full_response = VECTORDB_SYSTEM.get_full_response();
+
+      System.OUTPUT_OLLAMA_RESPONSE.add_to(full_response, System.OUTPUT_FOCUS);
+
+      string summary = "Give a quick and short summary of: " + full_response;
+      OLLAMA_SYSTEM.submit_question(summary);
+    }
+
+    else if (VECTORDB_SYSTEM.get_status() == VECTORDB_API_READY_FOR_REQUEST)
+    {
+      TRAIN_OF_THOUGH.back().SUBJECT = "";
+      TRAIN_OF_THOUGH.back().THINKING_STAGE = 1;
+      System.OUTPUT_OLLAMA_RESPONSE.add_to("something is wrong. nothing was processed.", System.OUTPUT_FOCUS);
+    }
+
+  }
+  else if(TRAIN_OF_THOUGH.back().THINKING_STAGE == 99)  // Recieve answer for exiting Maintenance Mode
+  {
+    if (RESOLUTION_BUFFER.CHANGED)
+    {
+      if (RESOLUTION_BUFFER.RESOLUTION_SIMPLE == 1)
+      {
+        System.OUTPUT_OLLAMA_RESPONSE.add_to("   *---- EXITING MAINTENANCE MODE CYCLE\n", System.OUTPUT_FOCUS);
+        TRAIN_OF_THOUGH.back().RESOLUTION.RESOLOLUTION_FOUND = true;
+      }
+      else
+      {
+        TRAIN_OF_THOUGH.back().THINKING_STAGE = 10;
+      }
+      
+      RESOLUTION_BUFFER.clear();
+    }
   }
   else
   {
     TRAIN_OF_THOUGH.back().RESOLUTION.RESOLOLUTION_FOUND = true;
   }
 }
-
-/*
-bool THOUGHTS::thoughts_exist()
-{
-  if (TRAIN_OF_THOUGH.size() > 0)
-  {
-    return true;
-  }
-  else
-  {
-    return false;
-  }
-}
-*/
-
-/*
-int THOUGHTS::int_thought_count()
-{
-  int count = TRAIN_OF_THOUGH.size();
-
-  if (count > 0)
-  {
-    for (int pos = 0; pos < count; pos++)
-    {
-      count += int_thought_count(Train_of_Thoughts[pos].TRAIN_OF_THOUGH);
-    }
-  }
-
-  return count;
-}
-*/
-
-/*
-THOUGHT& THOUGHTS::get_latest_thought(vector<THOUGHT> &Thought)
-{
-  if (thoughts_exist(Thought.back().TRAIN_OF_THOUGH))
-  {
-    return get_latest_thought(Thought.back().TRAIN_OF_THOUGH);
-  }
-  else
-  {
-    return Thought.back();
-  }
-}
-*/
 
 void THOUGHTS::pop_latest_thought()
 {
@@ -215,6 +296,7 @@ void THOUGHTS::process_input(SYSTEM &System)
   if (INPUT_CHANGED)
   {
     INPUT_CHANGED = false;
+    System.OUTPUT_INPUT.clear();
 
     if (TRAIN_OF_THOUGH.back().ABOUT == "new input")
     {
@@ -230,80 +312,8 @@ void THOUGHTS::process_input(SYSTEM &System)
           TRAIN_OF_THOUGH.back().ABOUT = "input";
         }
       }
-
-      System.OUTPUT_INPUT.clear();
     }
   }
-
-  /*
-    // Check to see if in maintenance mode
-    if (SYSTEM_MAITENANCE_MODE)
-    {
-      // Testing
-      //if (INPUT.substr(0, 9) == " embeding")
-      //{
-      //  INPUT.erase(0, 9);
-      //  System.VECTORDB_SYSTEM.submit_question(INPUT);
-      //  System.OUTPUT_INPUT.clear();
-      //}
-      if (INPUT.substr(0, 7) == " import")
-      {
-        INPUT.erase(0, 7);
-        System.VECTORDB_SYSTEM.submit_file_to_embed("buildragwithpython", INPUT);
-        System.OUTPUT_INPUT.clear();
-      }
-      else if (INPUT.substr(0, 6) == " erase")
-      {
-        INPUT.erase(0, 6);
-        System.VECTORDB_SYSTEM.submit_clear_database();
-        System.OUTPUT_INPUT.clear();
-      }
-      else if (INPUT.substr(0, 5) == " list")
-      {
-        INPUT.erase(0, 5);
-        System.VECTORDB_SYSTEM.submit_list_database();
-        System.OUTPUT_INPUT.clear();
-      }
-      //else if (INPUT.substr(0, 2) == " i")
-      //{
-      //  INPUT.erase(0, 2);
-      //  System.VECTORDB_SYSTEM.submit_question_to_ollama(INPUT, "i");
-      //  System.OUTPUT_INPUT.clear();
-      //}
-      else if (INPUT.substr(0, 2) == " o")
-      {
-        INPUT.erase(0, 2);
-        System.OLLAMA_SYSTEM.submit_question(INPUT);
-        System.OUTPUT_INPUT.clear();
-      } 
-      //else if (INPUT.substr(0, 2) == " n")
-      //{
-      //  INPUT.erase(0, 2);
-      //  System.VECTORDB_SYSTEM.submit_question_to_ollama_par(INPUT, "n", System.OLLAMA_SYSTEM);
-      //  System.OUTPUT_INPUT.clear();
-      //}
-    }
-    else
-    {
-      // First Check for keyword search
-      if (keyword_search(INPUT))
-      {
-        // Testing
-        SYSTEM_MAITENANCE_MODE = true;
-        System.OUTPUT_OLLAMA_RESPONSE.add_to("MAINTEANCEMODE set to true", System.OUTPUT_FOCUS);
-        System.OUTPUT_OLLAMA_RESPONSE.seperater(System.OUTPUT_FOCUS);
-      }
-
-      // submit request
-      //System.VECTORDB_SYSTEM.submit_question_to_ollama_cos(INPUT, "buildragwithpython", "g", System.OLLAMA_SYSTEM);
-
-    }
-
-    // --- 
-    CHANGED = false;
-    //INPUT = "";
-  }
-  */
 }
 
 void THOUGHTS::process_thinking(SYSTEM &System)
@@ -346,6 +356,30 @@ int THOUGHTS::thought_count()
   return TRAIN_OF_THOUGH.size();
 }
 
+string THOUGHTS::thought_current()
+{
+  if (thought_count() == 0)
+  {
+    return "idle";
+  }
+  else
+  {
+    return TRAIN_OF_THOUGH.back().ABOUT;
+  }
+}
+
+int THOUGHTS::thought_stage()
+{
+  if (thought_count() == 0)
+  {
+    return -1;
+  }
+  else
+  {
+    return TRAIN_OF_THOUGH.back().THINKING_STAGE;
+  }
+}
+
 void THOUGHTS::simple_ask(string Question, string Am_I_Asking_You_To)
 {
   THOUGHT new_thought;
@@ -366,18 +400,37 @@ void THOUGHTS::simple_ask(string Question, string Am_I_Asking_You_To)
 
 void THOUGHTS::input(string Input, bool Keyword_Search, string About)
 {
-  THOUGHT new_thought;
+  bool isolated = false;
 
-  INPUT_CHANGED = true;
+  if (thought_count() > 0)
+  {
+    if (TRAIN_OF_THOUGH.back().ISOLATE_INPUT_TO_THOUGHT == true)
+    {
+      isolated = true;
+    }
+  }
 
-  new_thought.THINKING = true;
-  new_thought.ABOUT = About;
-  new_thought.THINKING_STAGE = 0;
-  new_thought.SUBJECT = Input;
+  if (isolated)
+  {
+    INPUT_CHANGED = true;
+    //TRAIN_OF_THOUGH.back().THINKING = true;
+    TRAIN_OF_THOUGH.back().SUBJECT = Input;
+  }
+  else
+  {
+    THOUGHT new_thought;
 
-  new_thought.KEYWORD_SEARCH = Keyword_Search;
+    INPUT_CHANGED = true;
 
-  TRAIN_OF_THOUGH.push_back(new_thought);
+    new_thought.THINKING = true;
+    new_thought.ABOUT = About;
+    new_thought.THINKING_STAGE = 0;
+    new_thought.SUBJECT = Input;
+
+    new_thought.KEYWORD_SEARCH = Keyword_Search;
+
+    TRAIN_OF_THOUGH.push_back(new_thought);
+  }
 }
 
 void THOUGHTS::process(SYSTEM &System)

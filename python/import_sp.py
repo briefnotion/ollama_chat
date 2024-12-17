@@ -52,7 +52,6 @@ def process_file(filename, collection):
 
     for index, chunk in enumerate(chunks):
         embed = ollama.embeddings(model=EMBED_MODEL, prompt=chunk)['embedding']
-        #print(f"---   {chunk}   ---")
         collection.add([f"{filename}{index}"], [embed], documents=[chunk], metadatas={"source": filename})
 
 if __name__ == "__main__":
@@ -66,13 +65,10 @@ if __name__ == "__main__":
         print("No input provided. Please provide a directory or filename as a command-line argument.")
     elif os.path.isdir(input_path):
         # If input is a directory, process each file in the directory
-        for filename in os.listdir(input_path):
-            file_path = os.path.join(input_path, filename)
-            if os.path.isfile(file_path):
-                main([file_path])
-
+        file_list = [os.path.join(input_path, filename) for filename in os.listdir(input_path) if os.path.isfile(os.path.join(input_path, filename))]
+        main(collection, file_list)
     elif os.path.isfile(input_path):
         # If input is a filename, process the single file
-        main([input_path])
+        main(collection, [input_path])
     else:
         print(f"Input file or directory not found: {input_path}")

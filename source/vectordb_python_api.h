@@ -121,17 +121,18 @@ class VECTORDB_PYTHON_API
   private:
   void clear_thoughts();
   void process_gathering_information_stages();
+  void process_list_database_stages();
+  void process_embed_documents_stages();
+  void process_clear_database_stages();
 
   public:
-
-  //void submit_question_to_ollama_cos(string Question, string Collection_Name, string App_Type, OLLAMA_API &Ollama_System);
-
   void submit_file_to_embed(string Collection_Name, string File);
   void submit_clear_database();
   void submit_list_database();
 
   void search_db_for_relevant_docs(string Search_Criteria, string Collection_Name);
   bool get_gathered_documents(string &Documents_Gathered);
+  string get_full_response();
 
   void process(TTY_OUTPUT &Output, TTY_OUTPUT_FOCUS &Focus, OLLAMA_API &Ollama_System);
 

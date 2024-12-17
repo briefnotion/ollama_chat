@@ -202,67 +202,124 @@ void VECTORDB_PYTHON_API::process_gathering_information_stages()
   }
 }
 
-/*
-void VECTORDB_PYTHON_API::submit_question_to_ollama_cos(string Question, string Collection_Name, string App_Type, OLLAMA_API &Ollama_System) 
+void VECTORDB_PYTHON_API::process_list_database_stages()
 {
-  STAGE = 0;
+  if (THINKING_STAGE == 0)
+  {
+    // Submit call to search docs
+    if (get_status() == VECTORDB_API_READY_FOR_REQUEST)
+    {
+      string bcommand = PROPS.ENVIRONMENT + aa + PROPS.SCRIPT_LIST_DATABASE;
 
-  APP_TYPE = App_Type;
-  DOCS_ONLY = true;
-  QUESTION = Question;
-  COLLECTION_NAME = Collection_Name;
+      if (PROPS.BASH_SHELL.size() > 0)
+      {
+        bcommand = PROPS.BASH_SHELL + bcommand + "'";
+      }
 
-  PYTHON_QUESTION_RESPONSE_MUTEX.set_done(VECTORDB_API_WRITING_REQUEST);
+      PYTHON_QUESTION_RESPONSE_MUTEX.set_command_line (bcommand);
+      thread();
+
+      THINKING_STAGE = 1;
+    }
+  }
+  else if (THINKING_STAGE == 1)
+  {
+    // Wait for response
+    if (get_status() == VECTORDB_API_RESPONSE_DONE)
+    {
+      GATHERED_DOCUMENTS = PYTHON_QUESTION_RESPONSE_MUTEX.get_complete_response();
+      set_status(VECTORDB_API_RESPONSE_READY_TO_GATHER);
+    }
+  }
 }
-*/
+
+void VECTORDB_PYTHON_API::process_embed_documents_stages()
+{
+  if (THINKING_STAGE == 0)
+  {
+    // Submit call to search docs
+    if (get_status() == VECTORDB_API_READY_FOR_REQUEST)
+    {
+      string bcommand = PROPS.ENVIRONMENT + aa + PROPS.SCRIPT_EMBED_FILE + sp + COLLECTION_NAME + sp + SUBJECT;
+
+      if (PROPS.BASH_SHELL.size() > 0)
+      {
+        bcommand = PROPS.BASH_SHELL + bcommand + "'";
+      }
+
+      PYTHON_QUESTION_RESPONSE_MUTEX.set_command_line (bcommand);
+      thread();
+
+      THINKING_STAGE = 1;
+    }
+  }
+  else if (THINKING_STAGE == 1)
+  {
+    // Wait for response
+    if (get_status() == VECTORDB_API_RESPONSE_DONE)
+    {
+      GATHERED_DOCUMENTS = PYTHON_QUESTION_RESPONSE_MUTEX.get_complete_response();
+      set_status(VECTORDB_API_RESPONSE_READY_TO_GATHER);
+    }
+  }
+}
+
+void VECTORDB_PYTHON_API::process_clear_database_stages()
+{
+  if (THINKING_STAGE == 0)
+  {
+    // Submit call to search docs
+    if (get_status() == VECTORDB_API_READY_FOR_REQUEST)
+    {
+      string bcommand = PROPS.ENVIRONMENT + aa + PROPS.SCRIPT_CLEAR_DATABASE;
+
+      if (PROPS.BASH_SHELL.size() > 0)
+      {
+        bcommand = PROPS.BASH_SHELL + bcommand + "'";
+      }
+
+      PYTHON_QUESTION_RESPONSE_MUTEX.set_command_line (bcommand);
+      thread();
+
+      THINKING_STAGE = 1;
+    }
+  }
+  else if (THINKING_STAGE == 1)
+  {
+    // Wait for response
+    if (get_status() == VECTORDB_API_RESPONSE_DONE)
+    {
+      GATHERED_DOCUMENTS = PYTHON_QUESTION_RESPONSE_MUTEX.get_complete_response();
+      set_status(VECTORDB_API_RESPONSE_READY_TO_GATHER);
+    }
+  }
+}
 
 void VECTORDB_PYTHON_API::submit_file_to_embed(string Collection_Name, string File)
 {
-  APP_TYPE = "m";
-  DOCS_ONLY = true;
+  THINKING = true;
+  ABOUT = "embed documents";
+  THINKING_STAGE = 0;
+  SUBJECT = File;
   COLLECTION_NAME = Collection_Name;
-
-  string bcommand = PROPS.ENVIRONMENT + aa + PROPS.SCRIPT_EMBED_FILE + sp + COLLECTION_NAME + sp + File;
-
-  if (PROPS.BASH_SHELL.size() > 0)
-  {
-    bcommand = PROPS.BASH_SHELL + bcommand + "'";
-  }
-
-  PYTHON_QUESTION_RESPONSE_MUTEX.set_command_line (bcommand);
-  thread();
 }
 
 void VECTORDB_PYTHON_API::submit_clear_database()
 {
-  APP_TYPE = "b";
-  DOCS_ONLY = true;
-
-  string bcommand = PROPS.ENVIRONMENT + aa + PROPS.SCRIPT_CLEAR_DATABASE;
-
-  if (PROPS.BASH_SHELL.size() > 0)
-  {
-    bcommand = PROPS.BASH_SHELL + bcommand + "'";
-  }
-
-  PYTHON_QUESTION_RESPONSE_MUTEX.set_command_line (bcommand);
-  thread();
+  THINKING = true;
+  ABOUT = "clear database";
+  THINKING_STAGE = 0;
+  SUBJECT = "";
+  COLLECTION_NAME = "";
 }
 
 void VECTORDB_PYTHON_API::submit_list_database()
 {
-  APP_TYPE = "d";
-  DOCS_ONLY = true;
-
-  string bcommand = PROPS.ENVIRONMENT + aa + PROPS.SCRIPT_LIST_DATABASE;
-
-  if (PROPS.BASH_SHELL.size() > 0)
-  {
-    bcommand = PROPS.BASH_SHELL + bcommand + "'";
-  }
-
-  PYTHON_QUESTION_RESPONSE_MUTEX.set_command_line (bcommand);
-  thread();
+  THINKING = true;
+  ABOUT = "list database";
+  THINKING_STAGE = 0;
+  SUBJECT = "";
+  COLLECTION_NAME = "";
 }
 
 void VECTORDB_PYTHON_API::search_db_for_relevant_docs(string Search_Criteria, string Collection_Name)
@@ -289,6 +346,13 @@ bool VECTORDB_PYTHON_API::get_gathered_documents(string &Documents_Gathered)
   }
 }
 
+string VECTORDB_PYTHON_API::get_full_response()
+{
+  string full_response = GATHERED_DOCUMENTS;
+  clear_thoughts();
+  return full_response;
+}
+
 void VECTORDB_PYTHON_API::process(TTY_OUTPUT &Output, TTY_OUTPUT_FOCUS &Focus, OLLAMA_API &Ollama_System)
 {
   if (THINKING)
@@ -297,227 +361,19 @@ void VECTORDB_PYTHON_API::process(TTY_OUTPUT &Output, TTY_OUTPUT_FOCUS &Focus, O
     {
       process_gathering_information_stages();
     }
-  }
-
-  /*
-  // For Responses that pull information from vector database, close
-  if (DOCS_ONLY)
-  {
-    if (PYTHON_QUESTION_RESPONSE_MUTEX.done() == VECTORDB_API_RESPONS_GENERATING)
+    else if (ABOUT == "list database")
     {
-      //Output.add_to("generating docs", Focus);
+      process_list_database_stages();
     }
-    else if (PYTHON_QUESTION_RESPONSE_MUTEX.done() == VECTORDB_API_RESPONSE_DONE ||
-              PYTHON_QUESTION_RESPONSE_MUTEX.done() == VECTORDB_API_WRITING_REQUEST)
+    else if (ABOUT == "embed documents")
     {
-      if (APP_TYPE == "d" || APP_TYPE == "m" || APP_TYPE == "b")
-      {
-        string ret_response = "";
-
-        if (PYTHON_QUESTION_RESPONSE_MUTEX.response_size() > 0)
-        {
-          vector<string> result;
-          PYTHON_QUESTION_RESPONSE_MUTEX.get_response_to_vector(result);
-          ret_response = return_vector_as_string(result);
-        }
-
-        Output.add_to(ret_response, Focus);
-
-        // Post Process Here
-        if (Ollama_System.get_status() == OLLAMA_API_READY_FOR_REQUEST)
-        {
-          string request_to_summerize = "Summerize the following console output: " + PYTHON_QUESTION_RESPONSE_MUTEX.get_complete_response();
-          
-          Ollama_System.submit_question(request_to_summerize);
-          
-          QUESTION = "";
-          APP_TYPE = "";
-          PYTHON_QUESTION_RESPONSE_MUTEX.set_done(VECTORDB_API_READY_FOR_REQUEST);
-        }
-      }
-
-      else if (APP_TYPE == "i")
-      {
-        // Post Process Here
-        string question_with_docs = QUESTION + " - Answer that question using the following text as a resource: " + PYTHON_QUESTION_RESPONSE_MUTEX.get_complete_response();
-
-        Ollama_System.submit_question(question_with_docs);
-
-        QUESTION = "";
-        APP_TYPE = "";
-        PYTHON_QUESTION_RESPONSE_MUTEX.set_done(VECTORDB_API_READY_FOR_REQUEST);
-      }
-
-      else if (APP_TYPE == "n")
-      {
-        if (STAGE == 0)
-        {
-          if (Ollama_System.get_status() == OLLAMA_API_READY_FOR_REQUEST)
-          {
-            //string question_with_docs = "Answer with only \"YES\" or \"NO\". Is any of the information in the following text relevant to the topic? The following text is: " + 
-            //                            PYTHON_QUESTION_RESPONSE_MUTEX.get_complete_response();
-            //string question_with_docs = "Answer with only \"YES\" or \"NO\". Considering \"" + QUESTION + "\"  Is anything in the following text relevant: " + 
-            //                            PYTHON_QUESTION_RESPONSE_MUTEX.get_complete_response();
-            string question_with_docs = "Answer with only \"YES\" or \"NO\". Considering \"" + QUESTION + "\"  Is anything in the following text included: " + 
-                                        PYTHON_QUESTION_RESPONSE_MUTEX.get_complete_response();
-
-            Ollama_System.submit_question_internally(question_with_docs);
-
-            STAGE = 1;
-          }
-        }
-        else if (STAGE == 1)
-        {
-          if (Ollama_System.get_status() == OLLAMA_API_READY_FOR_REQUEST)
-          {
-            string answer = Ollama_System.get_complete_text_response();
-            
-            if (string_contains_word(answer, "yes"))
-            {
-              STAGE = 2;
-            }
-            else
-            {
-              APP_TYPE = "";
-              QUESTION = "";
-              PYTHON_QUESTION_RESPONSE_MUTEX.set_done(VECTORDB_API_READY_FOR_REQUEST);
-              STAGE = 0;
-            }
-          }
-        }
-        else if (STAGE == 2)
-        {
-          // Post Process Here
-          if (Ollama_System.get_status() == OLLAMA_API_READY_FOR_REQUEST)
-          {
-            //string question_with_docs = "Continue only relvevant information from the following text as a resource: " + PYTHON_QUESTION_RESPONSE_MUTEX.get_complete_response();
-            //string question_with_docs = "Continue with '" + QUESTION + "' from the following text as a resource: " + PYTHON_QUESTION_RESPONSE_MUTEX.get_complete_response();
-            //string question_with_docs = "Stay relevat when and continue with following text as a resource: " + PYTHON_QUESTION_RESPONSE_MUTEX.get_complete_response();
-            //string question_with_docs = "Also include the following text as a resource: " + PYTHON_QUESTION_RESPONSE_MUTEX.get_complete_response();
-            //string question_with_docs = "While responding to \"" + QUESTION + "\" with the following text. Don't repeat anything already said and " + 
-            //                              "stay relevant to the topic. The following text is: " + PYTHON_QUESTION_RESPONSE_MUTEX.get_complete_response();
-
-            string question_with_docs = "While responding to \"" + QUESTION + "\" with the following text. Don't repeat anything already said and " + 
-                                          "filter out anything not relevant to the topic. The following text is: " + PYTHON_QUESTION_RESPONSE_MUTEX.get_complete_response();
-
-            //string question_with_docs = "While responding to \"" + QUESTION + "\" with the following text. Don't repeat anything already said and " + 
-            //                              "filter out anything not relevant to the topic. The following text is: " + PYTHON_QUESTION_RESPONSE_MUTEX.get_complete_response();
-
-            Ollama_System.submit_question(question_with_docs);
-
-            APP_TYPE = "";
-            QUESTION = "";
-            PYTHON_QUESTION_RESPONSE_MUTEX.set_done(VECTORDB_API_READY_FOR_REQUEST);
-            STAGE = 3;
-          }
-        }
-      }
-
-      else if (APP_TYPE == "g")
-      {
-        if (STAGE == 0)
-        {
-          string bcommand = PROPS.ENVIRONMENT + aa + PROPS.SCRIPT_SEARCH_DOCS_ONLY_COS + sp + COLLECTION_NAME + sp + QUESTION;
-
-          if (PROPS.BASH_SHELL.size() > 0)
-          {
-            bcommand = PROPS.BASH_SHELL + bcommand + "'";
-          }
-
-          PYTHON_QUESTION_RESPONSE_MUTEX.set_command_line (bcommand);
-          thread();
-
-          //Output.add_to(to_string(PYTHON_QUESTION_RESPONSE_MUTEX.done()) + "\n", Focus);
-          //Output.add_to(bcommand, Focus);
-          //Output.seperater(Focus);
-
-          STAGE = 1;
-        }
-        else if (STAGE == 1)
-        {
-          if (PYTHON_QUESTION_RESPONSE_MUTEX.done() == VECTORDB_API_RESPONSE_DONE)
-          {
-            bool relevant_documents = false;
-
-            if (PYTHON_QUESTION_RESPONSE_MUTEX.get_complete_response().size() >= 22)
-            {
-              //Output.add_to(PYTHON_QUESTION_RESPONSE_MUTEX.get_complete_response().substr(0, 22), Focus);
-              //Output.seperater(Focus);
-
-              if (PYTHON_QUESTION_RESPONSE_MUTEX.get_complete_response().substr(0, 22) != "!No Relevant Documents")
-              {
-                relevant_documents = true;
-              }
-            }
-
-            if (relevant_documents)
-            {
-              //Output.add_to("RELEVANT DOCUMENTS\n", Focus);
-              //Output.seperater(Focus);
-
-              //string new_question = QUESTION + " State and Note that the following infomations was sourced from local files, and use the following information provided: " + PYTHON_QUESTION_RESPONSE_MUTEX.get_complete_response();
-              //string new_question = QUESTION + "Use the following information provided: " + PYTHON_QUESTION_RESPONSE_MUTEX.get_complete_response();
-
-              //string new_question = QUESTION + "Use the following information provided: " + PYTHON_QUESTION_RESPONSE_MUTEX.get_complete_response() + 
-              //                      "Mention \"The information provided was sourced from local files\"";
-
-              string new_question = QUESTION + "Use the following information, sourced from local files, provided: " + PYTHON_QUESTION_RESPONSE_MUTEX.get_complete_response();
-
-
-              //Output.add_to(new_question, Focus);
-              //Output.seperater(Focus);
-
-              Ollama_System.submit_question(new_question);
-            }
-            else
-            {
-              //Output.add_to("NO RELEVANT DOCUMENTS\n", Focus);
-              //Output.seperater(Focus);
-
-              Ollama_System.submit_question(QUESTION);
-            }
-
-            STAGE = 2;
-          }
-        }
-        else  // Any Other Stage
-        {
-          APP_TYPE = "";
-          QUESTION = "";
-          PYTHON_QUESTION_RESPONSE_MUTEX.set_done(VECTORDB_API_READY_FOR_REQUEST);
-          STAGE = 0;
-        }
-      }
+      process_embed_documents_stages();
+    }
+    else if (ABOUT == "clear database")
+    {
+      process_clear_database_stages();
     }
   }
-
-  
-  // These are inline resonses not associated to docs only, closes regardless of type.
-  else
-  {
-    string ret_response = "";
-
-    if (PYTHON_QUESTION_RESPONSE_MUTEX.response_size() > 0)
-    {
-      vector<string> result;
-      PYTHON_QUESTION_RESPONSE_MUTEX.get_response_to_vector(result);
-      ret_response = return_vector_as_string(result);
-    }
-
-    Output.add_to(ret_response, Focus);
-
-    // Post Process
-    if (PYTHON_QUESTION_RESPONSE_MUTEX.done() == VECTORDB_API_RESPONSE_DONE)
-    {
-      Output.seperater(Focus);
-      
-      // Post Process Here
-      APP_TYPE = "";
-      QUESTION = "";
-      PYTHON_QUESTION_RESPONSE_MUTEX.set_done(VECTORDB_API_READY_FOR_REQUEST);
-    }
-  }
-    */
 }
 
 // ------------------------------------------------------------------------- //

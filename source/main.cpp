@@ -109,6 +109,8 @@ int main()
   // ------------------------------------------------------------------------- //
 
   SIMPLE_MAIN_LOOP_PROCESSOR_USAGE processor;
+  string processor_status_display_simple_old = "";
+  string processor_status_display_simple = "";
 
   // Main Thread Loop
   while (main_loop_exit == false)
@@ -131,20 +133,21 @@ int main()
 
     // ------------------------------------------------------------------------- //
 
-    if (processor.changed())
+    processor_status_display_simple = " (ol:" + to_string(THOUGHTS_SYSTEM.OLLAMA_SYSTEM.get_status()) + ")" + 
+                                      " (db:" + to_string(THOUGHTS_SYSTEM.VECTORDB_SYSTEM.get_status()) + ")" + 
+                                      " (ct:" + to_string(THOUGHTS_SYSTEM.thought_count()) + ":" + 
+                                                THOUGHTS_SYSTEM.thought_current() + ":" + 
+                                                to_string(THOUGHTS_SYSTEM.thought_stage()) + ")";
+    
+    if (processor.changed() || processor_status_display_simple_old != processor_status_display_simple)
     {
+      processor_status_display_simple_old = processor_status_display_simple;
+      
       sdSystem.OUTPUT_CLOCK.clear();
       sdSystem.OUTPUT_CLOCK.redraw();
       sdSystem.OUTPUT_CLOCK.add_to(linemerge_left_justify("-------------------------------------------------------------------------", 
                                     processor.what_is_it() +
-                                    " (ct:" + to_string(THOUGHTS_SYSTEM.thought_count()) + ")" + 
-                                    " (ol:" + to_string(THOUGHTS_SYSTEM.OLLAMA_SYSTEM.get_status()) + ")" + 
-                                    " (db:" + to_string(THOUGHTS_SYSTEM.VECTORDB_SYSTEM.get_status()) + ")" + 
-                                    
-                                    /*
-                                    "(" + to_string(sdSystem.PROGRAM_TIME.current_frame_time()) + ") " + 
-                                    */
-
+                                    processor_status_display_simple +
                                     " INPUT:"), sdSystem.OUTPUT_FOCUS);
     }
 
@@ -185,7 +188,7 @@ int main()
 
           if (input_entered.size() > 0)
           {
-            if (input_entered == "exit" || input_entered == "bye")
+            if (input_entered == "bye")
             {
               main_loop_exit = true;
             }

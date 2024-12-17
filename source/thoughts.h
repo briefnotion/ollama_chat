@@ -51,10 +51,9 @@ class THOUGHT
   string SUBJECT = "";          // Criteria
 
   bool KEYWORD_SEARCH = true;
+  bool ISOLATE_INPUT_TO_THOUGHT = false;
 
   RESOLUTION_RESULTS RESOLUTION;
-
-  //vector<THOUGHT> TRAIN_OF_THOUGH;
 };
 
 class THOUGHTS
@@ -81,9 +80,6 @@ class THOUGHTS
   VECTORDB_PYTHON_API VECTORDB_SYSTEM;
 
   private:
-  //bool thoughts_exist();
-  //int int_thought_count();
-  //THOUGHT& get_latest_thought(vector<THOUGHT> &Thought);
   void pop_latest_thought();
 
   void process_input(SYSTEM &System);
@@ -92,6 +88,9 @@ class THOUGHTS
 
   public:
   int thought_count();
+  string thought_current();
+  int thought_stage();
+
   void simple_ask(string Question, string Am_I_Asking_You_To);
   void input(string Input, bool Keyword_Search = true, string About = "new input");
   void process(SYSTEM &System);
