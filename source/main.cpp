@@ -72,30 +72,37 @@ int main()
   sdSystem.OUTPUT_OLLAMA_RESPONSE.add_to(version_info, sdSystem.OUTPUT_FOCUS);
 
   // ------------------------------------------------------------------------- //
-  // TTY IO
+  // Properties Setup
   {
     // Prepair Variables:
     sdSystem.INPUT.create();
 
+    // Clock, and other things, masking as the input title.
     sdSystem.OUTPUT_CLOCK.PROPS.POSITION_X = 0;
     sdSystem.OUTPUT_CLOCK.PROPS.POSITION_Y = 0;
     sdSystem.OUTPUT_CLOCK.PROPS.LINES = 1;
     sdSystem.OUTPUT_CLOCK.create(0);
 
+    // Input Text Box:
     //sdSystem.OUTPUT_INPUT.PROPS.TITLE = "  INPUT";
     sdSystem.OUTPUT_INPUT.PROPS.POSITION_X = 0;
     sdSystem.OUTPUT_INPUT.PROPS.POSITION_Y = 1;
     sdSystem.OUTPUT_INPUT.PROPS.LINES = 2;
     sdSystem.OUTPUT_INPUT.create(1);
 
+    // Output Text Box:
     sdSystem.OUTPUT_OLLAMA_RESPONSE.PROPS.TITLE = "  OUTPUT";
     sdSystem.OUTPUT_OLLAMA_RESPONSE.PROPS.POSITION_X = 0;
     sdSystem.OUTPUT_OLLAMA_RESPONSE.PROPS.POSITION_Y = 3;
     sdSystem.OUTPUT_OLLAMA_RESPONSE.PROPS.LINES = 100;
+    sdSystem.OUTPUT_OLLAMA_RESPONSE.PROPS.RECORD_HISTORY = true;
     sdSystem.OUTPUT_OLLAMA_RESPONSE.create(2);
-    
-    sdSystem.INPUT.clear_screeen();
 
+    // Memory Processing Module
+    sdSystem.MEMORY.PROPS.WORKING_DIRECTORY = "~/chat_api/";
+    
+    // Blank the screen.
+    sdSystem.INPUT.clear_screeen();
   }
 
   // ------------------------------------------------------------------------- //
@@ -183,7 +190,7 @@ int main()
         {
           string input_entered = sdSystem.OUTPUT_INPUT.value();
 
-          sdSystem.OUTPUT_OLLAMA_RESPONSE.add_to("ENTERED: " + input_entered, sdSystem.OUTPUT_FOCUS);
+          sdSystem.OUTPUT_OLLAMA_RESPONSE.add_to("YOU:\n     " + input_entered, sdSystem.OUTPUT_FOCUS);
           sdSystem.OUTPUT_OLLAMA_RESPONSE.seperater(sdSystem.OUTPUT_FOCUS);
 
           if (input_entered.size() > 0)
@@ -235,6 +242,9 @@ int main()
 
   // Clean up and exit.
   sdSystem.INPUT.clear_screeen();
+
+  // Remember
+  sdSystem.MEMORY.save_chat_history(sdSystem.OUTPUT_OLLAMA_RESPONSE.HISTORY);
 
   // Shutdown any open threads process
   // Restore the terminal

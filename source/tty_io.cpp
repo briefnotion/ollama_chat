@@ -4,7 +4,6 @@
 #include "tty_io.h"
 
 using namespace std;
-
 // ------------------------------------------------------------------------- //
 
 void print_XY(int X, int Y)
@@ -172,6 +171,14 @@ void TTY_OUTPUT::clean_for_print()
   }
 }
 
+void TTY_OUTPUT::record_to_history(string Text)
+{
+  if (PROPS.RECORD_HISTORY == true)
+  {
+    HISTORY.push_back(Text);
+  }
+}
+
 void TTY_OUTPUT::create(int Focus_ID)
 {
   FOCUS_ID = Focus_ID;
@@ -197,17 +204,27 @@ void TTY_OUTPUT::clear()
   ENTER_RECEIVED = false;
 }
 
-bool TTY_OUTPUT::add_to(int Character, TTY_OUTPUT_FOCUS &Output_Focus)
+bool TTY_OUTPUT::add_to(int Character, TTY_OUTPUT_FOCUS &Output_Focus, bool Record_If_Allowed)
 {
+    if (Record_If_Allowed)
+  {
+    record_to_history(string(1, static_cast<char>(Character)));
+  }
+
   CHANGED = true;
   Output_Focus.set_focus(FOCUS_ID);
   return check_char_recieived(Character);
 }
 
-void TTY_OUTPUT::add_to(string Text, TTY_OUTPUT_FOCUS &Output_Focus)
+void TTY_OUTPUT::add_to(string Text, TTY_OUTPUT_FOCUS &Output_Focus, bool Record_If_Allowed)
 {
   if (Text.size() > 0)
   {
+    if (Record_If_Allowed)
+    {
+      record_to_history(Text);
+    }
+
     OUTPUT_STRING_FOCUS_CHANGES += Text;
     OUTPUT_STRING += Text;
     CHANGED = true;
@@ -217,7 +234,8 @@ void TTY_OUTPUT::add_to(string Text, TTY_OUTPUT_FOCUS &Output_Focus)
 
 void TTY_OUTPUT::seperater(TTY_OUTPUT_FOCUS &Output_Focus)
 {
-  add_to("\n-----\n", Output_Focus);
+  record_to_history("\n");
+  add_to("\n-----\n", Output_Focus, false);
 }
 
 bool TTY_OUTPUT::pressed_enter()

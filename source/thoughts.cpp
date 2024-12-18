@@ -47,7 +47,7 @@ void THOUGHTS::process_input_stages(SYSTEM &System)
   {
     // submit request for docuentation
 
-    VECTORDB_SYSTEM.search_db_for_relevant_docs(TRAIN_OF_THOUGH.back().SUBJECT, "buildragwithpython");
+    VECTORDB_SYSTEM.search_db_for_relevant_docs(TRAIN_OF_THOUGH.back().SUBJECT, VECTORDB_API_COLLECTION_DOCUMEMTATION);
 
     TRAIN_OF_THOUGH.back().THINKING_STAGE = 1;
   }
@@ -200,7 +200,7 @@ Please make sure to keep it concise and in the specified format.
     {
       TRAIN_OF_THOUGH.back().THINKING_STAGE = 11;
       TRAIN_OF_THOUGH.back().SUBJECT.erase(0, 6);
-      VECTORDB_SYSTEM.search_db_for_relevant_docs(TRAIN_OF_THOUGH.back().SUBJECT, "buildragwithpython");
+      VECTORDB_SYSTEM.search_db_for_relevant_docs(TRAIN_OF_THOUGH.back().SUBJECT, VECTORDB_API_COLLECTION_DOCUMEMTATION);
     }
 
     else if (TRAIN_OF_THOUGH.back().SUBJECT.substr(0, 4) == "list") // List Command
@@ -214,7 +214,7 @@ Please make sure to keep it concise and in the specified format.
     {
       TRAIN_OF_THOUGH.back().THINKING_STAGE = 11;
       TRAIN_OF_THOUGH.back().SUBJECT.erase(0, 5);
-      VECTORDB_SYSTEM.submit_file_to_embed("buildragwithpython", TRAIN_OF_THOUGH.back().SUBJECT);
+      VECTORDB_SYSTEM.submit_file_to_embed(VECTORDB_API_COLLECTION_DOCUMEMTATION, TRAIN_OF_THOUGH.back().SUBJECT);
     }
 
     else if (TRAIN_OF_THOUGH.back().SUBJECT.substr(0, 5) == "erase") // List Command
@@ -300,6 +300,8 @@ void THOUGHTS::process_input(SYSTEM &System)
 
     if (TRAIN_OF_THOUGH.back().ABOUT == "new input")
     {
+      System.OUTPUT_OLLAMA_RESPONSE.add_to(" AI:\n     ", System.OUTPUT_FOCUS);
+
       if (TRAIN_OF_THOUGH.back().KEYWORD_SEARCH)
       {
         // First Check for keyword search. Run special conditions.

@@ -1,3 +1,13 @@
+0.027-241217
+  - Created Role place holders for the chat history.
+  - Chat history is being saved with date and time. 
+      No derectory existance checks are being made, so directories will need to 
+      be made:
+        string directory_name_unprocessed = "history_unprocessed/";
+        string directory_name_processed =   "history_processed/";
+      Working directory is to set at (main.cpp): 
+        sdSystem.MEMORY.PROPS.WORKING_DIRECTORY = "~/chat_api/";
+
 0.026-241216
   - Continued work on generating a maintenace mode which is working now by asking to 
       "go into maintenance mode." Established a, fairly stable, model to handle 

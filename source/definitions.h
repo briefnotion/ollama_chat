@@ -21,7 +21,7 @@
 // DEFINITIONS
 // -------------------------------------------------------------------------------------
 
-#define Revision "0.026-241216"
+#define Revision "0.027-241217"
 #define  QACODE  "Z782"
 
 // -------------------------------------------------------------------------------------
@@ -48,5 +48,9 @@
 // StupidRandom Parameters
 #define StuRNDsize              100
 
+
+// Definitions for VectorDB API Collections
+#define VECTORDB_API_COLLECTION_DOCUMEMTATION "documentation"
+#define VECTORDB_API_COLLECTION_CHAT_HISTORY  "chat_history"
 
 #endif

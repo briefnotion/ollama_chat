@@ -18,6 +18,7 @@
 #include "fled_time.h"
 #include "tty_io.h"
 #include "threading.h"
+#include "remember.h"
 
 using namespace std;
 
@@ -33,13 +34,13 @@ class SYSTEM
   public:
 
   // Main Program Sleep Timers
-  TIMED_IS_READY  SCREENIO_SLEEP_TIMER;
-  TIMED_IS_READY  OLLAMA_SLEEP_TIMER;
-  TIMED_IS_READY  EMBEDDING_SLEEP_TIMER;
-  TIMED_IS_READY  THOUGHTS_SLEEP_TIMER;
+  TIMED_IS_READY    SCREENIO_SLEEP_TIMER;
+  TIMED_IS_READY    OLLAMA_SLEEP_TIMER;
+  TIMED_IS_READY    EMBEDDING_SLEEP_TIMER;
+  TIMED_IS_READY    THOUGHTS_SLEEP_TIMER;
 
   // I/O
-  TTY_INPUT INPUT;
+  TTY_INPUT         INPUT;
   
   TTY_OUTPUT_FOCUS  OUTPUT_FOCUS;
   
@@ -48,7 +49,10 @@ class SYSTEM
   TTY_OUTPUT        OUTPUT_OLLAMA_RESPONSE;
 
   // Program Clock
-  FLED_TIME        PROGRAM_TIME;
+  FLED_TIME         PROGRAM_TIME;
+
+  // Remember
+  REMEMBER          MEMORY;
 };
 
 // ------------------------------------------------------------------------- //

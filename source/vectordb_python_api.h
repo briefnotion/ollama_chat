@@ -11,8 +11,10 @@
 #include "threading.h"
 #include "stringthings.h"
 
+// Definitions for Timers
 #define  VECTORDB_API_RESPONSE_THREAD_TIMER_DELAY   60   // This will be in frames per second (fps)
 
+// Definitions for VectorDB API Communication Handles
 #define VECTORDB_API_READY_FOR_REQUEST          0
 #define VECTORDB_API_WRITING_REQUEST            1
 //#define VECTORDB_API_REQUEST_SUBMITTED      2 

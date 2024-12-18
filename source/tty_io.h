@@ -3,7 +3,7 @@
 
 #include <iostream>
 #include <string>
-#include <vector>
+#include <deque>
 
 
 // ------------------------------------------------------------------------- //
@@ -63,6 +63,8 @@ class TTY_OUTPUT_PROPERTIES
   int POSITION_X = 0;
   int POSITION_Y = 0;
   int LINES = -1;
+
+  bool RECORD_HISTORY = false;
 };
 
 class TTY_OUTPUT
@@ -77,7 +79,7 @@ class TTY_OUTPUT
   bool ENTER_RECEIVED = false;
   bool NEEDS_REDRAW = false;
 
-  int FOCUS_ID = -1; // -1 means no focus ID
+  int FOCUS_ID = -1; // -1 means focus ID is not set.
 
   bool DRAW_TITLE = false;
 
@@ -85,9 +87,12 @@ class TTY_OUTPUT
 
   void clean_for_print();
 
+  void record_to_history(string Text);
+
   public:
 
   TTY_OUTPUT_PROPERTIES PROPS;
+  deque<string>        HISTORY;
 
   bool CHANGED = false;
 
@@ -97,8 +102,8 @@ class TTY_OUTPUT
 
   void clear();
 
-  bool add_to(int Character, TTY_OUTPUT_FOCUS &Output_Focus);
-  void add_to(string Text, TTY_OUTPUT_FOCUS &Output_Focus);
+  bool add_to(int Character, TTY_OUTPUT_FOCUS &Output_Focus, bool Record_If_Allowed = true);
+  void add_to(string Text, TTY_OUTPUT_FOCUS &Output_Focus, bool Record_If_Allowed = true);
 
   void seperater(TTY_OUTPUT_FOCUS &Output_Focus);
 

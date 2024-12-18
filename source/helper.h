@@ -603,13 +603,13 @@ int two_byte_complement_signed(unsigned char byte1, unsigned char byte2);
 //  Returns a hacked int, the system undermined.
 
 string file_format_system_time();
-// Return format "20230628_22.44.39"
+// Return format "20241218_01.41.27"
 
 string file_format_system_date();
-// Return format "20230628_22.44.39"
+// Return format -no example given
 
 string file_format_system_hour_minutes_seconds();
-// Return format "20230628_22.44.39"
+// Return format -no example given
 
 // ---------------------------------------------------------------------------------------
 

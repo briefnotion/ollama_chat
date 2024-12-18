@@ -23,12 +23,16 @@ find_package(nlohmann_json REQUIRED)
 # Find the OpenSSL package
 find_package(OpenSSL REQUIRED)
 
+# Find Boost
+find_package(Boost 1.65 REQUIRED COMPONENTS filesystem)
+
 # Find the OllamaHPP package
 find_path(OllamaHPP_INCLUDE_DIR NAMES ollama.hpp HINTS ../../ollama-hpp/singleheader)
 
 include_directories(
     ${OllamaHPP_INCLUDE_DIR}
     ${HTTPLIB_INCLUDE_DIR} 
+    ${Boost_INCLUDE_DIRS}
 )
 
 # Create a target for files that include ollama.hpp with non-strict options
@@ -56,6 +60,8 @@ add_executable(chatapi
     tty_io.cpp
     fled_time.cpp
     threading.cpp
+    rasapi.cpp
+    remember.cpp
 )
 
 target_include_directories(chatapi PRIVATE
@@ -81,4 +87,5 @@ target_link_libraries(chatapi PRIVATE
     OpenSSL::SSL 
     OpenSSL::Crypto
     ollama_files
+    ${Boost_LIBRARIES}
 )
