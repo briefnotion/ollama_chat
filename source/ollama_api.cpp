@@ -487,7 +487,7 @@ void OLLAMA_API::process(TTY_OUTPUT &Output, TTY_OUTPUT_FOCUS &Focus)
       // Closing
       Output.seperater(Focus);
     }
-    set_status(OLLAMA_API_READY_FOR_REQUEST);
+    set_status(OLLAMA_API_READY_TO_GATHER);
   }
 
   check_response_done();

@@ -26,6 +26,9 @@ class REMEMBER
   REMEMBER_PROPERTIES PROPS;
   void save_chat_history(deque<string> &chat_history);
 
+  string load_opening();
+  void save_closing(string Closing);
+
 };
 
 // ------------------------------------------------------------------------- //

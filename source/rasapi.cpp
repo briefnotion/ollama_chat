@@ -396,6 +396,16 @@ string file_to_string(string Dir_Filename, bool &Success)
 
   string File_String = "";
 
+  // Expand ~ to home directory
+  if (Dir_Filename[0] == '~') 
+  {
+    const char* home = getenv("HOME");
+    if (home) 
+    {
+      Dir_Filename = string(home) + Dir_Filename.substr(1);
+    }
+  }
+
   bool booSuccess = false;
   bool booActive = false;
 

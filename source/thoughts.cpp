@@ -55,6 +55,8 @@ void THOUGHTS::process_input_stages(SYSTEM &System)
   {
     if (VECTORDB_SYSTEM.get_status() == VECTORDB_API_RESPONSE_READY_TO_GATHER)
     {
+      TRAIN_OF_THOUGH.back().THINKING_STAGE =  2;
+
       string gathered_documents = "";
       if (VECTORDB_SYSTEM.get_gathered_documents(gathered_documents))
       {
@@ -66,6 +68,13 @@ void THOUGHTS::process_input_stages(SYSTEM &System)
       {
         OLLAMA_SYSTEM.submit_question(TRAIN_OF_THOUGH.back().SUBJECT);
       }
+    }
+  }
+  else if (TRAIN_OF_THOUGH.back().THINKING_STAGE == 2)
+  {
+    if (OLLAMA_SYSTEM.get_status() == OLLAMA_API_READY_TO_GATHER)
+    {
+      OLLAMA_SYSTEM.set_status(OLLAMA_API_READY_FOR_REQUEST);
 
       TRAIN_OF_THOUGH.back().RESOLUTION.RESOLUTION_SIMPLE = 99;
       TRAIN_OF_THOUGH.back().RESOLUTION.RESOLOLUTION_FULL = OLLAMA_SYSTEM.RESPONSE_FULL;
@@ -86,8 +95,10 @@ void THOUGHTS::process_simple_ask_stages(SYSTEM &System)
   }
   else if (TRAIN_OF_THOUGH.back().THINKING_STAGE == 1)
   {
-    if (OLLAMA_SYSTEM.get_status() == OLLAMA_API_READY_FOR_REQUEST)
+    if (OLLAMA_SYSTEM.get_status() == OLLAMA_API_READY_TO_GATHER)
     {
+      OLLAMA_SYSTEM.set_status(OLLAMA_API_READY_FOR_REQUEST);
+
       TRAIN_OF_THOUGH.back().RESOLUTION.RESOLOLUTION_FOUND = true;
       TRAIN_OF_THOUGH.back().RESOLUTION.RESOLOLUTION_FULL = OLLAMA_SYSTEM.get_complete_text_response();
       TRAIN_OF_THOUGH.back().RESOLUTION.CHANGED = true;
@@ -115,7 +126,7 @@ void THOUGHTS::process_maintenance_mode_stages(SYSTEM &System)
   if (TRAIN_OF_THOUGH.back().THINKING_STAGE == 0)
   {
     TRAIN_OF_THOUGH.back().THINKING_STAGE = 1;
-    simple_ask(TRAIN_OF_THOUGH.back().SUBJECT, "enter the maintenance system");
+    interact_simple_ask(TRAIN_OF_THOUGH.back().SUBJECT, "enter the maintenance system");
   }
   else if (TRAIN_OF_THOUGH.back().THINKING_STAGE == 1)
   {
@@ -175,7 +186,18 @@ Please make sure to keep it concise and in the specified format.
 
     OLLAMA_SYSTEM.submit_question(introduction);
   }
-  else if(TRAIN_OF_THOUGH.back().THINKING_STAGE == 1) // Find exit or process commands
+
+  else if(TRAIN_OF_THOUGH.back().THINKING_STAGE == 1) // clear previous gather request
+  {
+    if (OLLAMA_SYSTEM.get_status() == OLLAMA_API_READY_TO_GATHER ||
+        OLLAMA_SYSTEM.get_status() == OLLAMA_API_READY_FOR_REQUEST)
+    {
+      TRAIN_OF_THOUGH.back().THINKING_STAGE = 2;
+      OLLAMA_SYSTEM.set_status(OLLAMA_API_READY_FOR_REQUEST);
+    }
+  }
+
+  else if(TRAIN_OF_THOUGH.back().THINKING_STAGE == 2) // Find exit or process commands
   {
     if (OLLAMA_SYSTEM.get_status() == OLLAMA_API_READY_FOR_REQUEST)
     {
@@ -184,7 +206,7 @@ Please make sure to keep it concise and in the specified format.
         if (keyword_search(TRAIN_OF_THOUGH.back().SUBJECT, {"exit"}))
         {
           TRAIN_OF_THOUGH.back().THINKING_STAGE = 99;
-          simple_ask(TRAIN_OF_THOUGH.back().SUBJECT, "exit the maintenance mode");
+          interact_simple_ask(TRAIN_OF_THOUGH.back().SUBJECT, "exit the maintenance mode");
         }
         else 
         {
@@ -193,9 +215,9 @@ Please make sure to keep it concise and in the specified format.
       }
     }
   }
+
   else if(TRAIN_OF_THOUGH.back().THINKING_STAGE == 10)  // Process Commands
   {
-
     if (TRAIN_OF_THOUGH.back().SUBJECT.substr(0, 6) == "search")    // Search Command
     {
       TRAIN_OF_THOUGH.back().THINKING_STAGE = 11;
@@ -232,14 +254,15 @@ Please make sure to keep it concise and in the specified format.
     }
 
   }
+
   else if(TRAIN_OF_THOUGH.back().THINKING_STAGE == 11)  // Clear
   {
     TRAIN_OF_THOUGH.back().SUBJECT = "";
     TRAIN_OF_THOUGH.back().THINKING_STAGE = 12;
   }
+
   else if(TRAIN_OF_THOUGH.back().THINKING_STAGE == 12)  // Wait for Command Response
   {
-
     if (VECTORDB_SYSTEM.get_status() == VECTORDB_API_RESPONSE_READY_TO_GATHER)
     {
       TRAIN_OF_THOUGH.back().SUBJECT = "";
@@ -265,12 +288,12 @@ Please make sure to keep it concise and in the specified format.
   {
     if (RESOLUTION_BUFFER.CHANGED)
     {
-      if (RESOLUTION_BUFFER.RESOLUTION_SIMPLE == 1)
+      if (RESOLUTION_BUFFER.RESOLUTION_SIMPLE == 1)     // If answered yes, exit cycle
       {
         System.OUTPUT_OLLAMA_RESPONSE.add_to("   *---- EXITING MAINTENANCE MODE CYCLE\n", System.OUTPUT_FOCUS);
-        TRAIN_OF_THOUGH.back().RESOLUTION.RESOLOLUTION_FOUND = true;
+        TRAIN_OF_THOUGH.back().THINKING_STAGE = 1000;
       }
-      else
+      else                                              // if answered anything else, go to process command
       {
         TRAIN_OF_THOUGH.back().THINKING_STAGE = 10;
       }
@@ -280,7 +303,39 @@ Please make sure to keep it concise and in the specified format.
   }
   else
   {
+    if (OLLAMA_SYSTEM.get_status() == OLLAMA_API_READY_TO_GATHER)
+    {
+      OLLAMA_SYSTEM.set_status(OLLAMA_API_READY_FOR_REQUEST);
+    }
+
     TRAIN_OF_THOUGH.back().RESOLUTION.RESOLOLUTION_FOUND = true;
+  }
+}
+
+void THOUGHTS::process_in_conclusion_mode_stages(SYSTEM &System)
+{
+  if (TRAIN_OF_THOUGH.back().THINKING_STAGE == 0)
+  {
+    // submit request for docuentation
+
+    //VECTORDB_SYSTEM.search_db_for_relevant_docs(TRAIN_OF_THOUGH.back().SUBJECT, VECTORDB_API_COLLECTION_DOCUMEMTATION);
+
+    TRAIN_OF_THOUGH.back().THINKING_STAGE = 1;
+  }
+  else if (TRAIN_OF_THOUGH.back().THINKING_STAGE == 1)
+  {
+    TRAIN_OF_THOUGH.back().THINKING_STAGE = 2;
+    OLLAMA_SYSTEM.submit_question(TRAIN_OF_THOUGH.back().SUBJECT);
+  }
+  else if (TRAIN_OF_THOUGH.back().THINKING_STAGE == 2)
+  {
+    if (OLLAMA_SYSTEM.get_status() == OLLAMA_API_READY_TO_GATHER)
+    {
+      OLLAMA_SYSTEM.set_status(OLLAMA_API_READY_FOR_REQUEST);
+      CONVERSATION_CLOSING = OLLAMA_SYSTEM.get_complete_text_response();
+      CONVERSATION_CLOSING_IS_READY = true;
+      TRAIN_OF_THOUGH.back().RESOLUTION.RESOLOLUTION_FOUND = true;
+    }
   }
 }
 
@@ -341,6 +396,10 @@ void THOUGHTS::process_thinking(SYSTEM &System)
     {
       process_maintenance_mode_cycle(System);
     }
+    else if (TRAIN_OF_THOUGH.back().ABOUT == "in conclusion")
+    {
+      process_in_conclusion_mode_stages(System);
+    }
   }
 }
 
@@ -382,7 +441,7 @@ int THOUGHTS::thought_stage()
   }
 }
 
-void THOUGHTS::simple_ask(string Question, string Am_I_Asking_You_To)
+void THOUGHTS::interact_simple_ask(string Question, string Am_I_Asking_You_To)
 {
   THOUGHT new_thought;
 
@@ -400,7 +459,7 @@ void THOUGHTS::simple_ask(string Question, string Am_I_Asking_You_To)
   TRAIN_OF_THOUGH.push_back(new_thought);
 }
 
-void THOUGHTS::input(string Input, bool Keyword_Search, string About)
+void THOUGHTS::interact_input(string Input, bool Keyword_Search, string About)
 {
   bool isolated = false;
 

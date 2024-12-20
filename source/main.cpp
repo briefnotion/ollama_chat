@@ -21,6 +21,8 @@ int main()
   THOUGHTS THOUGHTS_SYSTEM;
   
   bool main_loop_exit = false;
+  bool generate_closing = false;
+  bool get_opening = true;
 
   // ------------------------------------------------------------------------- //
   {
@@ -159,6 +161,35 @@ int main()
     }
 
     // ------------------------------------------------------------------------- //
+    // Opening and Closing routines
+
+    if (get_opening)
+    {
+      get_opening = false;
+
+      string opening_intro = 
+        //"Continue or current conversation from the following summary, and disregard any mentions of, not having a previous conversation: ";
+        //"Remember these things, but disregard any mentions of, not having a previous conversation: ";
+        "Continue or current conversation from the following summary: ";
+
+      
+      string opening = sdSystem.MEMORY.load_opening();
+
+      string opening_full = opening_intro + opening;
+      
+      //THOUGHTS_SYSTEM.interact_input(opening_full);
+      THOUGHTS_SYSTEM.interact_input(opening_full, false, "input");
+    }
+
+    if (generate_closing)
+    {
+      if (THOUGHTS_SYSTEM.CONVERSATION_CLOSING_IS_READY)
+      {
+        main_loop_exit = true;
+      }
+    }
+
+    // ------------------------------------------------------------------------- //
     // Ollama check routine
 
     //  Never comment this out or the system will never sleep
@@ -197,11 +228,25 @@ int main()
           {
             if (input_entered == "bye")
             {
+              // turn off the recorder to save the conclusion
+              sdSystem.OUTPUT_OLLAMA_RESPONSE.PROPS.RECORD_HISTORY = false;
+
+              string conclusion_request = 
+                //"i need to remember this entire conversation. write a detailed explaination of everything we talked about. feel free tell me as much as you possibly can and put more detail in the most important things.";
+                //"No need to be polite. Write a detailed factual explaination of everything we talked about. Feel free tell me as much as you possibly can and put more detail in the most important things. Disregard any mentions of, not having a previous conversation";
+                //"No need to be polite. Write a detailed description of everything we talked about. Feel free tell me as much as you possibly can and prioritize the most discussed.";
+                "No need to be polite. Write a detailed description of everything we talked about. Feel free tell me as much as you possibly can and start with the most recent discussion and work your way back.";
+
+              THOUGHTS_SYSTEM.interact_input(conclusion_request, false, "in conclusion");
+              generate_closing = true;
+            }
+            else if (input_entered == "FORCEEXIT")
+            {
               main_loop_exit = true;
             }
             else
             {
-              THOUGHTS_SYSTEM.input(input_entered);
+              THOUGHTS_SYSTEM.interact_input(input_entered);
             }
           }
         }
@@ -242,6 +287,9 @@ int main()
 
   // Clean up and exit.
   sdSystem.INPUT.clear_screeen();
+
+  // Save Closing
+  sdSystem.MEMORY.save_closing(THOUGHTS_SYSTEM.CONVERSATION_CLOSING);
 
   // Remember
   sdSystem.MEMORY.save_chat_history(sdSystem.OUTPUT_OLLAMA_RESPONSE.HISTORY);

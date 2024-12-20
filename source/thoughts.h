@@ -72,12 +72,17 @@ class THOUGHTS
   void process_simple_ask_stages(SYSTEM &System);
   void process_maintenance_mode_stages(SYSTEM &System);
   void process_maintenance_mode_cycle(SYSTEM &System);
+  void process_in_conclusion_mode_stages(SYSTEM &System);
 
   public:
   // Ollama System
   OLLAMA_API      OLLAMA_SYSTEM;
   // ChromaDB System
   VECTORDB_PYTHON_API VECTORDB_SYSTEM;
+
+  string CONVERSATION_OPENING = "";
+  string CONVERSATION_CLOSING = "";
+  bool CONVERSATION_CLOSING_IS_READY = false;
 
   private:
   void pop_latest_thought();
@@ -91,9 +96,11 @@ class THOUGHTS
   string thought_current();
   int thought_stage();
 
-  void simple_ask(string Question, string Am_I_Asking_You_To);
-  void input(string Input, bool Keyword_Search = true, string About = "new input");
+  void interact_simple_ask(string Question, string Am_I_Asking_You_To);
+  void interact_input(string Input, bool Keyword_Search = true, string About = "new input");
+
   void process(SYSTEM &System);
+
 };
 
 // ------------------------------------------------------------------------- //

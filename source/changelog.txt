@@ -1,3 +1,6 @@
+0.028-241219
+  - Created a way to recall previous conversation. It works well enough for now.
+
 0.027-241217
   - Created Role place holders for the chat history.
   - Chat history is being saved with date and time. 

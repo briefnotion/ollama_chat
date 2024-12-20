@@ -22,6 +22,7 @@
 //#define OLLAMA_API_REQUEST_SUBMITTED      2 
 #define OLLAMA_API_RESPONS_GENERATING     3
 #define OLLAMA_API_RESPONSE_DONE          4
+#define OLLAMA_API_READY_TO_GATHER        5
 
 using namespace std;
 
