@@ -50,9 +50,6 @@ class SYSTEM
 
   // Program Clock
   FLED_TIME         PROGRAM_TIME;
-
-  // Remember
-  REMEMBER          MEMORY;
 };
 
 // ------------------------------------------------------------------------- //

@@ -24,6 +24,16 @@
 using namespace std;
 
 // -------------------------------------------------------------------------------------
+void split_file_path(const string& filePath, string& directory, string& fileName, string& extension) 
+{
+  filesystem::path path(filePath);
+
+  directory = path.parent_path().string();
+  fileName = path.stem().string();
+  extension = path.extension().string();
+}
+
+// -------------------------------------------------------------------------------------
 
 bool FILE_WATCH::open()
 // Open the file for watching.
@@ -346,6 +356,16 @@ bool get_files_list(string Directory, vector<string> &List, string Only_Type)
   bool ret_sucess = false;
   List.clear();
 
+  // Expand ~ to home directory
+  if (Directory[0] == '~') 
+  {
+    const char* home = getenv("HOME");
+    if (home) 
+    {
+      Directory = string(home) + Directory.substr(1);
+    }
+  }
+
   // Using Boost
   {
     namespace fs = boost::filesystem;
@@ -385,6 +405,43 @@ bool get_files_list(string Directory, vector<string> &List, string Only_Type)
     {
       // Directory does not exist.
     }
+  }
+
+  return ret_sucess;
+}
+
+bool string_to_file(string Dir_Filename, string Value, bool Append)
+{
+  bool ret_sucess = false;
+  
+  // Expand ~ to home directory
+  if (Dir_Filename[0] == '~') 
+  {
+    const char* home = getenv("HOME");
+    if (home) 
+    {
+      Dir_Filename = string(home) + Dir_Filename.substr(1);
+    }
+  }
+
+  // Open file in either append or write mode based on the Append parameter
+  ios_base::openmode mode = Append ? ios::app : ios::out;
+  ofstream outFile(Dir_Filename, mode);
+
+  // Check if the file opened successfully
+  if (!outFile.is_open()) 
+  {
+    ret_sucess = false;
+  }
+  else
+  {
+    // Write the string value to the file
+    outFile << Value;
+
+    // Close the file
+    outFile.close();
+
+    ret_sucess = true;
   }
 
   return ret_sucess;
@@ -517,6 +574,35 @@ bool file_to_deque_string(string Dir_Filename, deque<string> &qFile)
   return booSuccess;
 }
 
+bool vector_string_to_file(string Dir_Filename, vector<string> &qFile, bool Append)
+{
+  bool ret_success = false;
+
+  // Expand ~ to home directory
+  if (Dir_Filename[0] == '~') 
+  {
+    const char* home = getenv("HOME");
+    if (home) 
+    {
+      Dir_Filename = string(home) + Dir_Filename.substr(1);
+    }
+  }
+
+  // Open file in either append or write mode based on the append parameter
+  ios_base::openmode mode = Append ? ios::app : ios::out;
+  ofstream outFile(Dir_Filename, mode);
+
+  if (outFile.is_open()) 
+  {
+    for (const auto& line : qFile) 
+    {
+      outFile << line;
+    }
+    outFile.close();
+    ret_success = true;
+  } 
+  return ret_success;
+}
 
 
 #endif

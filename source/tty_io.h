@@ -3,7 +3,7 @@
 
 #include <iostream>
 #include <string>
-#include <deque>
+#include <vector>
 
 
 // ------------------------------------------------------------------------- //
@@ -92,7 +92,7 @@ class TTY_OUTPUT
   public:
 
   TTY_OUTPUT_PROPERTIES PROPS;
-  deque<string>        HISTORY;
+  vector<string>        HISTORY;
 
   bool CHANGED = false;
 

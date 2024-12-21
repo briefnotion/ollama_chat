@@ -13,6 +13,7 @@
 #include "system.h"
 #include "ollama_api.h"
 #include "vectordb_python_api.h"
+#include "remember.h"
 
 using namespace std;
 
@@ -80,9 +81,8 @@ class THOUGHTS
   // ChromaDB System
   VECTORDB_PYTHON_API VECTORDB_SYSTEM;
 
-  string CONVERSATION_OPENING = "";
-  string CONVERSATION_CLOSING = "";
-  bool CONVERSATION_CLOSING_IS_READY = false;
+  // Remember
+  REMEMBER          MEMORY;
 
   private:
   void pop_latest_thought();

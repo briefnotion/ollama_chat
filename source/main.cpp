@@ -101,8 +101,11 @@ int main()
     sdSystem.OUTPUT_OLLAMA_RESPONSE.create(2);
 
     // Memory Processing Module
-    sdSystem.MEMORY.PROPS.WORKING_DIRECTORY = "~/chat_api/";
-    
+    THOUGHTS_SYSTEM.MEMORY.PROPS.WORKING_DIRECTORY = "~/chat_api/";
+    THOUGHTS_SYSTEM.MEMORY.PROPS.DIR_CHAT_UNPROCESSED = "history_unprocessed/";
+    THOUGHTS_SYSTEM.MEMORY.PROPS.DIR_CHAT_PROCESSED = "history_processed/";
+    THOUGHTS_SYSTEM.MEMORY.PROPS.DIR_MEMORY_FILES = "memory_files/";
+
     // Blank the screen.
     sdSystem.INPUT.clear_screeen();
   }
@@ -172,18 +175,17 @@ int main()
         //"Remember these things, but disregard any mentions of, not having a previous conversation: ";
         "Continue or current conversation from the following summary: ";
 
+      sdSystem.OUTPUT_OLLAMA_RESPONSE.add_to(THOUGHTS_SYSTEM.MEMORY.load_memory_files(), sdSystem.OUTPUT_FOCUS);
+      sdSystem.OUTPUT_OLLAMA_RESPONSE.seperater(sdSystem.OUTPUT_FOCUS);
       
-      string opening = sdSystem.MEMORY.load_opening();
+      string opening_full = opening_intro + THOUGHTS_SYSTEM.MEMORY.FILE_MANAGER.get_file("conversation_closing_previous");
 
-      string opening_full = opening_intro + opening;
-      
-      //THOUGHTS_SYSTEM.interact_input(opening_full);
       THOUGHTS_SYSTEM.interact_input(opening_full, false, "input");
     }
 
     if (generate_closing)
     {
-      if (THOUGHTS_SYSTEM.CONVERSATION_CLOSING_IS_READY)
+      if (THOUGHTS_SYSTEM.MEMORY.FILE_MANAGER.is_file_ready("conversation_closing_previous"))
       {
         main_loop_exit = true;
       }
@@ -289,10 +291,10 @@ int main()
   sdSystem.INPUT.clear_screeen();
 
   // Save Closing
-  sdSystem.MEMORY.save_closing(THOUGHTS_SYSTEM.CONVERSATION_CLOSING);
+  THOUGHTS_SYSTEM.MEMORY.save_memory_files();
 
   // Remember
-  sdSystem.MEMORY.save_chat_history(sdSystem.OUTPUT_OLLAMA_RESPONSE.HISTORY);
+  THOUGHTS_SYSTEM.MEMORY.save_chat_history(sdSystem.OUTPUT_OLLAMA_RESPONSE.HISTORY);
 
   // Shutdown any open threads process
   // Restore the terminal

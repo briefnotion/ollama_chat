@@ -20,18 +20,6 @@ bool keyword_search(const string &Input, initializer_list<string> Words)
 
 // ------------------------------------------------------------------------- //
 
-/*
-void THOUGHT::clear_thoughts()
-{
-  THINKING = false;
-  ABOUT = "";
-  THINKING_STAGE = -1;      // Stage of Process. -1 = off
-  SUBJECT = "";    
-}
-*/
-
-// ------------------------------------------------------------------------- //
-
 void RESOLUTION_RESULTS::clear()
 {
   CHANGED = false;         // Set to false after read to avoid re-reading if not changed
@@ -332,8 +320,15 @@ void THOUGHTS::process_in_conclusion_mode_stages(SYSTEM &System)
     if (OLLAMA_SYSTEM.get_status() == OLLAMA_API_READY_TO_GATHER)
     {
       OLLAMA_SYSTEM.set_status(OLLAMA_API_READY_FOR_REQUEST);
-      CONVERSATION_CLOSING = OLLAMA_SYSTEM.get_complete_text_response();
-      CONVERSATION_CLOSING_IS_READY = true;
+      
+      MEMORY_FILE tmp_memory_file;
+
+      tmp_memory_file.TITLE = "conversation_closing_previous";
+      tmp_memory_file.CONTENT = OLLAMA_SYSTEM.get_complete_text_response();
+      tmp_memory_file.IS_READY = true;
+
+      MEMORY.FILE_MANAGER.add_file(tmp_memory_file);
+
       TRAIN_OF_THOUGH.back().RESOLUTION.RESOLOLUTION_FOUND = true;
     }
   }

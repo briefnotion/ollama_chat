@@ -1,3 +1,7 @@
+0.029-241220
+  - Created a simple memory file manager, as a way to store text to be unchanged across, 
+      and during, multiple sessions.
+
 0.028-241219
   - Created a way to recall previous conversation. It works well enough for now.
 

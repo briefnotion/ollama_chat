@@ -10,11 +10,44 @@
 #include "rasapi.h"
 
 using namespace std;
+
+// ------------------------------------------------------------------------- //
+
+class MEMORY_FILE
+{
+  private:
+
+  public:
+  string TITLE = "";
+  string CONTENT = "";
+  bool IS_READY = false;
+};
+
+class MEMORY_FILE_MANAGER
+{
+  vector<MEMORY_FILE> FILES;
+
+  int find_file(string Title);      // returns pos of file in vector array.
+
+  public:
+
+  bool is_file_ready(string Title); // returns false if not found or false
+  string get_file(string Title);    // searchs and returns CONTENT
+  void add_file(MEMORY_FILE File);  // adds or modifies a file
+  //void remove_file(string Title);   // unimplemented.
+
+  string load_all_memory_files(string Directory);   // loads all memory files from disk.
+  bool save_all_memory_files(string Directory);     // saves all memory files to disk.
+};
+
 // ------------------------------------------------------------------------- //
 class REMEMBER_PROPERTIES
 {
   public:
   string WORKING_DIRECTORY = "";
+  string DIR_CHAT_UNPROCESSED = "";
+  string DIR_CHAT_PROCESSED = "";
+  string DIR_MEMORY_FILES = "";
 };
 
 class REMEMBER
@@ -24,11 +57,12 @@ class REMEMBER
   public:
 
   REMEMBER_PROPERTIES PROPS;
-  void save_chat_history(deque<string> &chat_history);
+  MEMORY_FILE_MANAGER FILE_MANAGER;
 
-  string load_opening();
-  void save_closing(string Closing);
+  void save_chat_history(vector<string> &chat_history);
 
+  string load_memory_files();
+  void save_memory_files();
 };
 
 // ------------------------------------------------------------------------- //

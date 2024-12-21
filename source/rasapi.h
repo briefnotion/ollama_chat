@@ -27,6 +27,7 @@
 #include <time.h>
 #include <deque>
 #include <cstdlib> // For getenv
+#include <filesystem>
 
 // Boost libraries
 #include <boost/filesystem.hpp>
@@ -34,6 +35,11 @@
 using namespace std;
 
 // -------------------------------------------------------------------------------------
+
+void split_file_path(const string& filePath, string& directory, string& fileName, string& extension);
+
+// -------------------------------------------------------------------------------------
+
 class FILE_WATCH_Properties
 // Properties (duh)
 {
@@ -107,21 +113,29 @@ bool check_create_working_dir(string Directory, bool Create);
 // Not Coded
 
 bool get_files_list(string Directory, vector<string> &List, string Only_Type);
-// returns false if no files found.
+// Returns false if no files found.
+
+bool string_to_file(string Dir_Filename, string Value, bool Append);
+// Opens and saves a string into a file with append option
+// Returns false if failed.
 
 string file_to_string(string Dir_Filename, bool &Success);
 // Opens and loads a file to return as a string.
-// Reurns Success true false value.
+// Returns Success true false value.
 
 string file_to_string(string Dir_Filename);
 // Opens and loads a file to return as a string.
 
 bool deque_string_to_file(string Dir_Filename, deque<string> &qFile, bool Append);
 // Opens and saves a dequed string into a file with append option
-// Reurns false if failed.
+// Returns false if failed.
 
 bool file_to_deque_string(string Dir_Filename, deque<string> &qFile);
 // Opens and saves a dequed string into a file with append option
-// Reurns false if failed.
+// Returns false if failed.
+
+bool vector_string_to_file(string Dir_Filename, vector<string> &qFile, bool Append);
+// Opens and saves a vector string into a file with append option
+// Returns false if failed.
 
 #endif

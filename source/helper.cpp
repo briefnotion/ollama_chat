@@ -328,7 +328,7 @@ bool TRUTH_CATCH::has_truth()
 }
 
   void FALSE_CATCH::catch_false(bool Value)
-// Sets HAS_TRUTH = true if Value is true.
+// Sets HAS_FALSE = true if Value is false.
 {
   if (Value == false)
   {
@@ -337,9 +337,9 @@ bool TRUTH_CATCH::has_truth()
 }
 
 bool FALSE_CATCH::has_false()
-// Returns true a true value was caught in the catch truth routine.
-//  Resets HAS_TRUTH = false after called.
-// Returns if all catch_truths were false.
+// Returns true if a false value was caught in the catch false routine.
+//  Resets HAS_FALSE = false after called.
+// Returns false if all catch_false were true.
 {
   if (HAS_FALSE == true)
   {

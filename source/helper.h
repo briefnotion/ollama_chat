@@ -233,9 +233,9 @@ class FALSE_CATCH
   // Sets HAS_FALSE = true if Value is false.
 
   bool has_false();
-  // Returns true a false value was caught in the catch false routine.
+  // Returns true if a false value was caught in the catch false routine.
   //  Resets HAS_FALSE = false after called.
-  // Returns false if all catch_truths were true.
+  // Returns false if all catch_false were true.
 };
 
 class BOOL_WITH_OVERRIDE
