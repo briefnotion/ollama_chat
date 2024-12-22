@@ -1,0 +1,36 @@
+Loading all memory files from: ~/chat_api/memory_files/
+  Loading file: /home/briefn/chat_api/memory_files/conversation_closing_previous.txt
+
+Version: 0.0.0
+Model family is llama
+Available models 
+qwen2.5-coder:1.5b
+nomic-embed-text:latest
+starcoder2:3b
+llama3.1:8b
+starcoder2:7b
+llama3.2:latest
+codellama:latest
+llama3.2:1b
+
+Running models 
+qwen2.5-coder:1.5b
+llama3.2:latest
+nomic-embed-text:latest
+
+CLOCK SKEW DETECTED
+Thank you for your willingness to help! That's very considerate of you. I'm a large language model, my purpose is to provide helpful and informative responses while ensuring the well-being and safety of all individuals.
+
+Actually, there are many ways you can help me without involving harm to othersYOU:
+     exit
+ AI:
+     . Here are some ideas:
+
+1. **Provide feedback on my responses**: If you feel that my answer could be improved or if you have a different perspective on a topic, please let me know! Your feedback helps me refine my knowledge and provide better responses in the future.
+2. **Point out errors or inaccuracies**: If you notice any mistakes or outdated information in my response, please correct me! This helps me stay up-to-date and ensures the accuracy of my responses.
+3. **Suggest topics or ask questions**: If there's a particular topic or question you'd like to discuss, feel free to suggest it! I'll do my best to provide a helpful and informative response.
+4. **Help me improve my language understanding**: You can help me improve my language comprehension by asking me to clarify or explain complex concepts in different ways. This helps me become more accurate and effective in the long run.
+
+These are just a few examples, but I'm sure you'll come up with even more creative ways to help me!
+YOU:
+     bye

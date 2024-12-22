@@ -60,7 +60,8 @@ void THOUGHTS::process_input_stages(SYSTEM &System)
   }
   else if (TRAIN_OF_THOUGH.back().THINKING_STAGE == 2)
   {
-    if (OLLAMA_SYSTEM.get_status() == OLLAMA_API_READY_TO_GATHER)
+    if (OLLAMA_SYSTEM.get_status() == OLLAMA_API_READY_TO_GATHER || 
+        OLLAMA_SYSTEM.get_status() == OLLAMA_API_READY_FOR_REQUEST)
     {
       OLLAMA_SYSTEM.set_status(OLLAMA_API_READY_FOR_REQUEST);
 
@@ -144,33 +145,14 @@ void THOUGHTS::process_maintenance_mode_cycle(SYSTEM &System)
   {
     System.OUTPUT_OLLAMA_RESPONSE.add_to("   *---- ENTERING MAINTENANCE MODE CYCLE\n", System.OUTPUT_FOCUS);
 
+    OLLAMA_SYSTEM.context_pause();
     TRAIN_OF_THOUGH.back().THINKING_STAGE = 1;
     TRAIN_OF_THOUGH.back().ISOLATE_INPUT_TO_THOUGHT = true;
     TRAIN_OF_THOUGH.back().SUBJECT = "";
 
     //string introduction = "Say: You are now entering the maintenance system. Then provide the following list of commands related to maintaining a ChromaDB database and Retrieval Augmented Generation, also known as RAG support: embeding, import, erase, list";
 
-    string introduction = R"(
-Ollama, please list the ChromaDB commands for Retrieval Augmented Generation (RAG) support as follows:
-
-1. **search <search terms or sentence>**
-   - Searches the vector database for related documents.
-   - **Example**: `search tell me about the quantumflux capacitor`
-
-2. **embed <filename or directory>**
-   - Imports all files, or a single file, into the vector database.
-   - **Example**: `embed ~/testdocs`
-
-3. **erase**
-   - Erases all entries in the vector database.
-   - **Example**: `erase`
-
-4. **list**
-   - Lists all entries in the vector database.
-   - **Example**: `list`
-
-Please make sure to keep it concise and in the specified format.
-)";
+    string introduction = MEMORY.FILE_MANAGER.get_file("maintenance_mode_introduction");
 
     OLLAMA_SYSTEM.submit_question(introduction);
   }
@@ -180,6 +162,7 @@ Please make sure to keep it concise and in the specified format.
     if (OLLAMA_SYSTEM.get_status() == OLLAMA_API_READY_TO_GATHER ||
         OLLAMA_SYSTEM.get_status() == OLLAMA_API_READY_FOR_REQUEST)
     {
+      TRAIN_OF_THOUGH.back().JUMP_ISOLATE_INPUT_TO_THOUGHT = false;
       TRAIN_OF_THOUGH.back().THINKING_STAGE = 2;
       OLLAMA_SYSTEM.set_status(OLLAMA_API_READY_FOR_REQUEST);
     }
@@ -236,9 +219,13 @@ Please make sure to keep it concise and in the specified format.
 
     else                                                            // Unknown Command
     {
-      System.OUTPUT_OLLAMA_RESPONSE.add_to("   *---- UNKNOWN COMMAND\n", System.OUTPUT_FOCUS);
+      string new_question = TRAIN_OF_THOUGH.back().SUBJECT;
+      
       TRAIN_OF_THOUGH.back().SUBJECT = "";
       TRAIN_OF_THOUGH.back().THINKING_STAGE = 1;
+      TRAIN_OF_THOUGH.back().JUMP_ISOLATE_INPUT_TO_THOUGHT = true;
+
+      interact_input(new_question);
     }
 
   }
@@ -278,6 +265,7 @@ Please make sure to keep it concise and in the specified format.
     {
       if (RESOLUTION_BUFFER.RESOLUTION_SIMPLE == 1)     // If answered yes, exit cycle
       {
+        OLLAMA_SYSTEM.context_unpause();
         System.OUTPUT_OLLAMA_RESPONSE.add_to("   *---- EXITING MAINTENANCE MODE CYCLE\n", System.OUTPUT_FOCUS);
         TRAIN_OF_THOUGH.back().THINKING_STAGE = 1000;
       }
@@ -436,6 +424,14 @@ int THOUGHTS::thought_stage()
   }
 }
 
+bool THOUGHTS::isolated()
+{
+  if (thought_count() == 0)
+  {
+    return TRAIN_OF_THOUGH.back().ISOLATE_INPUT_TO_THOUGHT;
+  }
+}
+
 void THOUGHTS::interact_simple_ask(string Question, string Am_I_Asking_You_To)
 {
   THOUGHT new_thought;
@@ -458,22 +454,33 @@ void THOUGHTS::interact_input(string Input, bool Keyword_Search, string About)
 {
   bool isolated = false;
 
+  // Process as new thought if left blank.
+  if (About == "")
+  {
+    About = "new input";
+  }
+
+  // Stay Isollated if ISOLATE_INPUT_TO_THOUGHT, or disregard.
   if (thought_count() > 0)
   {
-    if (TRAIN_OF_THOUGH.back().ISOLATE_INPUT_TO_THOUGHT == true)
+    if (TRAIN_OF_THOUGH.back().JUMP_ISOLATE_INPUT_TO_THOUGHT == false)
     {
-      isolated = true;
+      if (TRAIN_OF_THOUGH.back().ISOLATE_INPUT_TO_THOUGHT == true)
+      {
+        isolated = true;
+      }
     }
   }
 
+  // Only modify the current thought if isolated
   if (isolated)
   {
     INPUT_CHANGED = true;
-    //TRAIN_OF_THOUGH.back().THINKING = true;
     TRAIN_OF_THOUGH.back().SUBJECT = Input;
   }
   else
   {
+    // Create a new thought.
     THOUGHT new_thought;
 
     INPUT_CHANGED = true;
@@ -487,6 +494,11 @@ void THOUGHTS::interact_input(string Input, bool Keyword_Search, string About)
 
     TRAIN_OF_THOUGH.push_back(new_thought);
   }
+}
+
+void THOUGHTS::interact_input(string Input)
+{
+  interact_input(Input, true, "");
 }
 
 void THOUGHTS::process(SYSTEM &System)

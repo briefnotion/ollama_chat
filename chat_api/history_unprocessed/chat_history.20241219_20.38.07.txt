@@ -1,0 +1,37 @@
+ AI:
+     Version: 0.0.0
+Model family is llama
+Available models 
+qwen2.5-coder:1.5b
+nomic-embed-text:latest
+starcoder2:3b
+llama3.1:8b
+starcoder2:7b
+llama3.2:latest
+codellama:latest
+llama3.2:1b
+
+Running models 
+qwen2.5-coder:1.5b
+llama3.2:latest
+nomic-embed-text:latest
+
+CLOCK SKEW DETECTED
+YOU:
+     what was the first thing said?
+ AI:
+     I don't have a specific answer, as I'm an AI and our conversation just started. However, I can provide some insight into the origins of language.
+
+The question "What was the first thing said?" is often attributed to linguists and historians who study the evolution of human language. Unfortunately, there is no definitive answer to this question, as the earliest forms of human communication likely predate written records and are difficult to recover.
+
+However, some scientists have made educated guesses based on fossil evidence, genetic analysis, and comparative studies of languages. For example:
+
+1. **Evolutionary linguistics**: Some researchers believe that language may have evolved from a system of gestural communication, such as pantomiming or pointing, which would have been used by early humans to convey simple messages.
+2. **Symbolic thinking**: Others propose that the first forms of language were based on symbolic representation, using sounds, gestures, or other markers to represent concepts or objects.
+3. **Proto-languages**: Linguists have identified several proto-languages, such as Proto-Indo-European (PIE), which is thought to be the ancestor of many European and Asian languages. PIE is believed to have emerged around 4000-3000 BCE.
+
+While we can't pinpoint a single "first thing" said, it's clear that language has been an essential part of human communication for thousands of years, shaping our culture, societies, and understanding of the world around us.
+
+Would you like me to expand on this topic or explore other aspects of linguistics?
+YOU:
+     bye

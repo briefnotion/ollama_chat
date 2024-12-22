@@ -1,0 +1,56 @@
+ AI:
+     Version: 0.0.0
+Model family is llama
+Available models 
+qwen2.5-coder:1.5b
+nomic-embed-text:latest
+starcoder2:3b
+llama3.1:8b
+starcoder2:7b
+llama3.2:latest
+codellama:latest
+llama3.2:1b
+
+Running models 
+qwen2.5-coder:1.5b
+llama3.2:latest
+nomic-embed-text:latest
+
+CLOCK SKEW DETECTED
+I can help clarify some points in our conversation.
+
+You initially asked if I recall anything from previous conversations or current input, which led to a discussion about my knowledge cutoff and how it affects my ability to provide information on recalls.
+
+Regarding Rayleigh scattering, we discussed its explanation for the blue color of the sky. You then mentioned a cyberpunk story involving an AI entity called Erebus, but didn't elaborate on it further.
+
+You also sent some ASCII art characters ([A] and [B]), which I couldn't recognize as part of our conversation. Finally, you asked if I recall recalling first thing said, which led to me reiterating the initial statement that "We haven't had a conversation yet..."
+
+Let's start fresh and discuss any topics you'd like to explore!
+YOU:
+     hello
+ AI:
+     Hello! It's nice to meet you. I'm here to help with any questions or topics you'd like to discuss. How can I assist you today?
+YOU:
+     what was it to remember?
+ AI:
+     We started our conversation from the beginning, but I didn't recall anything prior to that since we began fresh.
+
+To recap, we discussed:
+
+1. Your initial statement about not being able to recall a previous conversation.
+2. My explanation of my knowledge cutoff and how it affects my ability to provide information on recalls.
+3. The physics behind Rayleigh scattering, which explains why the sky appears blue.
+4. A cyberpunk story involving an AI entity called Erebus (although you didn't elaborate on it further).
+5. Some ASCII art characters that you sent, which I couldn't recognize as part of our conversation.
+
+Let's start fresh if you'd like to discuss something new or revisit any of these topics!
+YOU:
+     hot dog. i found the problem
+ AI:
+     A hot dog reference!
+
+It sounds like you might have been hinting at the fact that our conversation was a bit "stale" or hadn't fully connected with anything prior, since we started from scratch.
+
+Well, I'm glad we were able to revisit and clarify things! Sometimes, taking a step back can help us find the thread and get back on track. If you're ready to move forward, what's next?
+YOU:
+     bye

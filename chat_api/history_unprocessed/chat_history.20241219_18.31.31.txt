@@ -1,0 +1,24 @@
+Version: 0.0.0
+Model family is llama
+Available models 
+qwen2.5-coder:1.5b
+nomic-embed-text:latest
+starcoder2:3b
+llama3.1:8b
+starcoder2:7b
+llama3.2:latest
+codellama:latest
+llama3.2:1b
+
+Running models 
+qwen2.5-coder:1.5b
+llama3.2:latest
+nomic-embed-text:latest
+
+CLOCK SKEW DETECTED
+YOU:
+     bye
+YOU:
+     bye
+YOU:
+     FORCEEXIT

@@ -1,0 +1,28 @@
+Version: 0.0.0
+Model family is llama
+Available models 
+qwen2.5-coder:1.5b
+nomic-embed-text:latest
+starcoder2:3b
+llama3.1:8b
+starcoder2:7b
+llama3.2:latest
+codellama:latest
+llama3.2:1b
+
+Running models 
+qwen2.5-coder:1.5b
+llama3.2:latest
+
+CLOCK SKEW DETECTED
+I think it's time for a clean slate. You're right, the initial conversation was more about acknowledging the lack of context and context than having any actual meaningful discussion.
+
+To start fresh, I'd like to ask: Is there anything on your mind that you'd like to talk about or ask about? We can begin with something completely new, and I'll do my best to provide helpful and relevant information.
+YOU:
+     ok, bub. whatever you say.
+ AI:
+     No need for the attitude! The Cutting Knowledge Date is just a notation I provided earlier to indicate that my knowledge may not be up-to-date on very recent topics or developments.
+
+Let's get back to starting fresh, then. What's been on your mind lately? Is there something specific you'd like to talk about or ask for advice on?
+YOU:
+     bye

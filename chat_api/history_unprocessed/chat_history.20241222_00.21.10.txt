@@ -1,0 +1,36 @@
+Loading all memory files from: ~/chat_api/memory_files/
+  Loading file: /home/briefn/chat_api/memory_files/conversation_closing_previous.txt
+
+Version: 0.0.0
+Model family is llama
+Available models 
+qwen2.5-coder:1.5b
+nomic-embed-text:latest
+starcoder2:3b
+llama3.1:8b
+starcoder2:7b
+llama3.2:latest
+codellama:latest
+llama3.2:1b
+
+Running models 
+qwen2.5-coder:1.5b
+llama3.2:latest
+nomic-embed-text:latest
+
+CLOCK SKEW DETECTED
+Let's start fresh. Since we haven't had any previous conversation, how can I assist you today? Is there something on your mind that you'd like to talk about or ask for help with? I'm here to listen and provide information.
+YOU:
+     hello.
+ AI:
+     Hello! It's nice to meet you. Is there something specific you'd like to chat about, or are you just looking to pass the time? I can offer suggestions for conversation topics or activities if you're interested.
+YOU:
+     do you have a giblet number?
+ AI:
+     A "giblet number" is not a standard term in my knowledge base. Could you please provide more context or information about what you mean by a "giblet number"? Is it related to cooking, mathematics, or something else entirely? I'll do my best to help clarify things for you!
+YOU:
+     thats ok, thank you.
+ AI:
+     No need to apologize. Giblet numbers are indeed a obscure term, and I couldn't find any reliable sources confirming their existence or meaning. If you'd like to share what led you to ask about giblet numbers, I'm here to listen and try to help if I can!
+YOU:
+     bye

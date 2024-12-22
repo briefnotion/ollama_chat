@@ -53,6 +53,7 @@ class THOUGHT
 
   bool KEYWORD_SEARCH = true;
   bool ISOLATE_INPUT_TO_THOUGHT = false;
+  bool JUMP_ISOLATE_INPUT_TO_THOUGHT = false;
 
   RESOLUTION_RESULTS RESOLUTION;
 };
@@ -95,9 +96,20 @@ class THOUGHTS
   int thought_count();
   string thought_current();
   int thought_stage();
+  bool isolated();
 
   void interact_simple_ask(string Question, string Am_I_Asking_You_To);
-  void interact_input(string Input, bool Keyword_Search = true, string About = "new input");
+  // Ask ollama to return yes no or maybe.
+  // Results are placed in the RESOLUTION_BUFFER before resolving.
+  // This is an internal command.
+  
+  void interact_input(string Input, bool Keyword_Search, string About);
+  void interact_input(string Input);
+  // Creates a new thought and adds it to the train of thoughts
+  // Defaults:
+  //  Keyword_Search = true
+  //  About = "new input"
+
 
   void process(SYSTEM &System);
 

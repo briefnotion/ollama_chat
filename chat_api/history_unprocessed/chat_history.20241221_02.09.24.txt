@@ -1,0 +1,23 @@
+Loading all memory files from: ~/chat_api/memory_files/
+  Loading file: /home/briefn/chat_api/memory_files/conversation_closing_previous.txt
+Continue or current conversation from the following summary: Version: 0.0.0
+Model family is llama
+Available models 
+qwen2.5-coder:1.5b
+nomic-embed-text:latest
+starcoder2:3b
+llama3.1:8b
+starcoder2:7b
+llama3.2:latest
+codellama:latest
+llama3.2:1b
+
+Running models 
+qwen2.5-coder:1.5b
+llama3.2:latest
+nomic-embed-text:latest
+
+CLOCK SKEW DETECTED
+I'd be happy to continue a conversation. However, I don't see a summary of our conversation. Could you please provide the summary so I can pick up where we left off?
+YOU:
+     bye

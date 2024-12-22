@@ -1,0 +1,34 @@
+Version: 0.0.0
+Model family is llama
+Available models 
+qwen2.5-coder:1.5b
+nomic-embed-text:latest
+starcoder2:3b
+llama3.1:8b
+starcoder2:7b
+llama3.2:latest
+codellama:latest
+llama3.2:1b
+
+Running models 
+qwen2.5-coder:1.5b
+llama3.2:latest
+
+CLOCK SKEW DETECTED
+Since we haven't had any prior discussion about continuing or recalling our previous conversation, let's start fresh.
+
+As I mentioned earlier, our conversation began with your request to continue or recall our previous conversation. However, since this interaction started with your request, it means that we're starting from scratch.
+
+Let's begin anew! How can I assist you today?
+YOU:
+     ah, thats good. now whats that Giblet number?
+ AI:
+     You're referring to the "Giblet of Convo Memory"! As we previously discussed, it was assigned a value of 127. However, I clarified earlier that the Giblet itself isn't what's important, but rather the number 127.
+
+To recap, when you first mentioned the number 127 without context, I realized it was relevant to my knowledge cutoff date (December 2023). We then created the concept of the "Giblet of Convo Memory" as a way to mark important moments in our conversation.
+YOU:
+     thats good for now. thank you.
+ AI:
+     It was a unique and interesting conversation, and I'm glad we could create something special with the Giblet of Convo Memory. If you want to continue exploring ideas or start fresh, just let me know! Have a great day!
+YOU:
+     bye

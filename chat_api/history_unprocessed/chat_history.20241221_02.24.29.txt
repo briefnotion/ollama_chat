@@ -1,0 +1,27 @@
+Loading all memory files from: ~/chat_api/memory_files/
+  Loading file: /home/briefn/chat_api/memory_files/conversation_closing_previous.txt
+ Contents are:
+We haven't had any conversation yet, so there's nothing to summarize. Your first message was "File not found." without any context or preceding conversation. I responded by indicating that we didn't have a previous conversation to continue from.If you'd like to start a conversation now, I can summarize our discussion at the end if you'd like. What would you like to talk about?
+
+Continue or current conversation from the following summary: conversation_opening_previous not found.
+Version: 0.0.0
+Model family is llama
+Available models 
+qwen2.5-coder:1.5b
+nomic-embed-text:latest
+starcoder2:3b
+llama3.1:8b
+starcoder2:7b
+llama3.2:latest
+codellama:latest
+llama3.2:1b
+
+Running models 
+qwen2.5-coder:1.5b
+llama3.2:latest
+nomic-embed-text:latest
+
+CLOCK SKEW DETECTED
+It seems like there is no previous conversation to continue from. This is the start of our conversation. How can I assist you today?
+YOU:
+     bye

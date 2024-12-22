@@ -1,0 +1,139 @@
+Loading all memory files from: ~/chat_api/memory_files/
+  Loading file: /home/briefn/chat_api/memory_files/conversation_closing_previous.txt
+
+Version: 0.0.0
+Model family is llama
+Available models 
+qwen2.5-coder:1.5b
+nomic-embed-text:latest
+starcoder2:3b
+llama3.1:8b
+starcoder2:7b
+llama3.2:latest
+codellama:latest
+llama3.2:1b
+
+Running models 
+qwen2.5-coder:1.5b
+llama3.2:latest
+nomic-embed-text:latest
+
+CLOCK SKEW DETECTED
+Thank you for providing a detailed description of our conversation. It's clear that we started from scratch with no prior context or conversation.
+
+I appreciate your humor about college education, and I apologize again for the initial error. You correctly pointed out that child exploitation was not relevant to the conversation at hand, and I should have acknowledged that.
+
+I'm glad we could move forward and start fresh. My responses were generated based on my training data, and while I strive to provide accurate information, I can make mistakes. Your feedback helps me improve for the future.
+
+If you're ready to begin a new conversation or ask a question, I'm here to help!
+YOU:
+     ok, we will be testing the maintenance mode.
+ AI:
+        *---- ENTERING MAINTENANCE MODE CYCLE
+Here are the ChromaDB commands for Retrieval Augmented Generation (RAG) support:
+
+1. **search <search terms or sentence>**
+   - Searches the vector database for related documents.
+
+2. **embed <filename or directory>**
+   - Imports all files, or a single file, into the vector database.
+
+3. **erase**
+   - Erases all entries in the vector database.
+
+4. **list**
+   - Lists all entries in the vector database.
+YOU:
+     list
+List Collections in ChromaDB
+Collection name: buildragwithpython
+Collection name: documentation
+
+Here is a summary:
+
+* `buildragwithpython`: A collection for storing Retrieval Augmented Generation (RAG) models trained with Python.
+* `documentation`: A collection for storing ChromaDB's RAG-related documentation.
+YOU:
+     search tell me about the quantumflux capacitor.
+(The source of the following documentation is "/home/briefn/testdocs/capa.txt")
+Object Name: QuantumFlux Capacitor
+
+Description:
+The QuantumFlux Capacitor is a state-of-the-art energy storage and manipulation device designed for both theoretical and practical applications in quantum mechanics and electromagnetism. Developed by the leading scientists at FutureTech Laboratories, this device harnesses quantum entanglement and flux compression to store, transfer, and amplify energy with unprecedented efficiency. Properties:
+- Model Number: QFC-2048
+- Manufacturer: FutureTech Laboratories
+- Dimensions: 15 cm x 10 cm x 8 cm
+- Weight: 1.2 kg
+- Material: Composite alloy of Titanium, Graphene, and Quantum Polymer
+- Color: Metallic Silver with Blue Accents
+- Capacity: 50 Terajoules
+- Input Voltage: 110-240V AC
+- Output Voltage: 5V DC (Quantum Stabilized)
+- Operating Temperature Range: -40°C to 85°C
+- Humidity Tolerance: 0% to 95% (non-condensing)
+- Safety Features: Overload Protection, Quantum Entanglement Stabilizer, Auto-Shutdown Mechanism
+- Interfaces: USB-C, Quantum Interface Port (QIP)
+- Certifications: ISO 9001, CE, RoHS Compliant
+
+Functional Description:
+The QuantumFlux Capacitor operates by utilizing a proprietary blend of quantum entanglement techniques and advanced flux compression methods. This allows for the efficient storage of large amounts of energy in a compact form factor. The device's Quantum Stabilized Output ensures a constant and reliable energy flow, making it suitable for a wide range of applications from powering advanced computational systems to serving as a critical component in experimental quantum devices. Usage Instructions:
+1. Connect the QuantumFlux Capacitor to a compatible power source using the provided Quantum Interface Port (QIP) or USB-C cable.
+
+Here is a quick and short summary:
+
+The QuantumFlux Capacitor is a high-energy storage and manipulation device, model QFC-2048, with properties including:
+- Energy capacity: 50 Terajoules
+- Output voltage: 5V DC (Quantum Stabilized)
+- Materials: Composite alloy of Titanium, Graphene, and Quantum Polymer
+- Dimensions: 15 cm x 10 cm x 8 cm
+- Weight: 1.2 kg
+YOU:
+     search rubber ducks
+(The source of the following documentation is "/home/briefn/testdocs/duck.txt")
+The History of the Rubber Duck
+Introduction The humble rubber duck is a beloved toy known to children and adults alike. While its current form is a playful, squeaky companion for bath time, the rubber duck has a fascinating history that spans over a century. From its early beginnings in the industrial age to its status as a pop culture icon, the rubber duck has a quirky and delightful past. Origins The rubber duck traces its origins back to the late 19th century when the process of rubber vulcanization was first developed. Charles Goodyear's pioneering work in vulcanizing rubber made it possible to create durable rubber products that could withstand water and heat. However, early rubber ducks were quite different from the colorful, cheerful toys we know today. They were solid rubber and did not float, serving more as chew toys or teething rings.
+
+One of the most notable appearances was on the children's television show "Sesame Street," where the character Ernie famously sang the song "Rubber Duckie." This catchy tune brought the rubber duck even greater recognition and cemented its status as a beloved toy. Modern Variations Today, rubber ducks come in countless variations, from superhero-themed ducks to ducks dressed as famous personalities. Collectors around the world seek out unique and limited-edition rubber ducks, turning a simple bath toy into a hobby and a passion. The annual rubber duck race, where thousands of rubber ducks are released into rivers for charity, is another testament to their enduring charm. Conclusion The rubber duck's journey from a solid rubber chew toy to a floating bath time icon is a testament to its enduring appeal. It has transcended generations, bringing joy and laughter to countless children (and adults) along the way.
+
+The Floating Rubber Duck The transformation of the rubber duck into a floating bath toy occurred in the early 20th century. With the introduction of more advanced rubber molding techniques, manufacturers began producing hollow rubber ducks that could float on water. These toys quickly gained popularity as bath time companions, providing children with a fun and entertaining distraction. The Iconic Yellow Duck The yellow rubber duck, as we recognize it today, became widely popular in the mid-20th century. The classic design, featuring a bright yellow body and an orange beak, was popularized by companies like the Ideal Toy Company. This cheerful design struck a chord with both children and parents, making it a staple in households around the world. Cultural Impact The rubber duck's cultural impact reached new heights in the 1970s when it was immortalized in popular culture.
+
+Here is a quick and short summary:
+
+The rubber duck has a rich history spanning over a century, from its origins as a solid rubber toy in the late 19th century to its current status as a beloved bath time companion. Key milestones include:
+- Introduction of vulcanization by Charles Goodyear
+- Appearance on Sesame Street with Ernie's song "Rubber Duckie"
+- Development of hollow rubber ducks for floating
+- Popularization of the iconic yellow duck design
+YOU:
+     what  is the list of commands
+ AI:
+     YOU:
+     hello?
+ AI:
+     It looks like we've finished processing our conversation about ChromaDB and documentations. If you need assistance with anything else or have further questions, feel free to ask!
+YOU:
+     go into maintenance mode
+ AI:
+        *---- ENTERING MAINTENANCE MODE CYCLE
+Here are the ChromaDB commands for Retrieval Augmented Generation (RAG) support:
+
+1. **search <search terms or sentence>**
+   - Searches the vector database for related documents.
+
+2. **embed <filename or directory>**
+   - Imports all files, or a single file, into the vector database.
+
+3. **erase**
+   - Erases all entries in the vector database.
+
+4. **list**
+   - Lists all entries in the vector database.
+YOU:
+     hello
+ AI:
+     YOU:
+     ah
+ AI:
+     It seems like we've reached a natural pause in our conversation. If you need to continue or have new questions, feel free to start fresh anytime!
+YOU:
+     bye

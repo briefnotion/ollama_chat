@@ -145,11 +145,31 @@ int main()
 
     // ------------------------------------------------------------------------- //
 
-    processor_status_display_simple = " (ol:" + to_string(THOUGHTS_SYSTEM.OLLAMA_SYSTEM.get_status()) + ")" + 
-                                      " (db:" + to_string(THOUGHTS_SYSTEM.VECTORDB_SYSTEM.get_status()) + ")" + 
-                                      " (ct:" + to_string(THOUGHTS_SYSTEM.thought_count()) + ":" + 
-                                                THOUGHTS_SYSTEM.thought_current() + ":" + 
-                                                to_string(THOUGHTS_SYSTEM.thought_stage()) + ")";
+    processor_status_display_simple = "";
+
+    if (THOUGHTS_SYSTEM.OLLAMA_SYSTEM.get_status() > 0)
+    {
+      // Ollama System
+      processor_status_display_simple +=  " (olama status:" + to_string(THOUGHTS_SYSTEM.OLLAMA_SYSTEM.get_status()) + ")";
+    }
+    if (THOUGHTS_SYSTEM.VECTORDB_SYSTEM.get_status() > 0)
+    {
+      // VectorDB System
+      processor_status_display_simple += " (database status:" + to_string(THOUGHTS_SYSTEM.VECTORDB_SYSTEM.get_status()) + ")";
+    }
+    if (THOUGHTS_SYSTEM.thought_count() > 0)
+    {
+      // Thought Count, and Current Thought, and Thought Stage
+      processor_status_display_simple += " (thought count:" + to_string(THOUGHTS_SYSTEM.thought_count()) + 
+                                                " \"" + THOUGHTS_SYSTEM.thought_current() + 
+                                                "\" stage:" + to_string(THOUGHTS_SYSTEM.thought_stage());
+      if (THOUGHTS_SYSTEM.isolated())
+      {
+        processor_status_display_simple += " isolated ";
+      }
+
+      processor_status_display_simple += ")";
+    }
     
     if (processor.changed() || processor_status_display_simple_old != processor_status_display_simple)
     {
@@ -173,7 +193,8 @@ int main()
       string opening_intro = 
         //"Continue or current conversation from the following summary, and disregard any mentions of, not having a previous conversation: ";
         //"Remember these things, but disregard any mentions of, not having a previous conversation: ";
-        "Continue or current conversation from the following summary: ";
+        //"Continue or current conversation from the following summary: ";
+        "";
 
       sdSystem.OUTPUT_OLLAMA_RESPONSE.add_to(THOUGHTS_SYSTEM.MEMORY.load_memory_files(), sdSystem.OUTPUT_FOCUS);
       sdSystem.OUTPUT_OLLAMA_RESPONSE.seperater(sdSystem.OUTPUT_FOCUS);

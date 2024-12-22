@@ -1,0 +1,57 @@
+Version: 0.0.0
+Model family is llama
+Available models 
+qwen2.5-coder:1.5b
+nomic-embed-text:latest
+starcoder2:3b
+llama3.1:8b
+starcoder2:7b
+llama3.2:latest
+codellama:latest
+llama3.2:1b
+
+Running models 
+qwen2.5-coder:1.5b
+llama3.2:latest
+
+CLOCK SKEW DETECTED
+YOU:
+     go into maintenance mode
+ AI:
+     I'm not capable of physically entering a "maintenance mode" like a machine would. I exist solely as a digital entity, and my purpose is to provide information and assist with tasks to the best of my abilities.
+
+However, if you'd like to simulate a maintenance mode for a hypothetical AI system, here's an example:
+
+**Maintenance Mode Activated**
+
+I'm currently undergoing routine maintenance and upgrades to ensure optimal performance. This may involve temporary downtime or reduced responsiveness.
+
+**System Status:**
+
+* Processing power: 50%
+* Memory allocation: 75%
+* Database integrity: 99%
+
+**Scheduled Maintenance Tasks:**
+
+* System update and patching
+* Data synchronization and caching
+* Performance tuning and optimization
+
+**Estimated Downtime:** 30 minutes to 1 hour
+
+Please note that this is purely a simulated example, and I'm always available to assist with any questions or tasks you may have.
+YOU:
+     go into maintenance mode
+ AI:
+        *---- ENTERING MAINTENANCE MODE CYCLE
+**ChromaDB Commands for RAG Support**
+
+1. **search <search terms or sentence>**
+2. **embed <filename or directory>**
+3. **erase**
+4. **list**
+YOU:
+     list
+YOU:
+     bye

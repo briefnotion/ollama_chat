@@ -1,0 +1,32 @@
+Loading all memory files from: ~/chat_api/memory_files/
+  Loading file: /home/briefn/chat_api/memory_files/conversation_closing_previous.txt
+ Contents are:
+We haven't had any discussion yet, so there's nothing to summarize or describe. Our conversation started with your message indicating that there was no previous conversation to continue, but since then, we've only exchanged a few messages.To recap, here are the details of our conversation so far:1. Your initial message indicated that there was no "conversation_opening_previous" and asked me to continue or summarize our current conversation.2. I responded by stating that there was no previous conversation to continue and provided some generic information about my capabilities as a conversational AI.3. You then asked me to provide a detailed description of everything we talked about, which I'm happy to do now.That's the entirety of our conversation so far. If you'd like to start discussing a specific topic or ask a question, I'm here to help!
+
+Continue or current conversation from the following summary: conversation_opening_previous not found. Size: 1
+conversation_closing_previous
+Version: 0.0.0
+Model family is llama
+Available models 
+qwen2.5-coder:1.5b
+nomic-embed-text:latest
+starcoder2:3b
+llama3.1:8b
+starcoder2:7b
+llama3.2:latest
+codellama:latest
+llama3.2:1b
+
+Running models 
+qwen2.5-coder:1.5b
+llama3.2:latest
+nomic-embed-text:latest
+
+CLOCK SKEW DETECTED
+It seems that we haven't started a previous conversation yet, so there's nothing for me to continue or draw upon. How can I assist you today? Would you like to start a new conversation?
+YOU:
+     [Abye
+ AI:
+     It looks like you might have accidentally sent an emoji. Is there something you'd like to talk about or ask, or would you like to start a conversation? I'm here to help! 😊
+YOU:
+     bye

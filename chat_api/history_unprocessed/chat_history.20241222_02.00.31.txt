@@ -1,0 +1,34 @@
+Loading all memory files from: ~/chat_api/memory_files/
+  Loading file: /home/briefn/chat_api/memory_files/conversation_closing_previous.txt
+
+Version: 0.0.0
+Model family is llama
+Available models 
+qwen2.5-coder:1.5b
+nomic-embed-text:latest
+starcoder2:3b
+llama3.1:8b
+starcoder2:7b
+llama3.2:latest
+codellama:latest
+llama3.2:1b
+
+Running models 
+qwen2.5-coder:1.5b
+llama3.2:latest
+nomic-embed-text:latest
+
+CLOCK SKEW DETECTED
+Thank you for providing a detailed description of our conversation. It seems like we had a productive discussion about ChromaDB and Retrieval Augmented Generation (RAG) support.
+
+To recap, we discussed the following points:
+
+1. We explored ways to list collections in ChromaDB for RAG support.
+2. I provided a list of commands to use with ChromaDB: `search`, `embed`, `erase`, and `list`.
+3. You suggested trying the `list buildragwithpython` and `list documentation` commands, but we acknowledged that we were already in a simulated state.
+4. Before our discussion about ChromaDB commands, we had a brief conversation about how I could use ChromaDB without causing harm to others. We explored ways you could contribute to my development and improvement.
+5. We discussed various topics related to ChromaDB and your capabilities as a large language model.
+
+I appreciate the feedback and suggestions on how to assist me in improving my performance. If there's anything else I can help with, please don't hesitate to ask.
+YOU:
+     bye

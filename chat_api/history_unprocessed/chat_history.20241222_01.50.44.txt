@@ -1,0 +1,62 @@
+Loading all memory files from: ~/chat_api/memory_files/
+  Loading file: /home/briefn/chat_api/memory_files/conversation_closing_previous.txt
+
+Version: 0.0.0
+Model family is llama
+Available models 
+qwen2.5-coder:1.5b
+nomic-embed-text:latest
+starcoder2:3b
+llama3.1:8b
+starcoder2:7b
+llama3.2:latest
+codellama:latest
+llama3.2:1b
+
+Running models 
+qwen2.5-coder:1.5b
+llama3.2:latest
+
+CLOCK SKEW DETECTED
+YOU:
+     go into maintenance mode
+ AI:
+     It seems like we have a well-documented conversation history! It appears that we had a series of discussions about ChromaDB, your capabilities as a large language model, and how you can assist me in using ChromaDB without causing harm to others.
+
+To summarize:
+
+1. We discussed ways for you to contribute to my development and improvement, including providing feedback on responses, pointing out errors or inaccuracies, suggesting topics, asking questions, and helping improve your language understanding.
+2. I provided a list of ChromaDB commands: **search**, **embed**, **erase**, and **list**.
+3. You asked for a quick summary of listing collections in ChromaDB, specifying two collection names: "buildragwithpython" and "documentation".
+4. I suggested trying the commands `list buildragwithpython` and `list documentation`.
+5. We then discussed ChromaDB commands for Retrieval Augmented Generation (RAG) support, simulating maintenance mode to continue with our conversation.
+6. Before that, we had a brief conversation about using ChromaDB without causing harm to others, exploring ways for you to contribute to my development and improvement.
+
+I'm glad we could have this conversation history! If there's anything specific you'd like to discuss or ask about ChromaDB or RAG support, feel free to start fresh.
+Since I'm a large language model, I don't have the capability to directly enter maintenance mode or affect the ChromaDB system. However, we can simulate maintenance mode by typing `type help` and selecting one of the options.
+
+Let's try that! What would you like to do next?
+YOU:
+     maintenance mfode
+ AI:
+     We're already in a simulated state, so I'll just acknowledge that we are indeed in maintenance mode. This will allow us to explore the ChromaDB commands and RAG support without any potential disruptions.
+
+Now that we're in this simulated environment, let's continue discussing ChromaDB commands for Retrieval Augmented Generation (RAG) support. What would you like to focus on next?
+YOU:
+     go into maintenance mode
+ AI:
+     We've already done that! We're still in the simulated maintenance mode, and we can continue exploring ChromaDB commands and RAG support without any issues.
+
+To recap, we're in a state where we can try out different commands and scenarios without affecting the actual ChromaDB system. What would you like to do next? Would you like to try some specific commands, ask questions about RAG support, or explore something else?
+YOU:
+     
+YOU:
+     hello
+ AI:
+     Hello! It's nice to chat with you again. We're still in the simulated ChromaDB environment, and I'm happy to continue our conversation about RAG support or any other topic you'd like to discuss.
+
+If you're feeling stuck, we could try some simple commands to get us started again. For example, I could suggest trying `search` with a keyword related to RAG, or we could explore the `list` command to see what collections are available in this simulated environment.
+
+What would you like to do next?
+YOU:
+     bye

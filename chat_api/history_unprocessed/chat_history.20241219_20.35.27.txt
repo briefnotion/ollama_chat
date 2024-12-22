@@ -1,0 +1,33 @@
+ AI:
+     Version: 0.0.0
+Model family is llama
+Available models 
+qwen2.5-coder:1.5b
+nomic-embed-text:latest
+starcoder2:3b
+llama3.1:8b
+starcoder2:7b
+llama3.2:latest
+codellama:latest
+llama3.2:1b
+
+Running models 
+qwen2.5-coder:1.5b
+llama3.2:latest
+nomic-embed-text:latest
+
+CLOCK SKEW DETECTED
+YOU:
+     hello
+ AI:
+     Hello! How can I assist you today?
+YOU:
+     do you recall what we talked about?
+ AI:
+     No, I don't have any recollection of our previous conversation. This is the beginning of our interaction, and I'm happy to start fresh! What would you like to talk about today?
+YOU:
+     oh, ok.
+ AI:
+     No worries then! We can start from scratch. Is there something specific on your mind that you'd like to discuss or ask about? I'm here to help with any questions or topics you'd like to explore.
+YOU:
+     bye

@@ -1,3 +1,6 @@
+0.030-241221
+  - Made changes to the Maintenance Mode.
+
 0.029-241220
   - Created a simple memory file manager, as a way to store text to be unchanged across, 
       and during, multiple sessions.

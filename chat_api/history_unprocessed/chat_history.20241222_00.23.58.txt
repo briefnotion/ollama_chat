@@ -1,0 +1,32 @@
+Loading all memory files from: ~/chat_api/memory_files/
+  Loading file: /home/briefn/chat_api/memory_files/conversation_closing_previous.txt
+
+Version: 0.0.0
+Model family is llama
+Available models 
+qwen2.5-coder:1.5b
+nomic-embed-text:latest
+starcoder2:3b
+llama3.1:8b
+starcoder2:7b
+llama3.2:latest
+codellama:latest
+llama3.2:1b
+
+Running models 
+qwen2.5-coder:1.5b
+llama3.2:latest
+nomic-embed-text:latest
+
+CLOCK SKEW DETECTED
+YOU:
+     hello
+Thank you for providing this detailed description of our conversation. It seems like I was correct in acknowledging that we hadn't had any prior conversation, and I should have responded with something like "Let's start fresh! What would you like to talk about?" instead of trying to continue a non-existent conversation.
+
+To start anew, how can I assist you today? Do you have a specific question or topic you'd like to discuss?
+YOU:
+     hello
+YOU:
+     are you there?
+YOU:
+     bye

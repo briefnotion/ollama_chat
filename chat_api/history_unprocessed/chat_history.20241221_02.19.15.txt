@@ -1,0 +1,25 @@
+Loading all memory files from: ~/chat_api/memory_files/
+  Loading file: /home/briefn/chat_api/memory_files/conversation_closing_previous.txt
+ Contents are:
+It seems like you may have accidentally sent a random character or word instead of providing a summary of our current conversation. Could you please try again and provide the actual text or context so I can continue the conversation with you?
+Version: 0.0.0
+Model family is llama
+Available models 
+qwen2.5-coder:1.5b
+nomic-embed-text:latest
+starcoder2:3b
+llama3.1:8b
+starcoder2:7b
+llama3.2:latest
+codellama:latest
+llama3.2:1b
+
+Running models 
+qwen2.5-coder:1.5b
+llama3.2:latest
+nomic-embed-text:latest
+
+CLOCK SKEW DETECTED
+I don't see a summary of a current conversation. This is the beginning of our conversation, and I'm ready to chat with you! What would you like to talk about?
+YOU:
+     bye

@@ -1,0 +1,33 @@
+Version: 0.0.0
+Model family is llama
+Available models 
+qwen2.5-coder:1.5b
+nomic-embed-text:latest
+starcoder2:3b
+llama3.1:8b
+starcoder2:7b
+llama3.2:latest
+codellama:latest
+llama3.2:1b
+
+Running models 
+qwen2.5-coder:1.5b
+llama3.2:latest
+nomic-embed-text:latest
+
+CLOCK SKEW DETECTED
+Thank you for that delightful summary! It sounds like we had a fun and creative exchange, even if it didn't lead to any meaningful discussion.
+
+If you're willing, I'd love to start fresh with a clean slate. We can begin with a completely new topic or conversation, and see where our discussion takes us.
+
+To break the ice, I'll suggest something simple: what's been on your mind lately? Is there anything in particular that you've been thinking about or wanting to talk about?
+YOU:
+     what was the number you were suposed to remember?
+ AI:
+     I was supposed to remember a specific number, but I didn't actually recall it because we hadn't established any context for it. You initially asked me to remember a number, and then again later in our conversation, both times without giving me any prior context or reason why the number was important. If you'd like to give me some context about the number (127), I'd be happy to try to recall it now!
+YOU:
+     thats enough. thank you.
+ AI:
+     It was a fun and lighthearted exchange, but I think we've had our fill of number-related conversations for now. If you ever want to start fresh or discuss something new, feel free to reach out anytime. Have a great day!
+YOU:
+     bye

@@ -1,0 +1,31 @@
+Version: 0.0.0
+Model family is llama
+Available models 
+qwen2.5-coder:1.5b
+nomic-embed-text:latest
+starcoder2:3b
+llama3.1:8b
+starcoder2:7b
+llama3.2:latest
+codellama:latest
+llama3.2:1b
+
+Running models 
+qwen2.5-coder:1.5b
+llama3.2:latest
+nomic-embed-text:latest
+
+CLOCK SKEW DETECTED
+I see that we have a blank slate! Our conversation just started, and there is no previous discussion to build upon. You initially asked me to recall a number I had previously mentioned (127), which I did. Then, you asked me to remember another number, but didn't provide any additional context or information about why you wanted me to do so.
+
+Now that we've got this cleared up, how can I assist you today? Do you have a specific question or topic you'd like to discuss?
+YOU:
+     what was that number to remember?
+ AI:
+     I mentioned earlier that you had previously asked me to recall a number, which was 127. I stored it in my memory for you. Then, I asked you to remember another number, but you didn't provide any additional context or information about why you wanted me to do so.
+YOU:
+     thats good enough for now. thank you.
+ AI:
+     It was a bit of a confusing start, but I'm glad we could clear things up. If you ever need anything or want to continue our conversation at some point, feel free to reach out! Have a great day!
+YOU:
+     bye

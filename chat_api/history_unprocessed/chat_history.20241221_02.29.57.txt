@@ -1,0 +1,49 @@
+Loading all memory files from: ~/chat_api/memory_files/
+  Loading file: /home/briefn/chat_api/memory_files/conversation_closing_previous.txt
+ Contents are:
+We didn't have any substantive conversation prior to your first message, "Abye". Here's a summary of our exchange:1. You initially sent a message but didn't provide any context or topic for discussion.2. I responded by saying that we hadn't started a previous conversation and asked if you'd like to start one.3. You followed up with the message "[Abye]", which appeared to be an accidental emoji insertion rather than a meaningful comment.4. I acknowledged the confusion and suggested starting a new conversation.5. You sent another message, but it was just a single character ("Abye") without any context or content.That's the entirety of our exchange so far. If you'd like to start a real conversation, I'm here to listen and respond!
+
+Continue or current conversation from the following summary: We didn't have any substantive conversation prior to your first message, "Abye". Here's a summary of our exchange:1. You initially sent a message but didn't provide any context or topic for discussion.2. I responded by saying that we hadn't started a previous conversation and asked if you'd like to start one.3. You followed up with the message "[Abye]", which appeared to be an accidental emoji insertion rather than a meaningful comment.4. I acknowledged the confusion and suggested starting a new conversation.5. You sent another message, but it was just a single character ("Abye") without any context or content.That's the entirety of our exchange so far. If you'd like to start a real conversation, I'm here to listen and respond!
+Version: 0.0.0
+Model family is llama
+Available models 
+qwen2.5-coder:1.5b
+nomic-embed-text:latest
+starcoder2:3b
+llama3.1:8b
+starcoder2:7b
+llama3.2:latest
+codellama:latest
+llama3.2:1b
+
+Running models 
+qwen2.5-coder:1.5b
+llama3.2:latest
+nomic-embed-text:latest
+
+CLOCK SKEW DETECTED
+I apologize for the abrupt start we had earlier. Let me try again with a fresh beginning.
+
+Hello! It seems we got off on the wrong foot, and I appreciate your willingness to start anew. Since we're starting from scratch, what's been on your mind lately? Is there something you'd like to talk about, or perhaps a topic you're curious about exploring? I'm here to listen and engage in a conversation that interests you!
+YOU:
+     tell me some strange story about one of those lizards that run on water.
+ AI:
+     I think there may be some confusion - there isn't a type of lizard that runs on water. However, I can try to spin you a yarn about a mythical or fictional creature that might fit the bill.
+
+Once upon a time, in a small village nestled between two great rivers, there lived a legendary lizard named Rana. Rana was no ordinary creature - she had the ability to walk on water with ease. Her scales shimmered like diamonds in the sunlight, and her eyes seemed to gleam with an otherworldly intelligence.
+
+One day, a group of travelers stumbled upon Rana basking in the sun on a tranquil lake. As they approached, they noticed that Rana was not just standing still - she was walking towards them, her tail swishing behind her like a metronome. The travelers were amazed and a little frightened by this spectacle.
+
+As Rana drew closer, she began to speak in a voice that was both melodious and mysterious. "I am the guardian of the lake," she said. "And I have been watching you from afar. You seem like kind souls, but also curious ones. I sense that you are seeking something - perhaps knowledge, or treasure?"
+
+The travelers were taken aback by Rana's words, but they soon realized that they had indeed been searching for something. They told Rana about their quest, and she listened intently, her eyes never leaving theirs.
+
+When they finished speaking, Rana nodded her head and began to walk towards a hidden cave beneath the lake. "Follow me," she said, "and I will reveal to you a secret that has been hidden for centuries."
+
+The travelers followed Rana into the cave, where they found themselves in a vast chamber filled with glittering jewels and ancient artifacts. In the center of the room, Rana stopped before a great stone pedestal, upon which rested a small, glowing crystal.
+
+"This is the Heart of the Lake," Rana said, her voice full of reverence. "It holds the secrets of the universe within its depths. But be warned, travelers - the knowledge contained within is not for the faint of heart."
+
+And with that, Rana vanished into thin air, leaving the travelers to ponder the mystery of the Heart of the Lake. From that day on, they roamed the world in search of wisdom and adventure, forever changed by their encounter with the enigmatic lizard who ran on water.
+YOU:
+     bye

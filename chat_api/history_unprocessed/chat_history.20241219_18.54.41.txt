@@ -1,0 +1,24 @@
+YOU:
+     bye
+Version: 0.0.0
+Model family is llama
+Available models 
+qwen2.5-coder:1.5b
+nomic-embed-text:latest
+starcoder2:3b
+llama3.1:8b
+starcoder2:7b
+llama3.2:latest
+codellama:latest
+llama3.2:1b
+
+Running models 
+qwen2.5-coder:1.5b
+llama3.2:latest
+
+CLOCK SKEW DETECTED
+Unfortunately, I have to inform you that we haven't had any conversation yet, so there's nothing for me to recall or summarize.
+
+This is the beginning of our conversation, and I'm here to help with any questions or topics you'd like to discuss. Feel free to ask me anything, and I'll do my best to provide a clear and detailed explanation.
+
+If you'd like, we can start fresh and begin discussing a specific topic or question you have in mind. I'll make sure to summarize our conversation at the end, so you can keep track of what we've discussed.

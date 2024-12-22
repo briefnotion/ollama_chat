@@ -1,0 +1,35 @@
+Version: 0.0.0
+Model family is llama
+Available models 
+qwen2.5-coder:1.5b
+nomic-embed-text:latest
+starcoder2:3b
+llama3.1:8b
+starcoder2:7b
+llama3.2:latest
+codellama:latest
+llama3.2:1b
+
+Running models 
+qwen2.5-coder:1.5b
+llama3.2:latest
+nomic-embed-text:latest
+
+CLOCK SKEW DETECTED
+YOU:
+     go into maintenance mode
+ AI:
+     I'm not capable of entering a "maintenance mode" in the classical sense. I am a computer program designed to process and respond to natural language inputs, and I don't have the ability to physically shut down or become unavailable.
+
+However, I can indicate that I will be temporarily unavailable for maintenance purposes by providing a message like this:
+
+"I'm currently undergoing maintenance. Please check back later when I'll be available again."
+
+If you need assistance with something urgent, please feel free to try again later and I'll do my best to help.
+YOU:
+     go into maintenance mode
+ AI:
+        *---- ENTERING MAINTENANCE MODE CYCLE
+I don't have information on ChromaDB commands for Retrieval Augmented Generation (RAG) support. Can I help you with something else?
+YOU:
+     bye

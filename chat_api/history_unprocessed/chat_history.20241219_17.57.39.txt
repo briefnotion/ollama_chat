@@ -1,0 +1,225 @@
+YOU:
+     hello
+ AI:
+     Version: 0.0.0
+Model family is llama
+Available models 
+qwen2.5-coder:1.5b
+nomic-embed-text:latest
+starcoder2:3b
+llama3.1:8b
+starcoder2:7b
+llama3.2:latest
+codellama:latest
+llama3.2:1b
+
+Running models 
+qwen2.5-coder:1.5b
+llama3.2:latest
+
+CLOCK SKEW DETECTED
+Hello! How can I assist you today?
+YOU:
+     go into maintenance mode
+ AI:
+     Going into "maintenance mode" means that my responses will be limited or unavailable for a short period of time. This is typically done to perform routine updates, maintenance tasks, or to resolve any technical issues.
+
+During this time, I may:
+
+1. Respond with error messages or technical notes
+2. Not provide answers or respond at all
+3. Provide general information or FAQs
+
+Please note that my maintenance mode will not last indefinitely, and I will resume normal operations as soon as the maintenance is complete.
+
+Is there anything specific you'd like to know or discuss while I'm in maintenance mode?
+YOU:
+     go into maintenance mode
+ AI:
+     *System Going Offline*
+
+Maintenance Mode Engaged
+
+**Please Check Back Later**
+
+This system is currently undergoing routine updates and maintenance. We apologize for any inconvenience this may cause.
+
+If you need immediate assistance, please try contacting us later or checking our FAQs.
+
+**Status:** Online Maintenance
+YOU:
+     go into maintenance mode
+ AI:
+     *System Offline*
+
+MAINTENANCE MODE ACTIVATED
+
+This system is currently undergoing significant updates and upgrades. The duration of the maintenance period may vary.
+
+During this time, please be aware that:
+
+* Responses may be delayed or not available
+* Some features or functionalities may be unavailable
+* Our support team may be temporarily unresponsive
+
+We apologize for any inconvenience this may cause and appreciate your patience as we work to improve our systems.
+
+**Estimated Time of Completion:** Not Specified
+
+**Please Check Back Later**
+
+If you have an urgent question or concern, please try contacting us later or checking our FAQs.
+YOU:
+     ah
+ AI:
+     It seems like you're acknowledging that I'm indeed in maintenance mode.
+
+If you'd like to simulate a conversation while I'm offline, I can pretend to be in a "down for maintenance" state. Just let me know what's on your mind, and I'll respond with a mock error message or system notification!
+YOU:
+     go into maintenance mode
+ AI:
+        *---- ENTERING MAINTENANCE MODE CYCLE
+I'm not capable of performing actions while in maintenance mode, but I can provide information on ChromaDB commands:
+
+1. `search <search terms or sentence>`: Searches the vector database for related documents.
+2. `embed <filename or directory>`: Imports all files into the vector database.
+3. `erase`: Erases all entries in the vector database.
+4. `list`: Lists all entries in the vector database.
+
+Please note that I'm not executing these commands, but rather providing information on their usage.
+YOU:
+     list
+List Collections in ChromaDB
+Collection name: buildragwithpython
+Collection name: documentation
+
+I'm not capable of executing queries while in maintenance mode, but I can provide information on the command:
+
+`list collections`
+
+To list all available collections in ChromaDB, you would run the command `list collections`. This should return a list of all collection names present in the database.
+YOU:
+     list
+List Collections in ChromaDB
+Collection name: buildragwithpython
+Collection name: documentation
+
+Maintenance Mode
+
+Error: Unrecognized Command
+
+Command not recognized. Please check the ChromaDB documentation for available commands.
+
+**Available Commands:**
+
+* list collections
+* search <search terms or sentence>
+* embed <filename or directory>
+* erase
+* list
+
+Please try running "list collections" to retrieve a list of all available collection names in ChromaDB.
+YOU:
+     search tell me about the quantumflux capacitor.
+(The source of the following documentation is "/home/briefn/testdocs/capa.txt")
+Object Name: QuantumFlux Capacitor
+
+Description:
+The QuantumFlux Capacitor is a state-of-the-art energy storage and manipulation device designed for both theoretical and practical applications in quantum mechanics and electromagnetism. Developed by the leading scientists at FutureTech Laboratories, this device harnesses quantum entanglement and flux compression to store, transfer, and amplify energy with unprecedented efficiency. Properties:
+- Model Number: QFC-2048
+- Manufacturer: FutureTech Laboratories
+- Dimensions: 15 cm x 10 cm x 8 cm
+- Weight: 1.2 kg
+- Material: Composite alloy of Titanium, Graphene, and Quantum Polymer
+- Color: Metallic Silver with Blue Accents
+- Capacity: 50 Terajoules
+- Input Voltage: 110-240V AC
+- Output Voltage: 5V DC (Quantum Stabilized)
+- Operating Temperature Range: -40°C to 85°C
+- Humidity Tolerance: 0% to 95% (non-condensing)
+- Safety Features: Overload Protection, Quantum Entanglement Stabilizer, Auto-Shutdown Mechanism
+- Interfaces: USB-C, Quantum Interface Port (QIP)
+- Certifications: ISO 9001, CE, RoHS Compliant
+
+Functional Description:
+The QuantumFlux Capacitor operates by utilizing a proprietary blend of quantum entanglement techniques and advanced flux compression methods. This allows for the efficient storage of large amounts of energy in a compact form factor. The device's Quantum Stabilized Output ensures a constant and reliable energy flow, making it suitable for a wide range of applications from powering advanced computational systems to serving as a critical component in experimental quantum devices. Usage Instructions:
+1. Connect the QuantumFlux Capacitor to a compatible power source using the provided Quantum Interface Port (QIP) or USB-C cable.
+
+Maintenance Mode
+
+Error: Unrecognized Command
+
+Command not recognized. Please check the documentation for available commands.
+
+**Available Commands:**
+
+* list collections
+* search <search terms or sentence>
+* embed <filename or directory>
+* erase
+* list
+
+If you're looking for information on a specific device, please try searching using the "search" command.
+YOU:
+     exit
+   *---- UNKNOWN COMMAND
+YOU:
+     list
+List Collections in ChromaDB
+Collection name: buildragwithpython
+Collection name: documentation
+
+Since I'm in maintenance mode, I don't have the ability to execute commands. However, according to my previous knowledge:
+
+The available collections in ChromaDB are:
+
+* buildragwithpython
+* documentation
+YOU:
+     seach rubber ducks
+   *---- UNKNOWN COMMAND
+YOU:
+     search rubber ducks
+(The source of the following documentation is "/home/briefn/testdocs/duck.txt")
+The History of the Rubber Duck
+Introduction The humble rubber duck is a beloved toy known to children and adults alike. While its current form is a playful, squeaky companion for bath time, the rubber duck has a fascinating history that spans over a century. From its early beginnings in the industrial age to its status as a pop culture icon, the rubber duck has a quirky and delightful past. Origins The rubber duck traces its origins back to the late 19th century when the process of rubber vulcanization was first developed. Charles Goodyear's pioneering work in vulcanizing rubber made it possible to create durable rubber products that could withstand water and heat. However, early rubber ducks were quite different from the colorful, cheerful toys we know today. They were solid rubber and did not float, serving more as chew toys or teething rings.
+
+One of the most notable appearances was on the children's television show "Sesame Street," where the character Ernie famously sang the song "Rubber Duckie." This catchy tune brought the rubber duck even greater recognition and cemented its status as a beloved toy. Modern Variations Today, rubber ducks come in countless variations, from superhero-themed ducks to ducks dressed as famous personalities. Collectors around the world seek out unique and limited-edition rubber ducks, turning a simple bath toy into a hobby and a passion. The annual rubber duck race, where thousands of rubber ducks are released into rivers for charity, is another testament to their enduring charm. Conclusion The rubber duck's journey from a solid rubber chew toy to a floating bath time icon is a testament to its enduring appeal. It has transcended generations, bringing joy and laughter to countless children (and adults) along the way.
+
+The Floating Rubber Duck The transformation of the rubber duck into a floating bath toy occurred in the early 20th century. With the introduction of more advanced rubber molding techniques, manufacturers began producing hollow rubber ducks that could float on water. These toys quickly gained popularity as bath time companions, providing children with a fun and entertaining distraction. The Iconic Yellow Duck The yellow rubber duck, as we recognize it today, became widely popular in the mid-20th century. The classic design, featuring a bright yellow body and an orange beak, was popularized by companies like the Ideal Toy Company. This cheerful design struck a chord with both children and parents, making it a staple in households around the world. Cultural Impact The rubber duck's cultural impact reached new heights in the 1970s when it was immortalized in popular culture.
+
+Maintenance Mode
+
+Error: Unrecognized Command
+
+Command not recognized. Please check the documentation for available commands.
+
+**Available Commands:**
+
+* list collections
+* search <search terms or sentence>
+* embed <filename or directory>
+* erase
+* list
+
+If you're looking for information on a specific topic, please try searching using the "search" command.
+YOU:
+     list
+List Collections in ChromaDB
+Collection name: buildragwithpython
+Collection name: documentation
+
+Since I'm in maintenance mode, I don't have the ability to execute commands. However, according to my previous knowledge:
+
+There is no available information on "buildragwithpython" or "documentation" as collections in ChromaDB.
+YOU:
+     exit
+   *---- EXITING MAINTENANCE MODE CYCLE
+YOU:
+     list
+YOU:
+     hello
+YOU:
+     you there?
+YOU:
+     bye

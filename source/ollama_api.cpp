@@ -464,6 +464,16 @@ string OLLAMA_API::get_complete_text_response()
   return RESPONSE_FULL;
 }
 
+void OLLAMA_API::context_pause()
+{
+  CONTEXT_PAUSED = CONTEXT;
+}
+
+void OLLAMA_API::context_unpause()
+{
+  CONTEXT = CONTEXT_PAUSED;
+}
+
 void OLLAMA_API::process(TTY_OUTPUT &Output, TTY_OUTPUT_FOCUS &Focus)
 {
   // Print Responses that may arrive.

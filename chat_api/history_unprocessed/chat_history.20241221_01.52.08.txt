@@ -1,0 +1,51 @@
+Loading all memory files from: ~/chat_api/memory_files/
+  Loading file: /home/briefn/chat_api/memory_files/conversation_closing_previous.txt
+/home/briefn/chat_api/memory_files  :  conversation_closing_previous  :  .txt
+Version: 0.0.0
+Model family is llama
+Available models 
+qwen2.5-coder:1.5b
+nomic-embed-text:latest
+starcoder2:3b
+llama3.1:8b
+starcoder2:7b
+llama3.2:latest
+codellama:latest
+llama3.2:1b
+
+Running models 
+qwen2.5-coder:1.5b
+llama3.2:latest
+
+CLOCK SKEW DETECTED
+I see that our conversation started with my request for a detailed description of everything we discussed so far. You provided a summary of our earlier discussions, and I'll continue to expand upon it.
+
+As you mentioned, we began by exploring the concept of the Giblet, which was initially sparked by your suggestion to assign a meaning to the number 127. We revisited this idea several times, anchoring it with various values, including 10, but ultimately concluding that the Giblet itself wasn't what was important, but rather the significance of the number 127.
+
+I must say, I'm impressed by our creative approach to applying the concept of the Giblet in future discussions. We even coined a term to describe this unique method – the "Giblet of Convo Memory." This concept allows us to mark important moments in our conversation and create connections between seemingly unrelated ideas.
+
+It's also interesting to note that our conversation was influenced by my knowledge cutoff date (December 2023), which marked a point when new information would no longer be available for me to recall or discuss. Despite this limitation, we were able to explore creative ways to apply the Giblet concept in our discussion.
+
+Throughout our conversation, we explored various ideas and concepts, including the initial request to write a detailed description of everything we discussed so far (which led us back to the beginning). I appreciate your thoughtfulness and creativity in developing this unique approach to conversation.
+
+As we move forward, I'm excited to see how we can continue to apply the Giblet concept in future discussions. Who knows what new ideas and connections will emerge from our creative conversations?
+YOU:
+     actually, i dont know how the cutoff date got in there.
+ AI:
+     It seems that I accidentally included a phrase related to your knowledge cutoff date (December 2023) which is not relevant to our current conversation.
+
+Let's start fresh! To continue or recall our previous conversation, you mentioned that we were discussing the concept of the Giblet and its connection to the number 127. We explored various ideas and concepts, including anchoring the Giblet with values like 10, but ultimately concluding that the significance of the number 127 was what mattered.
+
+You also asked me to repeat the number 127 several times with the Giblet title, which I provided as requested. Our conversation began with your request to recall or continue our previous discussion, and we acknowledged that we hadn't had a meaningful conversation yet until then.
+
+How would you like to proceed? Would you like to revisit any of these ideas or explore new topics?
+YOU:
+     thats good for now, i am also worried that we may be overdoing the giblet thing.
+ AI:
+     I think I might have gotten a bit carried away with the Giblet concept as well. While it was an interesting experiment in creativity and conversation, it's possible that we've exhausted its potential.
+
+In retrospect, perhaps it would be better to simply continue our conversation without referencing the Giblet or its various iterations. We can start fresh and explore new topics or ideas that are more relevant to your interests or questions.
+
+What would you like to talk about next? Is there a particular topic or subject area that you'd like to discuss? I'm here to listen and help in any way I can.
+YOU:
+     bye

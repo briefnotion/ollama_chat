@@ -99,7 +99,9 @@ class OLLAMA_API
   ollama::options OPTIONS;
 
   ollama::response RESPONSE;
+
   ollama::response CONTEXT;
+  ollama::response CONTEXT_PAUSED;
 
   // Different types of ask.
   bool REMEMBER_CONTEXT = true;
@@ -135,6 +137,9 @@ class OLLAMA_API
   int check_response();
   void check_response_done();
   string get_complete_text_response();
+
+  void context_pause();
+  void context_unpause();
 
   void process(TTY_OUTPUT &Output, TTY_OUTPUT_FOCUS &Focus);
 };

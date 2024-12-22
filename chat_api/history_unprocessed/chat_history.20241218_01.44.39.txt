@@ -1,0 +1,41 @@
+Version: 0.0.0
+Model family is llama
+Available models 
+qwen2.5-coder:1.5b
+nomic-embed-text:latest
+starcoder2:3b
+llama3.1:8b
+starcoder2:7b
+llama3.2:latest
+codellama:latest
+llama3.2:1b
+
+Running models 
+qwen2.5-coder:1.5b
+llama3.2:latest
+nomic-embed-text:latest
+
+CLOCK SKEW DETECTED
+YOU:
+     hello
+ AI:
+     Hello! How can I assist you today?
+YOU:
+     why is the sky blue?
+ AI:
+     The sky appears blue because of a phenomenon called Rayleigh scattering, named after the British physicist Lord Rayleigh. Here's what happens:
+
+1. When sunlight enters Earth's atmosphere, it encounters tiny molecules of gases such as nitrogen (N2) and oxygen (O2).
+2. These gas molecules scatter the light in all directions, but they scatter shorter (blue) wavelengths more than longer (red) wavelengths.
+3. This is because the smaller gas molecules are more effective at scattering the shorter wavelengths.
+4. As a result, the blue light is dispersed throughout the atmosphere, giving the sky its blue color.
+
+It's worth noting that the color of the sky can change depending on various factors such as:
+
+* Time of day: During sunrise and sunset, the sky can take on hues of red, orange, and pink due to scattering by atmospheric particles.
+* Atmospheric conditions: Dust, pollution, and water vapor can affect the way light is scattered, altering the apparent color of the sky.
+* Altitude: At higher altitudes, the air is thinner, and the blue color becomes less intense.
+
+So, there you have it! The sky appears blue due to the scattering of sunlight by tiny gas molecules in our atmosphere.
+YOU:
+     bye

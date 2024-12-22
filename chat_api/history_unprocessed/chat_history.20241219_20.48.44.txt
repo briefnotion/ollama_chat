@@ -1,0 +1,71 @@
+Version: 0.0.0
+Model family is llama
+Available models 
+qwen2.5-coder:1.5b
+nomic-embed-text:latest
+starcoder2:3b
+llama3.1:8b
+starcoder2:7b
+llama3.2:latest
+codellama:latest
+llama3.2:1b
+
+Running models 
+qwen2.5-coder:1.5b
+llama3.2:latest
+nomic-embed-text:latest
+
+CLOCK SKEW DETECTED
+I'm glad we're starting fresh! It seems like there's been some confusion about the previous conversations, so let's start from scratch.
+
+You mentioned that I couldn't save our conversation history due to access restrictions on the Vectord DB. Can you please provide more context or information about what happened when trying to save the conversation history? Was it a specific platform or tool that was causing the issue?
+
+I'm here to help and want to make sure we have a clear understanding of what's going on. Let's work together to get our conversation back on track!
+YOU:
+     ok, where did we leave off?
+ AI:
+     It seems that I made an incorrect assumption earlier. We didn't have a previous conversation to pick up from. Our conversation started with your message asking me to continue or current conversation from the following summary.
+
+Since there was no actual conversation prior to this, let's start fresh! What would you like to talk about?
+YOU:
+     lets talk about the arora boriallus
+ AI:
+     I'm not aware of any information on a person or concept called the "Arora Boriallus." It's possible that it's a misspelling, a made-up term, or a reference to a very obscure or specialized topic.
+
+Can you please provide more context or information about what the Arora Boriallus is? Is it a character from a book or movie, a scientific concept, or something else entirely? I'll do my best to help you understand or learn more about it!
+YOU:
+     what about the northern lights?
+ AI:
+     The Northern Lights (also known as the Aurora Borealis) are a natural phenomenon that occurs when charged particles from the sun interact with the Earth's magnetic field and atmosphere.
+
+The resulting display can be breathtaking, with vibrant colors and patterns dancing across the night sky. The Northern Lights are typically visible in the Arctic regions of the world, such as Alaska, Canada, Norway, Sweden, Finland, and Iceland.
+
+There are several factors that contribute to the formation of the Northern Lights:
+
+1. Solar activity: The sun's magnetic field and solar wind create a stream of charged particles that interact with the Earth's magnetic field.
+2. Magnetic field: The Earth's magnetic field acts as a shield, deflecting the charged particles towards the poles.
+3. Atmospheric conditions: The Northern Lights are most visible when there is clear darkness and low humidity, allowing the light to be seen more clearly.
+
+The colors of the Northern Lights depend on the energy of the particles and the altitude at which they interact with the atmosphere:
+
+* Green is produced by collisions between oxygen atoms and sunlight
+* Red is produced by collisions between oxygen atoms and sunlight at higher altitudes
+* Blue and violet are produced by collisions between nitrogen molecules and sunlight
+
+The Northern Lights can be affected by various weather conditions, such as solar activity, cloud cover, and moon phase. Some of the most popular ways to experience the Northern Lights include:
+
+* Taking a guided tour or expedition to areas with high visibility
+* Staying in an aurora-friendly location, such as Tromsø, Norway, or Yellowknife, Canada
+* Using camera equipment and software to capture photos of the display
+
+Would you like to know more about the Northern Lights or how to increase your chances of witnessing this natural wonder?
+YOU:
+     remember a number for me: 127
+ AI:
+     I've stored the number 127 in my memory for you. Let me know if you need me to recall it later!
+YOU:
+     ok.
+ AI:
+     That's a good start! Is there anything else I can help you with or would you like to move on to something new?
+YOU:
+     bye

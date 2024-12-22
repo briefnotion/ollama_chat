@@ -1,0 +1,147 @@
+Loading all memory files from: ~/chat_api/memory_files/
+  Loading file: /home/briefn/chat_api/memory_files/conversation_closing_previous.txt
+
+Version: 0.0.0
+Model family is llama
+Available models 
+qwen2.5-coder:1.5b
+nomic-embed-text:latest
+starcoder2:3b
+llama3.1:8b
+starcoder2:7b
+llama3.2:latest
+codellama:latest
+llama3.2:1b
+
+Running models 
+qwen2.5-coder:1.5b
+llama3.2:latest
+
+CLOCK SKEW DETECTED
+This conversation has just started. There is no previous discussion or summary to provide. You have provided a detailed description of your last discussion, but this is not related to any existing conversation. If you'd like to continue the discussion, I'm happy to chat with you about ChromaDB commands, Retrieval Augmented Generation (RAG) support, and ways to use ChromaDB without causing harm to others.
+YOU:
+     go into maintenance mode
+ AI:
+        *---- ENTERING MAINTENANCE MODE CYCLE
+Here are the ChromaDB commands for Retrieval Augmented Generation (RAG) support:
+
+1. **search <search terms or sentence>**
+   - Searches the vector database for related documents.
+
+2. **embed <filename or directory>**
+   - Imports all files, or a single file, into the vector database.
+
+3. **erase**
+   - Erases all entries in the vector database.
+
+4. **list buildragwithpython** 
+   - Lists collections 
+
+5. **list documentation**
+   - Lists collections
+YOU:
+     hello
+ AI:
+     Hello! It's nice to meet you. Is there something I can help you with, or would you like to continue discussing ChromaDB and RAG support?
+YOU:
+     what are the list of commands?
+ AI:
+     Here is a revised list of ChromaDB commands:
+
+1. **search <search terms or sentence>**
+   - Searches the vector database for related documents.
+
+2. **embed <filename or directory>**
+   - Imports all files, or a single file, into the vector database.
+
+3. **erase**
+   - Erases all entries in the vector database.
+
+4. **list**
+   - Lists all entries in the vector database.
+
+Note: The additional commands I listed earlier ("buildragwithpython" and "documentation") were not part of the original list you provided. If you'd like to add them or discuss their usage, I'm here to help!
+YOU:
+     list
+List Collections in ChromaDB
+Collection name: buildragwithpython
+Collection name: documentation
+
+Unfortunately, there is no information provided about the "buildragwithpython" and "documentation" commands or collections. The original list only mentioned four standard ChromaDB commands:
+
+1. **search <search terms or sentence>**
+   - Searches the vector database for related documents.
+
+2. **embed <filename or directory>**
+   - Imports all files, or a single file, into the vector database.
+
+3. **erase**
+   - Erases all entries in the vector database.
+
+4. **list**
+   - Lists all entries in the vector database.
+
+No additional information is available on "buildragwithpython" and "documentation".
+YOU:
+     what else can you determine from what was provided.
+ AI:
+     From the original text, I can determine that:
+
+* ChromaDB is a vector database system.
+* Retrieval Augmented Generation (RAG) support is an area of interest for using ChromaDB.
+* You had previously discussed listing collections in ChromaDB for RAG support with me.
+* You provided four commands that can be used with ChromaDB:
+	1. **search**
+	2. **embed**
+	3. **erase**
+	4. **list**
+
+Additionally, I know that:
+
+* The conversation was about using ChromaDB without causing harm to others.
+* There were suggestions for how I could contribute to your development and improvement (providing feedback, pointing out errors, suggesting topics or questions, and helping improve language understanding).
+* We explored other topics related to ChromaDB and my capabilities as a large language model.
+YOU:
+     ok, good
+ AI:
+     It seems like we've clarified some details about our conversation. If you have any more questions or need further clarification on anything, feel free to ask!
+YOU:
+     search tell me about the quantumflux capacitor.
+(The source of the following documentation is "/home/briefn/testdocs/capa.txt")
+Object Name: QuantumFlux Capacitor
+
+Description:
+The QuantumFlux Capacitor is a state-of-the-art energy storage and manipulation device designed for both theoretical and practical applications in quantum mechanics and electromagnetism. Developed by the leading scientists at FutureTech Laboratories, this device harnesses quantum entanglement and flux compression to store, transfer, and amplify energy with unprecedented efficiency. Properties:
+- Model Number: QFC-2048
+- Manufacturer: FutureTech Laboratories
+- Dimensions: 15 cm x 10 cm x 8 cm
+- Weight: 1.2 kg
+- Material: Composite alloy of Titanium, Graphene, and Quantum Polymer
+- Color: Metallic Silver with Blue Accents
+- Capacity: 50 Terajoules
+- Input Voltage: 110-240V AC
+- Output Voltage: 5V DC (Quantum Stabilized)
+- Operating Temperature Range: -40°C to 85°C
+- Humidity Tolerance: 0% to 95% (non-condensing)
+- Safety Features: Overload Protection, Quantum Entanglement Stabilizer, Auto-Shutdown Mechanism
+- Interfaces: USB-C, Quantum Interface Port (QIP)
+- Certifications: ISO 9001, CE, RoHS Compliant
+
+Functional Description:
+The QuantumFlux Capacitor operates by utilizing a proprietary blend of quantum entanglement techniques and advanced flux compression methods. This allows for the efficient storage of large amounts of energy in a compact form factor. The device's Quantum Stabilized Output ensures a constant and reliable energy flow, making it suitable for a wide range of applications from powering advanced computational systems to serving as a critical component in experimental quantum devices. Usage Instructions:
+1. Connect the QuantumFlux Capacitor to a compatible power source using the provided Quantum Interface Port (QIP) or USB-C cable.
+
+It appears that this text is not related to ChromaDB or our previous conversation. The document you provided seems to be a product description for the "QuantumFlux Capacitor" and has no connection to ChromaDB or Retrieval Augmented Generation (RAG) support. If you'd like to discuss something related to ChromaDB, I'm here to help!
+YOU:
+     exit
+ AI:
+     It was nice chatting with you about ChromaDB and RAG support. If you need anything else in the future, feel free to start a new conversation. Have a great day!
+YOU:
+     exit the maintenance mode,
+   *---- EXITING MAINTENANCE MODE CYCLE
+YOU:
+     now, what were we discussing?
+ AI:
+     We were discussing ChromaDB, a vector database system, and Retrieval Augmented Generation (RAG) support. We also talked about how you could use ChromaDB without causing harm to others, and I provided some suggestions for contributing to your development and improvement. Additionally, we explored the four standard ChromaDB commands: **search**, **embed**, **erase**, and **list**.
+YOU:
+     bye
