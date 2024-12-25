@@ -49,12 +49,12 @@ void THOUGHTS::process_input_stages(SYSTEM &System)
       if (VECTORDB_SYSTEM.get_gathered_documents(gathered_documents))
       {
         System.OUTPUT_OLLAMA_RESPONSE.add_to("   *---- DOCUMENTATION WAS FOUND\n", System.OUTPUT_FOCUS);  // Temporary Note for debugging
-        string new_question = TRAIN_OF_THOUGH.back().SUBJECT + " Use the following information, sourced from local files, provided: " + gathered_documents;
-        OLLAMA_SYSTEM.submit_question(new_question);
+        string assisted_documents = " Use the following information, sourced from local files, provided: " + gathered_documents;
+        OLLAMA_SYSTEM.submit_question(ROLE_SYSTEM, assisted_documents, ROLE_USER, USER_NAME, TRAIN_OF_THOUGH.back().SUBJECT, true, true, true);
       }
       else
       {
-        OLLAMA_SYSTEM.submit_question(TRAIN_OF_THOUGH.back().SUBJECT);
+        OLLAMA_SYSTEM.submit_question(ROLE_USER, USER_NAME, TRAIN_OF_THOUGH.back().SUBJECT, true, true, true);
       }
     }
   }
@@ -79,8 +79,7 @@ void THOUGHTS::process_simple_ask_stages(SYSTEM &System)
   if (TRAIN_OF_THOUGH.back().THINKING_STAGE == 0)
   {
     TRAIN_OF_THOUGH.back().THINKING_STAGE = 1;
-    //OLLAMA_SYSTEM.submit_question(TRAIN_OF_THOUGH.back().SUBJECT);
-    OLLAMA_SYSTEM.submit_question_internally(TRAIN_OF_THOUGH.back().SUBJECT);
+    OLLAMA_SYSTEM.submit_question(ROLE_SYSTEM, "", TRAIN_OF_THOUGH.back().SUBJECT, false, false, false);
   }
   else if (TRAIN_OF_THOUGH.back().THINKING_STAGE == 1)
   {
@@ -144,6 +143,7 @@ void THOUGHTS::process_maintenance_mode_cycle(SYSTEM &System)
   if (TRAIN_OF_THOUGH.back().THINKING_STAGE == 0) // Open the system and lock it in till it's exited
   {
     System.OUTPUT_OLLAMA_RESPONSE.add_to("   *---- ENTERING MAINTENANCE MODE CYCLE\n", System.OUTPUT_FOCUS);
+    System.OUTPUT_OLLAMA_RESPONSE.add_to("   *---- THE FOLLOWING CONVERSATION WILL BE FORGOTTEN ON EXIT\n", System.OUTPUT_FOCUS);
 
     OLLAMA_SYSTEM.context_pause();
     TRAIN_OF_THOUGH.back().THINKING_STAGE = 1;
@@ -154,7 +154,7 @@ void THOUGHTS::process_maintenance_mode_cycle(SYSTEM &System)
 
     string introduction = MEMORY.FILE_MANAGER.get_file("maintenance_mode_introduction");
 
-    OLLAMA_SYSTEM.submit_question(introduction);
+    OLLAMA_SYSTEM.submit_question(ROLE_SYSTEM, "", introduction, true, true, true);
   }
 
   else if(TRAIN_OF_THOUGH.back().THINKING_STAGE == 1) // clear previous gather request
@@ -248,7 +248,7 @@ void THOUGHTS::process_maintenance_mode_cycle(SYSTEM &System)
       System.OUTPUT_OLLAMA_RESPONSE.add_to(full_response, System.OUTPUT_FOCUS);
 
       string summary = "Give a quick and short summary of: " + full_response;
-      OLLAMA_SYSTEM.submit_question(summary);
+      OLLAMA_SYSTEM.submit_question(ROLE_SYSTEM, "", summary, true, false, true);
     }
 
     else if (VECTORDB_SYSTEM.get_status() == VECTORDB_API_READY_FOR_REQUEST)
@@ -301,7 +301,7 @@ void THOUGHTS::process_in_conclusion_mode_stages(SYSTEM &System)
   else if (TRAIN_OF_THOUGH.back().THINKING_STAGE == 1)
   {
     TRAIN_OF_THOUGH.back().THINKING_STAGE = 2;
-    OLLAMA_SYSTEM.submit_question(TRAIN_OF_THOUGH.back().SUBJECT);
+    OLLAMA_SYSTEM.submit_question(ROLE_SYSTEM, "", TRAIN_OF_THOUGH.back().SUBJECT, false, true, true);
   }
   else if (TRAIN_OF_THOUGH.back().THINKING_STAGE == 2)
   {
@@ -318,6 +318,36 @@ void THOUGHTS::process_in_conclusion_mode_stages(SYSTEM &System)
       MEMORY.FILE_MANAGER.add_file(tmp_memory_file);
 
       TRAIN_OF_THOUGH.back().RESOLUTION.RESOLOLUTION_FOUND = true;
+    }
+  }
+}
+
+void THOUGHTS::check_simple_keywords(THOUGHT &Thought)
+{
+  if (keyword_search(TRAIN_OF_THOUGH.back().SUBJECT, {"time"}))
+  {
+    Thought.SUBJECT += " (Update your internal clock to the current real time of " + current_time() + ".)";
+    //Thought.SUBJECT += "But, dont respond to the current time if it isn't what was intended)";
+  }
+  if (keyword_search(TRAIN_OF_THOUGH.back().SUBJECT, {"date"}))
+  {
+    Thought.SUBJECT += " (Update your internal clock to the current real date of " + current_date() + ".)";
+    //Thought.SUBJECT += "But, dont respond to the current date if it isn't what was intended)";
+  }
+}
+
+void THOUGHTS::check_intentions(THOUGHT &Thought)
+{
+  if (Thought.KEYWORD_SEARCH)
+  {
+    // First Check for keyword search. Run special conditions.
+    if (keyword_search(TRAIN_OF_THOUGH.back().SUBJECT, {"maintenance", "mode"}))
+    {
+      Thought.ABOUT = "maintenance mode";
+    }
+    else
+    {
+      Thought.ABOUT = "input";
     }
   }
 }
@@ -340,18 +370,8 @@ void THOUGHTS::process_input(SYSTEM &System)
     {
       System.OUTPUT_OLLAMA_RESPONSE.add_to(" AI:\n     ", System.OUTPUT_FOCUS);
 
-      if (TRAIN_OF_THOUGH.back().KEYWORD_SEARCH)
-      {
-        // First Check for keyword search. Run special conditions.
-        if (keyword_search(TRAIN_OF_THOUGH.back().SUBJECT, {"maintenance", "mode"}))
-        {
-          TRAIN_OF_THOUGH.back().ABOUT = "maintenance mode";
-        }
-        else
-        {
-          TRAIN_OF_THOUGH.back().ABOUT = "input";
-        }
-      }
+      check_simple_keywords(TRAIN_OF_THOUGH.back());
+      check_intentions(TRAIN_OF_THOUGH.back());
     }
   }
 }

@@ -158,10 +158,57 @@ void OLLAMA_API::proc_render_thread()
 
   //std::cout << OLLAMA_MUTEX.context().as_simple_string() << std::endl;
 
-  ollama::generate(PROPS.MODEL, REQUEST, CONTEXT, response_callback, OPTIONS);
+  if (CONSIDER_CONTEXT)
+  {
+    ollama::generate(PROPS.MODEL, REQUEST, CONTEXT, response_callback, OPTIONS);
+  }
+  else
+  {
+    ollama::generate(PROPS.MODEL, REQUEST, response_callback, OPTIONS);
+  }
 }
 
 // ------------------------------------------------------------------------- //
+
+/*
+{
+  "role": "user",
+  "name": "Alice",
+  "content": "What time is it?"
+}
+*/
+
+nlohmann::json OLLAMA_API::build_request(string Role, string Name, string Content)
+{
+  nlohmann::json request;
+  request["model"] = "default"; // Specify the model name
+
+  // If a name is provided, include it in the content
+  if (!Name.empty()) 
+  {
+    Content = Name + ": " + Content; // Prefix the content with the name
+  }
+
+  return {{"role", Role}, {"content", Content}};
+}
+
+nlohmann::json OLLAMA_API::build_request(string Role1, string Content1, string Role2, string Name2, string Content2)
+{
+  nlohmann::json request;
+  request["model"] = "default"; // Specify the model name
+
+  // If a name is provided, include it in the content
+  if (!Name2.empty()) 
+  {
+    Content2 = Name2 + ": " + Content2; // Prefix the content with the name
+  }
+
+  return 
+    {
+      {{"role", Role1}, {"content", Content1}},
+      {{"role", Role2}, {"content", Content2}}
+    };
+}
 
 void OLLAMA_API::create()
 {
@@ -357,6 +404,11 @@ void OLLAMA_API::create()
 
       OPTIONS["num_ctx"] = 8192; 
       // increases the context window size to 8192 tokens. This means the model can consider up to 8192 tokens from the input context when generating responses, which can help improve the coherence and relevance of the output, especially for longer inputs.
+
+      // Things for testing:
+      /*
+      */
+      // Things for testing:
       
       connection_status = OLLAMA_SERVER_CONNECTED;
     } 
@@ -372,6 +424,23 @@ void OLLAMA_API::create()
   
   CONNECTION_STATUS =  connection_status;
   CONNECTION_STATUS_CHANGED = true;
+}
+
+void OLLAMA_API::exec_question()
+{
+  // Be careful with this because it looks like black magic to me.
+  OLLAMA_RESPONSE_THREAD.start_render_thread([&]() 
+                {  proc_render_thread();  });
+}
+
+void OLLAMA_API::set_status(int Status)
+{
+  OLLAMA_MUTEX.set_done(Status);
+}
+
+int OLLAMA_API::get_status()
+{
+  return OLLAMA_MUTEX.done();
 }
 
 void OLLAMA_API::check()
@@ -393,31 +462,17 @@ void OLLAMA_API::check()
   }
 }
 
-void OLLAMA_API::exec_question()
-{
-  // Be careful with this because it looks like black magic to me.
-  OLLAMA_RESPONSE_THREAD.start_render_thread([&]() 
-                {  proc_render_thread();  });
-}
-
-int OLLAMA_API::get_status()
-{
-  return OLLAMA_MUTEX.done();
-}
-
-void OLLAMA_API::set_status(int Status)
-{
-  OLLAMA_MUTEX.set_done(Status);
-}
-
-void OLLAMA_API::submit_question(const string& Question)
+void OLLAMA_API::submit_question(string Role, string Name, string Question, bool Output_To_Response, bool Consider_Context, bool Remember_Context)
 {
   if (CONNECTION_STATUS == OLLAMA_SERVER_CONNECTED)
   {
     if (OLLAMA_MUTEX.done() == OLLAMA_API_READY_FOR_REQUEST)
     {
-      REMEMBER_CONTEXT = true;
-      REQUEST = Question;
+      REMEMBER_CONTEXT = Remember_Context;
+      CONSIDER_CONTEXT = Consider_Context;
+      ALLOW_OUTPUT = Output_To_Response;
+
+      REQUEST = build_request(Role, Name, Question).dump();
       RESPONSE_FULL = "";
 
       exec_question();
@@ -425,16 +480,18 @@ void OLLAMA_API::submit_question(const string& Question)
   }
 }
 
-void OLLAMA_API::submit_question_internally(const string& Question)
+void OLLAMA_API::submit_question(string Assistant_Role, string Assistant_Text ,string User_Role, string User_Name, string User_Question, bool Output_To_Response, bool Consider_Context, bool Remember_Context)
 {
   if (CONNECTION_STATUS == OLLAMA_SERVER_CONNECTED)
   {
     if (OLLAMA_MUTEX.done() == OLLAMA_API_READY_FOR_REQUEST)
     {
-      REMEMBER_CONTEXT = false;
-      REQUEST = Question;
-      RESPONSE_FULL = "";
+      REMEMBER_CONTEXT = Remember_Context;
+      CONSIDER_CONTEXT = Consider_Context;
+      ALLOW_OUTPUT = Output_To_Response;
 
+      REQUEST = build_request(Assistant_Role, Assistant_Text, User_Role, User_Name, User_Question).dump();
+      RESPONSE_FULL = "";
       exec_question();
     }
   }
@@ -454,7 +511,16 @@ void OLLAMA_API::check_response_done()
     
     if (REMEMBER_CONTEXT)
     {
-      CONTEXT = RESPONSE;
+      // Recombine old context with new context if response is suposed to be 
+      //  remembered but no context was provided with the question.
+      if (CONSIDER_CONTEXT)
+      {
+        CONTEXT = RESPONSE;
+      }
+      else
+      {
+        submit_question(ROLE_SYSTEM, "", get_complete_text_response(), ALLOW_OUTPUT, true, true);
+      }
     }
   }
 }
@@ -466,12 +532,16 @@ string OLLAMA_API::get_complete_text_response()
 
 void OLLAMA_API::context_pause()
 {
-  CONTEXT_PAUSED = CONTEXT;
+  CONTEXT_PAUSED.push_back(CONTEXT);
 }
 
 void OLLAMA_API::context_unpause()
 {
-  CONTEXT = CONTEXT_PAUSED;
+  if (CONTEXT_PAUSED.size() > 0)
+  {
+    CONTEXT = CONTEXT_PAUSED.back();
+    CONTEXT_PAUSED.pop_back();
+  }
 }
 
 void OLLAMA_API::process(TTY_OUTPUT &Output, TTY_OUTPUT_FOCUS &Focus)
@@ -481,7 +551,7 @@ void OLLAMA_API::process(TTY_OUTPUT &Output, TTY_OUTPUT_FOCUS &Focus)
   {
     string tmp_response = return_vector_as_string(RESPONSE_STRING_VECTOR);
     
-    if (REMEMBER_CONTEXT)
+    if (ALLOW_OUTPUT)
     {
       Output.add_to(tmp_response, Focus);
     }
@@ -492,7 +562,7 @@ void OLLAMA_API::process(TTY_OUTPUT &Output, TTY_OUTPUT_FOCUS &Focus)
   // Get to next line if response found and ask another question
   if (get_status() == OLLAMA_API_RESPONSE_DONE)
   {
-    if (REMEMBER_CONTEXT)
+    if (ALLOW_OUTPUT)
     {
       // Closing
       Output.seperater(Focus);

@@ -254,6 +254,9 @@ int main()
               // turn off the recorder to save the conclusion
               sdSystem.OUTPUT_OLLAMA_RESPONSE.PROPS.RECORD_HISTORY = false;
 
+              sdSystem.OUTPUT_OLLAMA_RESPONSE.add_to("   *---- EXITING THE SYSTEM\n", sdSystem.OUTPUT_FOCUS);
+              sdSystem.OUTPUT_OLLAMA_RESPONSE.add_to("   *---- GENERATING CLOSING\n", sdSystem.OUTPUT_FOCUS);
+
               string conclusion_request = 
                 //"i need to remember this entire conversation. write a detailed explaination of everything we talked about. feel free tell me as much as you possibly can and put more detail in the most important things.";
                 //"No need to be polite. Write a detailed factual explaination of everything we talked about. Feel free tell me as much as you possibly can and put more detail in the most important things. Disregard any mentions of, not having a previous conversation";

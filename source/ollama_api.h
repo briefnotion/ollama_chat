@@ -17,12 +17,18 @@
 
 #define OLLAMA_RESPONSE_THREAD_TIMER_DELAY   60   // This will be in frames per second (fps)
 
+// OLLAMA_API_STATUS is used to track the status of the API
 #define OLLAMA_API_READY_FOR_REQUEST      0
 //#define OLLAMA_API_WRITING_REQUEST        1
 //#define OLLAMA_API_REQUEST_SUBMITTED      2 
 #define OLLAMA_API_RESPONS_GENERATING     3
 #define OLLAMA_API_RESPONSE_DONE          4
 #define OLLAMA_API_READY_TO_GATHER        5
+
+// Roles
+#define ROLE_SYSTEM     "system"
+#define ROLE_ASSISTANT  "assistant"
+#define ROLE_USER       "user"
 
 using namespace std;
 
@@ -63,6 +69,15 @@ class OLLAMA_API_MUTEX
 // ------------------------------------------------------------------------- //
 // ------------------------------------------------------------------------- //
 
+class MESSAGE
+{
+  public:
+  string role;
+  string content;
+};
+
+// ------------------------------------------------------------------------- //
+
 class OLLAMA_API_PROPS
 {
   public:
@@ -101,10 +116,12 @@ class OLLAMA_API
   ollama::response RESPONSE;
 
   ollama::response CONTEXT;
-  ollama::response CONTEXT_PAUSED;
+  vector<ollama::response> CONTEXT_PAUSED;
 
   // Different types of ask.
   bool REMEMBER_CONTEXT = true;
+  bool CONSIDER_CONTEXT = true;
+  bool ALLOW_OUTPUT     = true;
 
   public:
 
@@ -120,28 +137,62 @@ class OLLAMA_API
   string REQUEST = "";
 
   private:
-  void create();
   
-  public:
-  void check();
+  std::vector<MESSAGE> conversation;
+
+  nlohmann::json build_request(string Role, string Name, string Content);
+  nlohmann::json build_request(string Role1, string Content1, string Role2, string Name2, string Content2);
+
+  void create();
+  // Generates connection between Ollama server and Ollama API.
 
   void exec_question();
+  // Starts new thread with parameters set in mutex
 
-  int get_status();
+  public:
 
   void set_status(int Status);
+  // force sets OLLAMA_API_STATUS as defined in header
+  //  should only be used when bringing Ollama_API_STATUS to DONE after
+  //  OLLAMA_API_READY_TO_GATHER.
 
-  void submit_question(const string& Question);
-  void submit_question_internally(const string& Question);
+  int get_status();
+  // Returns OLLAMA_API_STATUS as defined in header
+
+  void check();
+  // Check to see if Ollama server is connected then creates the api session if not. 
+
+  void submit_question(string Role, string Name, string Question, bool Output_To_Response, bool Consider_Context, bool Remember_Context);
+  // Question - Input into ollama ai
+  // Role - system assistant or user
+  // Name - user name or for user role
+  // Output_To_Response - if true, output is generated to output field.
+  // Consider_Context - if true, consider the previous context when generating response.
+  // Remember_Context - if true, generated response is remembered for future use.
+  //                    if Consider_Context is false, generated context will be combined  
+  //                    with previous context.
+  void submit_question(string Assistant_Role, string Assistant_Text ,string User_Role, string User_Name, string User_Question, bool Output_To_Response, bool Consider_Context, bool Remember_Context);
 
   int check_response();
-  void check_response_done();
-  string get_complete_text_response();
+  // Routine to get a currently running ollama response and update 
+  //  the accessible live response stream
 
+  void check_response_done();
+  // Routine called by process to close and set things when Ollama is 
+  //  finish responding
+
+  string get_complete_text_response();
+  // Returns complete text response at the time of status done.
+
+  // Push current context to stack.  remember to match unpause with pause.
+  //  or context will not be restored
   void context_pause();
   void context_unpause();
 
   void process(TTY_OUTPUT &Output, TTY_OUTPUT_FOCUS &Focus);
+  // If Ollama server is active and responding, outputs genereted text.
+  // If Ollama has completed genereated text, post processing is called.
+  // else, routine does nothing.
 };
 
 // ------------------------------------------------------------------------- //

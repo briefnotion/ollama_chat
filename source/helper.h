@@ -602,6 +602,10 @@ int two_byte_complement_signed(unsigned char byte1, unsigned char byte2);
 //  Params byte1 (LSB), byte2 (MSB), the data we find.
 //  Returns a hacked int, the system undermined.
 
+string current_time();
+
+string current_date();
+
 string file_format_system_time();
 // Return format "20241218_01.41.27"
 

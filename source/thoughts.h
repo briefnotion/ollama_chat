@@ -76,6 +76,11 @@ class THOUGHTS
   void process_maintenance_mode_cycle(SYSTEM &System);
   void process_in_conclusion_mode_stages(SYSTEM &System);
 
+  void check_simple_keywords(THOUGHT &Thought);
+  void check_intentions(THOUGHT &Thought);
+
+  string USER_NAME = "Bob";
+
   public:
   // Ollama System
   OLLAMA_API      OLLAMA_SYSTEM;

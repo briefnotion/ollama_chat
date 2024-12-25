@@ -1240,6 +1240,40 @@ int two_byte_complement_signed(unsigned char byte1, unsigned char byte2)
   return value;
 }
 
+string current_time()
+{
+  FLED_TIME_VAR time; 
+  string ret_date_time = "";
+
+  std::chrono::time_point<std::chrono::system_clock> tmeNow = std::chrono::system_clock::now();
+  std::chrono::duration<double>  dur = tmeNow.time_since_epoch();
+
+  time.put_seconds(dur.count());
+
+  ret_date_time = to_string (time.get_hour()) +
+                  ":" +
+                  linemerge_right_justify(2, "00", to_string(time.get_minute()));
+
+  return ret_date_time;
+}
+
+string current_date()
+{
+  FLED_TIME_VAR time; 
+  string ret_date_time = "";
+
+  std::chrono::time_point<std::chrono::system_clock> tmeNow = std::chrono::system_clock::now();
+  std::chrono::duration<double>  dur = tmeNow.time_since_epoch();
+
+  time.put_seconds(dur.count());
+
+    ret_date_time = "day " + to_string(time.get_day()) +
+                 " of month " + to_string(time.get_month()) +
+                  " of year " + to_string(time.get_year());
+
+  return ret_date_time;
+}
+
 string file_format_system_time()
 {
   FLED_TIME_VAR time; 
