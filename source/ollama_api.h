@@ -30,6 +30,11 @@
 #define ROLE_ASSISTANT  "assistant"
 #define ROLE_USER       "user"
 
+// Role user names
+#define USER_AI           ""
+#define USER_DOCUMENATION "DOCUMENTATION"
+#define USER_INSTRUCTIONS "INSTRUCTIONNS"
+
 using namespace std;
 
 // ------------------------------------------------------------------------- //
@@ -141,7 +146,7 @@ class OLLAMA_API
   std::vector<MESSAGE> conversation;
 
   nlohmann::json build_request(string Role, string Name, string Content);
-  nlohmann::json build_request(string Role1, string Content1, string Role2, string Name2, string Content2);
+  nlohmann::json build_request(string Role1, string Name1, string Content1, string Role2, string Name2, string Content2);
 
   void create();
   // Generates connection between Ollama server and Ollama API.
@@ -171,7 +176,9 @@ class OLLAMA_API
   // Remember_Context - if true, generated response is remembered for future use.
   //                    if Consider_Context is false, generated context will be combined  
   //                    with previous context.
-  void submit_question(string Assistant_Role, string Assistant_Text ,string User_Role, string User_Name, string User_Question, bool Output_To_Response, bool Consider_Context, bool Remember_Context);
+  void submit_question(string Role_1, string Name_1, string Question_1, 
+                        string Role_2, string Name_2, string Question_2, 
+                        bool Output_To_Response, bool Consider_Context, bool Remember_Context);
 
   int check_response();
   // Routine to get a currently running ollama response and update 

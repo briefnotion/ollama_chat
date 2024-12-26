@@ -170,47 +170,56 @@ void OLLAMA_API::proc_render_thread()
 
 // ------------------------------------------------------------------------- //
 
-/*
-{
-  "role": "user",
-  "name": "Alice",
-  "content": "What time is it?"
-}
-*/
-
 nlohmann::json OLLAMA_API::build_request(string Role, string Name, string Content)
 {
   nlohmann::json request;
   request["model"] = "default"; // Specify the model name
 
+  std::string modifiedContent = Content;
+
   // If a name is provided, include it in the content
   if (!Name.empty()) 
   {
-    Content = Name + ": " + Content; // Prefix the content with the name
+      modifiedContent = Name + ": " + Content; // Prefix the content with the name
   }
 
-  return {{"role", Role}, {"content", Content}};
+  request["messages"] = 
+  {
+      {{"role", Role}, {"content", modifiedContent}}
+  };
+
+  return request; // Return the built request
 }
 
-nlohmann::json OLLAMA_API::build_request(string Role1, string Content1, string Role2, string Name2, string Content2)
+nlohmann::json OLLAMA_API::build_request(string Role1, string Name1, string Content1, string Role2, string Name2, string Content2)
 {
   nlohmann::json request;
   request["model"] = "default"; // Specify the model name
 
+  std::string modifiedContent1 = Content1;
+  std::string modifiedContent2 = Content2;
+
   // If a name is provided, include it in the content
-  if (!Name2.empty()) 
+  if (!Name1.empty()) 
   {
-    Content2 = Name2 + ": " + Content2; // Prefix the content with the name
+      modifiedContent1 = Name1 + ": " + Content1; // Prefix the content with the name
   }
 
-  return 
-    {
-      {{"role", Role1}, {"content", Content1}},
-      {{"role", Role2}, {"content", Content2}}
-    };
+  if (!Name2.empty()) 
+  {
+      modifiedContent2 = Name2 + ": " + Content2; // Prefix the content with the name
+  }
+
+  request["messages"] = 
+  {
+      {{"role", Role1}, {"content", modifiedContent1}},
+      {{"role", Role2}, {"content", modifiedContent2}}
+  };
+
+  return request; // Return the built request
 }
 
-void OLLAMA_API::create()
+void OLLAMA_API::create() // ↑ ↓ → ←
 {
   bool connection_status = CONNECTION_STATUS;
 
@@ -472,7 +481,11 @@ void OLLAMA_API::submit_question(string Role, string Name, string Question, bool
       CONSIDER_CONTEXT = Consider_Context;
       ALLOW_OUTPUT = Output_To_Response;
 
-      REQUEST = build_request(Role, Name, Question).dump();
+      // this isn't consistant enough to work. shame, because i wanted the system to talk to multiple people.
+      //REQUEST = build_request(Role, Name, Question).dump();
+      
+      REQUEST = Question;
+      
       RESPONSE_FULL = "";
 
       exec_question();
@@ -480,7 +493,9 @@ void OLLAMA_API::submit_question(string Role, string Name, string Question, bool
   }
 }
 
-void OLLAMA_API::submit_question(string Assistant_Role, string Assistant_Text ,string User_Role, string User_Name, string User_Question, bool Output_To_Response, bool Consider_Context, bool Remember_Context)
+void OLLAMA_API::submit_question(string Role_1, string Name_1, string Question_1, 
+                                  string Role_2, string Name_2, string Question_2, 
+                                  bool Output_To_Response, bool Consider_Context, bool Remember_Context)
 {
   if (CONNECTION_STATUS == OLLAMA_SERVER_CONNECTED)
   {
@@ -490,7 +505,11 @@ void OLLAMA_API::submit_question(string Assistant_Role, string Assistant_Text ,s
       CONSIDER_CONTEXT = Consider_Context;
       ALLOW_OUTPUT = Output_To_Response;
 
-      REQUEST = build_request(Assistant_Role, Assistant_Text, User_Role, User_Name, User_Question).dump();
+      // this isn't consistant enough to work. shame, because i wanted the system to talk to multiple people.
+      //REQUEST = build_request(Role_1, Name_1, Question_1, Role_2, Name_2, Question_2).dump();
+
+      REQUEST = Question_1 + " " + Question_2;
+
       RESPONSE_FULL = "";
       exec_question();
     }
@@ -519,7 +538,7 @@ void OLLAMA_API::check_response_done()
       }
       else
       {
-        submit_question(ROLE_SYSTEM, "", get_complete_text_response(), ALLOW_OUTPUT, true, true);
+        submit_question(ROLE_USER, "", get_complete_text_response(), ALLOW_OUTPUT, true, true);
       }
     }
   }

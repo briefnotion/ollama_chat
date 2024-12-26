@@ -485,7 +485,7 @@ string file_to_string(string Dir_Filename, bool &Success)
     {
       getline(fsFile,strRead);
 
-      File_String = File_String + strRead;
+      File_String = File_String + strRead + "\n";
 
       if(fsFile.eof())
       {

@@ -189,19 +189,7 @@ int main()
     if (get_opening)
     {
       get_opening = false;
-
-      string opening_intro = 
-        //"Continue or current conversation from the following summary, and disregard any mentions of, not having a previous conversation: ";
-        //"Remember these things, but disregard any mentions of, not having a previous conversation: ";
-        //"Continue or current conversation from the following summary: ";
-        "";
-
-      sdSystem.OUTPUT_OLLAMA_RESPONSE.add_to(THOUGHTS_SYSTEM.MEMORY.load_memory_files(), sdSystem.OUTPUT_FOCUS);
-      sdSystem.OUTPUT_OLLAMA_RESPONSE.seperater(sdSystem.OUTPUT_FOCUS);
-      
-      string opening_full = opening_intro + THOUGHTS_SYSTEM.MEMORY.FILE_MANAGER.get_file("conversation_closing_previous");
-
-      THOUGHTS_SYSTEM.interact_input(opening_full, false, "input");
+      THOUGHTS_SYSTEM.interact_input("", false, "opening");
     }
 
     if (generate_closing)

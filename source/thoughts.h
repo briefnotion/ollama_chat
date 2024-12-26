@@ -74,6 +74,7 @@ class THOUGHTS
   void process_simple_ask_stages(SYSTEM &System);
   void process_maintenance_mode_stages(SYSTEM &System);
   void process_maintenance_mode_cycle(SYSTEM &System);
+  void process_opening_mode_stages(SYSTEM &System);
   void process_in_conclusion_mode_stages(SYSTEM &System);
 
   void check_simple_keywords(THOUGHT &Thought);

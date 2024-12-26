@@ -1,3 +1,6 @@
+0.032-241226
+  - No progress made.
+
 0.031-241224
   - Made some changes to the system.
   - Exploring the aspect of the "system", "assistant", and "user" role, and how 
