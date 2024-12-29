@@ -1,3 +1,6 @@
+0.033-241228
+  - Tested several different response generation formats.
+
 0.032-241226
   - No progress made.
 

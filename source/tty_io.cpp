@@ -6,6 +6,62 @@
 using namespace std;
 // ------------------------------------------------------------------------- //
 
+int kbhit()
+{
+  termios oldt, newt;
+  int ch;
+  int oldf;
+
+  if (tcgetattr(STDIN_FILENO, &oldt) != 0) 
+  {
+    perror("tcgetattr");
+    return 0;
+  }
+
+  newt = oldt;
+  newt.c_lflag &= ~(ICANON | ECHO);
+  if (tcsetattr(STDIN_FILENO, TCSANOW, &newt) != 0) 
+  {
+    perror("tcsetattr");
+    return 0;
+  }
+
+  oldf = fcntl(STDIN_FILENO, F_GETFL, 0);
+  if (oldf == -1) 
+  {
+    perror("fcntl");
+    return 0;
+  }
+
+  if (fcntl(STDIN_FILENO, F_SETFL, oldf | O_NONBLOCK) == -1) 
+  {
+    perror("fcntl");
+    return 0;
+  }
+
+  ch = getchar();
+
+  if (tcsetattr(STDIN_FILENO, TCSANOW, &oldt) != 0) 
+  {
+    perror("tcsetattr");
+    return 0;
+  }
+
+  if (fcntl(STDIN_FILENO, F_SETFL, oldf) == -1) 
+  {
+    perror("fcntl");
+    return 0;
+  }
+
+  if (ch != EOF) 
+  {
+    ungetc(ch, stdin);
+    return 1;
+  }
+
+  return 0;
+}
+
 void print_XY(int X, int Y)
 {
   move_cursor(0, 0);
@@ -72,6 +128,32 @@ void get_console_size(int &Rows, int &Cols)
 
   // Restore the cursor position
   cout << "\033[u";
+}
+
+void kb_pause(string Message)
+{
+  char char_received = 'X';
+
+  if (Message != "DO NOT PRINT")
+  {
+    move_cursor(0, 0);
+    clear_lines(10);
+    move_cursor(0, 0);
+    cout << "PAUSE" << endl << endl;
+    cout << Message << endl;
+  }
+
+  while (char_received != ' ')
+  {
+    if (kbhit())
+    {
+      char_received = getchar();
+    }
+    else
+    {
+      sleep(1);
+    }
+  }
 }
 
 // ------------------------------------------------------------------------- //
@@ -305,32 +387,6 @@ void TTY_INPUT::set_nonblocking_mode()
   termios newt = STARTING_TERMINAL_STATE;
   newt.c_lflag &= ~(ICANON | ECHO);
   tcsetattr(STDIN_FILENO, TCSANOW, &newt);
-}
-
-int TTY_INPUT::kbhit()
-{
-  termios oldt, newt;
-  int ch;
-  int oldf;
-
-  tcgetattr(STDIN_FILENO, &oldt);
-  newt = oldt;
-  newt.c_lflag &= ~(ICANON | ECHO);
-  tcsetattr(STDIN_FILENO, TCSANOW, &newt);
-  oldf = fcntl(STDIN_FILENO, F_GETFL, 0);
-  fcntl(STDIN_FILENO, F_SETFL, oldf | O_NONBLOCK);
-
-  ch = getchar();
-
-  tcsetattr(STDIN_FILENO, TCSANOW, &oldt);
-  fcntl(STDIN_FILENO, F_SETFL, oldf);
-
-  if (ch != EOF) {
-      ungetc(ch, stdin);
-      return 1;
-  }
-
-  return 0;
 }
 
 void TTY_INPUT::restore_terminal_settings()

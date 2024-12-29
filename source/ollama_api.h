@@ -120,6 +120,9 @@ class OLLAMA_API
 
   ollama::response RESPONSE;
 
+  // CHAT MODEL
+  ollama::messages CONVERSATION;
+
   ollama::response CONTEXT;
   vector<ollama::response> CONTEXT_PAUSED;
 

@@ -11,7 +11,7 @@ int main()
 {
   string version_info = Revision;
   version_info = "Ollama Chat Revision: " + version_info + "\n\n";
-  
+
   // ------------------------------------------------------------------------- //
 
   // Main System Varibles

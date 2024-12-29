@@ -28,14 +28,23 @@ using namespace std;
 
 // ------------------------------------------------------------------------- //
 
+int kbhit();
+// Returns 0 if no key is pressed.
+
 void print_XY(int X, int Y); // Print to a specific XY coordinate on the screen.
 void print_XYZ(int X, int Y, int Z); // Print to a specific XYZ coordinate on the screen.
 void move_cursor(int X, int Y); // Move cursor to position (x,y) on the screen
-void clear_screen(); // Clears the screen.
-void clear_line(); // Clears the current line.
+                                // 0,0 is the top left corner of the screen.
+
+void clear_screen();  // Clears the screen.
+void clear_line();    // Clears the current line.
 void clear_lines(int Number_Of_Lines); // Clears a number of lines starting at the current line.
 void move_up_a_line(); // Moves the cursor up one line.
 void get_console_size(int &Rows, int &Cols); // Gets the size of the console window.
+
+void kb_pause(string Message = "DO NOT PRINT");
+// pause program till space is pressed
+// does not work in extra thread.
 
 // ------------------------------------------------------------------------- //
 
@@ -130,7 +139,6 @@ class TTY_INPUT
 
   //char get_char();
   void set_nonblocking_mode();
-  int kbhit();
 
   bool check_char_recieived();
   // returns true if the loop should continue on

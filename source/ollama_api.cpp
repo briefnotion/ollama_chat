@@ -158,14 +158,119 @@ void OLLAMA_API::proc_render_thread()
 
   //std::cout << OLLAMA_MUTEX.context().as_simple_string() << std::endl;
 
-  if (CONSIDER_CONTEXT)
+  try
   {
-    ollama::generate(PROPS.MODEL, REQUEST, CONTEXT, response_callback, OPTIONS);
+    int type = 4;
+
+    if (type == 0)  // Generation via prompt and context
+    {
+      if (CONSIDER_CONTEXT)
+      {
+        ollama::generate(PROPS.MODEL, REQUEST, CONTEXT, response_callback, OPTIONS);
+      }
+      else
+      {
+        ollama::generate(PROPS.MODEL, REQUEST, response_callback, OPTIONS);
+      }
+    }
+
+    else if (type == 1)  // Generation via ollama::request 
+    {
+      ollama::request request(PROPS.MODEL, REQUEST, OPTIONS);
+
+      if (CONSIDER_CONTEXT)
+      {
+        if ( CONTEXT.as_json().contains("context") ) 
+        {
+          request["context"] = CONTEXT.as_json()["context"];
+        }
+      }
+
+      ollama::generate(request, response_callback);
+    }
+
+    else if (type == 2)  // Generation via ollama::chat  With Streaming On
+    {
+      CONVERSATION.push_back({ROLE_USER, REQUEST});
+
+      ollama::request request(PROPS.MODEL, REQUEST, OPTIONS, true);
+
+      if (CONSIDER_CONTEXT)
+      {
+        if ( CONTEXT.as_json().contains("context") ) 
+        {
+          request["context"] = CONTEXT.as_json()["context"];
+        }
+      }
+
+      ollama::generate(request, response_callback);
+    }
+
+    else if (type == 3)  // Generation via ollama::chat  With Streaming Off
+    {
+      CONVERSATION.push_back({ROLE_USER, REQUEST});
+
+      ollama::request request(PROPS.MODEL, REQUEST, OPTIONS, false);
+
+      if (CONSIDER_CONTEXT)
+      {
+        if ( CONTEXT.as_json().contains("context") ) 
+        {
+          request["context"] = CONTEXT.as_json()["context"];
+        }
+      }
+
+      ollama::generate(request, response_callback);
+    }
+    
+    else if (type == 4)  // Generation via ollama::chat  With Streaming Off, tool
+    {
+      nlohmann::json tool_wheather = 
+      {
+        {"type", "function"},
+        {"function", {
+          {"name", "get_current_weather"},
+          {"description", "Get the current weather for a location"},
+          {"parameters", {
+            {"type", "object"},
+            {"properties", {
+              {"location", {
+                {"type", "string"},
+                {"description", "The location to get the weather for, e.g. San Francisco, CA"}
+              }},
+              {"format", {
+                {"type", "string"},
+                {"description", "The format to return the weather in, e.g. 'celsius' or 'fahrenheit'"},
+                {"enum", {"celsius", "fahrenheit"}}
+              }}
+            }},
+            {"required", {"location", "format"}}
+          }}
+        }}
+      };
+
+      CONVERSATION.push_back({ROLE_USER, REQUEST});
+
+      ollama::request request(PROPS.MODEL, REQUEST, OPTIONS, false);
+
+      if (CONSIDER_CONTEXT)
+      {
+        if ( CONTEXT.as_json().contains("context") ) 
+        {
+          request["context"] = CONTEXT.as_json()["context"];
+        }
+      }
+
+      request["tools"] = tool_wheather;
+
+      ollama::generate(request, response_callback);
+    }
   }
-  else
+  catch(const std::exception& e)
   {
-    ollama::generate(PROPS.MODEL, REQUEST, response_callback, OPTIONS);
+    std::cerr << e.what() << '\n';
   }
+  
 }
 
 // ------------------------------------------------------------------------- //
@@ -487,6 +592,13 @@ void OLLAMA_API::submit_question(string Role, string Name, string Question, bool
       REQUEST = Question;
       
       RESPONSE_FULL = "";
+
+      if (1 == 0)
+      {
+        kb_pause( "Response:\n  " + RESPONSE.as_json_string() +
+                  //"\nContext:\n" + CONTEXT.as_json_string() +
+                  "\n\n" );
+      }
 
       exec_question();
     }
