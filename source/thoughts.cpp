@@ -72,7 +72,7 @@ void THOUGHTS::process_input_stages(SYSTEM &System)
   }
 }
 
-void THOUGHTS::process_simple_ask_stages(SYSTEM &System)
+void THOUGHTS::process_simple_ask_stages()
 { 
   if (TRAIN_OF_THOUGH.back().THINKING_STAGE == 0)
   {
@@ -105,7 +105,7 @@ void THOUGHTS::process_simple_ask_stages(SYSTEM &System)
   }
 }
 
-void THOUGHTS::process_maintenance_mode_stages(SYSTEM &System)
+void THOUGHTS::process_maintenance_mode_stages()
 {
   //System.OUTPUT_OLLAMA_RESPONSE.add_to("MM STAGE: " + to_string(TRAIN_OF_THOUGH.back().THINKING_STAGE) + "\n", System.OUTPUT_FOCUS);
 
@@ -328,7 +328,7 @@ void THOUGHTS::process_opening_mode_stages(SYSTEM &System)
   }
 }
 
-void THOUGHTS::process_in_conclusion_mode_stages(SYSTEM &System)
+void THOUGHTS::process_in_conclusion_mode_stages()
 {
   if (TRAIN_OF_THOUGH.back().THINKING_STAGE == 0)
   {
@@ -425,11 +425,11 @@ void THOUGHTS::process_thinking(SYSTEM &System)
     }
     else if (TRAIN_OF_THOUGH.back().ABOUT == "simple ask")
     {
-      process_simple_ask_stages(System);
+      process_simple_ask_stages();
     }
     else if (TRAIN_OF_THOUGH.back().ABOUT == "maintenance mode")
     {
-      process_maintenance_mode_stages(System);
+      process_maintenance_mode_stages();
     }
     else if (TRAIN_OF_THOUGH.back().ABOUT == "maintenance mode cycle")
     {
@@ -441,7 +441,7 @@ void THOUGHTS::process_thinking(SYSTEM &System)
     }
     else if (TRAIN_OF_THOUGH.back().ABOUT == "in conclusion")
     {
-      process_in_conclusion_mode_stages(System);
+      process_in_conclusion_mode_stages();
     }
   }
 }
@@ -489,6 +489,10 @@ bool THOUGHTS::isolated()
   if (thought_count() == 0)
   {
     return TRAIN_OF_THOUGH.back().ISOLATE_INPUT_TO_THOUGHT;
+  }
+  else
+  {
+    return false;
   }
 }
 
@@ -582,7 +586,7 @@ void THOUGHTS::process(SYSTEM &System)
   }
 
   // Handle Output
-  VECTORDB_SYSTEM.process(System.OUTPUT_OLLAMA_RESPONSE, System.OUTPUT_FOCUS, OLLAMA_SYSTEM);
+  VECTORDB_SYSTEM.process();
   OLLAMA_SYSTEM.process(System.OUTPUT_OLLAMA_RESPONSE, System.OUTPUT_FOCUS);
 }
 

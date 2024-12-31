@@ -11,6 +11,8 @@
 #include "tty_io.h"
 #include "threading.h"
 
+#include "rasapi.h"
+
 #define OLLAMA_SERVER_NOT_CONNECTED     0
 #define OLLAMA_SERVER_CONNECTED         1
 #define OLLAMA_SERVER_CONNECTION_FAILED -1

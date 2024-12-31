@@ -71,11 +71,11 @@ class THOUGHTS
   RESOLUTION_RESULTS RESOLUTION_BUFFER;   // THIS IS PRECARIOUS. USE WITH CAUTION
 
   void process_input_stages(SYSTEM &System);
-  void process_simple_ask_stages(SYSTEM &System);
-  void process_maintenance_mode_stages(SYSTEM &System);
+  void process_simple_ask_stages();
+  void process_maintenance_mode_stages();
   void process_maintenance_mode_cycle(SYSTEM &System);
   void process_opening_mode_stages(SYSTEM &System);
-  void process_in_conclusion_mode_stages(SYSTEM &System);
+  void process_in_conclusion_mode_stages();
 
   void check_simple_keywords(THOUGHT &Thought);
   void check_intentions(THOUGHT &Thought);

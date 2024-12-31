@@ -79,11 +79,14 @@ string VECTORDB_PYTHON_API::exec(const char* cmd)
 {
   array<char, 128> buffer;
   string result;
-  unique_ptr<FILE, decltype(&pclose)> pipe(popen(cmd, "r"), pclose);
+  
+  // Use a lambda to avoid the warning
+  unique_ptr<FILE, function<int(FILE*)>> pipe(popen(cmd, "r"), [](FILE* fp) { return pclose(fp); });
   if (!pipe) 
   {
     throw runtime_error("popen() failed!");
   }
+  
   while (fgets(buffer.data(), buffer.size(), pipe.get()) != nullptr) 
   {
     result += buffer.data();
@@ -94,7 +97,9 @@ string VECTORDB_PYTHON_API::exec(const char* cmd)
 void VECTORDB_PYTHON_API::exec_thread_question() 
 {
   array<char, 128> buffer;
-  unique_ptr<FILE, decltype(&pclose)> pipe(popen(PYTHON_QUESTION_RESPONSE_MUTEX.command_line().c_str(), "r"), pclose);
+
+  // Use a lambda to avoid the warning
+  unique_ptr<FILE, function<int(FILE*)>> pipe(popen(PYTHON_QUESTION_RESPONSE_MUTEX.command_line().c_str(), "r"), [](FILE* fp) { return pclose(fp); });
 
   PYTHON_QUESTION_RESPONSE_MUTEX.set_done(VECTORDB_API_RESPONS_GENERATING);
 
@@ -353,7 +358,7 @@ string VECTORDB_PYTHON_API::get_full_response()
   return full_response;
 }
 
-void VECTORDB_PYTHON_API::process(TTY_OUTPUT &Output, TTY_OUTPUT_FOCUS &Focus, OLLAMA_API &Ollama_System)
+void VECTORDB_PYTHON_API::process()
 {
   if (THINKING)
   {

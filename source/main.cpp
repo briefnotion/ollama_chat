@@ -309,10 +309,10 @@ int main()
   THOUGHTS_SYSTEM.MEMORY.save_chat_history(sdSystem.OUTPUT_OLLAMA_RESPONSE.HISTORY);
 
   // Shutdown any open threads process
-  // Restore the terminal
   THOUGHTS_SYSTEM.OLLAMA_SYSTEM.OLLAMA_RESPONSE_THREAD.wait_for_thread_to_finish("OLLAMA_RESPONSE_THREAD");
   THOUGHTS_SYSTEM.VECTORDB_SYSTEM.PYTHON_QUESTION_RESPONSE_THREAD.wait_for_thread_to_finish("PYTHON_QUESTION_RESPONSE_THREAD");
   
+  // Restore the terminal
   sdSystem.INPUT.restore_terminal_settings();
 
   return 0;

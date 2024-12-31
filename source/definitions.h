@@ -21,7 +21,7 @@
 // DEFINITIONS
 // -------------------------------------------------------------------------------------
 
-#define Revision "0.033-241228"
+#define Revision "0.034-241229"
 #define  QACODE  "Z782"
 
 // -------------------------------------------------------------------------------------
@@ -45,12 +45,14 @@
 #define TEST_DATA   false
 */
 
-// StupidRandom Parameters
-#define StuRNDsize              100
-
 
 // Definitions for VectorDB API Collections
 #define VECTORDB_API_COLLECTION_DOCUMEMTATION "documentation"
 #define VECTORDB_API_COLLECTION_CHAT_HISTORY  "chat_history"
+
+// Auxilary Definitions
+// StupidRandom Parameters
+#define StuRNDsize              100
+#define DUMP_DIRECTORY          "/home/briefn/chat_api/dump/"
 
 #endif

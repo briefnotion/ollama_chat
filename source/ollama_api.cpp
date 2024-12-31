@@ -225,6 +225,8 @@ void OLLAMA_API::proc_render_thread()
     
     else if (type == 4)  // Generation via ollama::chat  With Streaming Off, tool
     {
+      //nlohmann::json function_call = "auto";
+
       nlohmann::json tool_wheather = 
       {
         {"type", "function"},
@@ -262,6 +264,9 @@ void OLLAMA_API::proc_render_thread()
       }
 
       request["tools"] = tool_wheather;
+      request["function_call"] = "auto";
+
+      dump_string(DUMP_DIRECTORY, "request_submit.txt", request.dump());
 
       ollama::generate(request, response_callback);
     }
@@ -522,7 +527,9 @@ void OLLAMA_API::create() // ↑ ↓ → ←
       // Things for testing:
       /*
       */
-      // Things for testing:
+      // Things for testing
+      
+      (void)success;
       
       connection_status = OLLAMA_SERVER_CONNECTED;
     } 
@@ -578,6 +585,9 @@ void OLLAMA_API::check()
 
 void OLLAMA_API::submit_question(string Role, string Name, string Question, bool Output_To_Response, bool Consider_Context, bool Remember_Context)
 {
+  (void)Role;
+  (void)Name;
+
   if (CONNECTION_STATUS == OLLAMA_SERVER_CONNECTED)
   {
     if (OLLAMA_MUTEX.done() == OLLAMA_API_READY_FOR_REQUEST)
@@ -609,6 +619,11 @@ void OLLAMA_API::submit_question(string Role_1, string Name_1, string Question_1
                                   string Role_2, string Name_2, string Question_2, 
                                   bool Output_To_Response, bool Consider_Context, bool Remember_Context)
 {
+  (void)Role_1;
+  (void)Name_1;
+  (void)Role_2;
+  (void)Name_2;
+
   if (CONNECTION_STATUS == OLLAMA_SERVER_CONNECTED)
   {
     if (OLLAMA_MUTEX.done() == OLLAMA_API_READY_FOR_REQUEST)
@@ -646,6 +661,7 @@ void OLLAMA_API::check_response_done()
       //  remembered but no context was provided with the question.
       if (CONSIDER_CONTEXT)
       {
+        dump_string(DUMP_DIRECTORY, "response.txt", OLLAMA_MUTEX.get_complete_response_after_done().as_json_string());
         CONTEXT = RESPONSE;
       }
       else

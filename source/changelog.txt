@@ -1,3 +1,6 @@
+0.034-241229
+  - Currently at a function tool roadblock.  Weighing options.
+
 0.033-241228
   - Tested several different response generation formats.
 

@@ -112,6 +112,9 @@ class FILE_WATCH
 bool check_create_working_dir(string Directory, bool Create);
 // Not Coded
 
+void dump_string(string Directory, string Filename, string Value);
+// Copies string to file Filename
+
 bool get_files_list(string Directory, vector<string> &List, string Only_Type);
 // Returns false if no files found.
 

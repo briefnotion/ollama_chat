@@ -136,7 +136,7 @@ class VECTORDB_PYTHON_API
   bool get_gathered_documents(string &Documents_Gathered);
   string get_full_response();
 
-  void process(TTY_OUTPUT &Output, TTY_OUTPUT_FOCUS &Focus, OLLAMA_API &Ollama_System);
+  void process();
 
 };
 

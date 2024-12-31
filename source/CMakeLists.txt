@@ -4,9 +4,10 @@ cmake_minimum_required(VERSION 3.18.0)
 set(CMAKE_CXX_STANDARD 20)
 set(CMAKE_CXX_STANDARD_REQUIRED True)
 
-# Assign build type
+# Assign build type support build type
 set(BUILD_RELEASE ON)
 set(BUILD_STRICT ON)
+set(SUPPORT_BUILD_STRICT ON)
 
 if(BUILD_RELEASE)
     set(CMAKE_BUILD_TYPE Release)
@@ -46,11 +47,19 @@ add_library(ollama_files STATIC
 
 target_include_directories(ollama_files PRIVATE ${OllamaHPP_INCLUDE_DIR})
 
-# Always set compile options for ollama_files to strict off
-if(CMAKE_COMPILER_IS_GNUCC OR CMAKE_COMPILER_IS_GNUCXX)
-    target_compile_options(ollama_files PRIVATE -Wall -Wextra)
-elseif(CMAKE_CXX_COMPILER_ID MATCHES "Clang")
-    target_compile_options(ollama_files PRIVATE -Weverything)
+# Set compile options for ollama_files based on BUILD_STRICT variable
+if(SUPPORT_BUILD_STRICT)
+    if(CMAKE_COMPILER_IS_GNUCC OR CMAKE_COMPILER_IS_GNUCXX)
+        target_compile_options(ollama_files PRIVATE -Wall -Wextra -Werror)
+        elseif(CMAKE_CXX_COMPILER_ID MATCHES "Clang")
+        target_compile_options(ollama_files PRIVATE -Weverything -Werror)
+    endif()
+else()
+    if(CMAKE_COMPILER_IS_GNUCC OR CMAKE_COMPILER_IS_GNUCXX)
+        target_compile_options(ollama_files PRIVATE -Wall -Wextra)
+    elseif(CMAKE_CXX_COMPILER_ID MATCHES "Clang")
+        target_compile_options(ollama_files PRIVATE -Weverything)
+    endif()
 endif()
 
 # Add the executable for remaining files
