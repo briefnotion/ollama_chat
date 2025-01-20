@@ -11,7 +11,9 @@
 #include "stringthings.h"
 
 #include "system.h"
-#include "ollama_api.h"
+//#include "ollama_api.h"
+#include "ollama_api_python.h"
+#include "vectordb_python_api.h"
 #include "vectordb_python_api.h"
 #include "remember.h"
 
@@ -84,7 +86,8 @@ class THOUGHTS
 
   public:
   // Ollama System
-  OLLAMA_API      OLLAMA_SYSTEM;
+  //OLLAMA_API      OLLAMA_SYSTEM;
+  OLLAMA_API_PYTHON      OLLAMA_SYSTEM;
   // ChromaDB System
   VECTORDB_PYTHON_API VECTORDB_SYSTEM;
 

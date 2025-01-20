@@ -8,13 +8,6 @@ using namespace std;
 
 // ------------------------------------------------------------------------- //
 
-string VECTORDB_PYTHON_MUTEX::get_complete_response() const
-{
-  lock_guard<mutex> lock(MUTEX_);
-
-  return COMPLETE_RESPONSE;
-}
-
 void VECTORDB_PYTHON_MUTEX::set_command_line(string Command)
 {
   lock_guard<mutex> lock(MUTEX_);
@@ -26,6 +19,13 @@ string VECTORDB_PYTHON_MUTEX::command_line() const
 {
   lock_guard<mutex> lock(MUTEX_);
   return COMMAND_LINE;
+}
+
+string VECTORDB_PYTHON_MUTEX::get_complete_response() const
+{
+  lock_guard<mutex> lock(MUTEX_);
+
+  return COMPLETE_RESPONSE;
 }
 
 int VECTORDB_PYTHON_MUTEX::done() const

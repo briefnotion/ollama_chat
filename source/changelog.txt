@@ -1,3 +1,23 @@
+0.035-250112
+  - Created ollama_api_python.cpp to replace ollama_api.cpp with the hope of being able 
+      to access ollama tools functions.  This is a first pass and context is not retained.
+
+      cons:
+        - Code is more conveluted and complex.
+        - Depends on calling a python script. 
+        - Losing platform indepencency.
+        - Python problems will be inherented.
+        - Relying on python ollama api, which is just another api.
+        - File io will increase dramaticly.
+        - The system will not be secure and run in one space.
+        - Errors will not be contained or always caught or tested.
+        - Conflicts between code calls will be more likely.
+        - Notaciable drecrease in performance due to python and IO overheads.
+        - Code will be more difficult to maintain
+      
+      pros:
+        - Maybe I'll have access to ollamas tools function.
+
 0.034-241229
   - Currently at a function tool roadblock.  Weighing options.
 

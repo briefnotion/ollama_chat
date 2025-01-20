@@ -21,7 +21,7 @@
 // DEFINITIONS
 // -------------------------------------------------------------------------------------
 
-#define Revision "0.034-241229"
+#define Revision "0.035-250112"
 #define  QACODE  "Z782"
 
 // -------------------------------------------------------------------------------------
@@ -33,9 +33,9 @@
 // 15 - 60 fps
 //#define SCREENUPDATEDELAY 30  // in milliseconds 
 #define SCREENIO_SLEEP_TIMER_DELAY    30  // This will be in frames per second (fps)
-#define OLLAMA_SLEEP_TIMER_DELAY      45  // This will be in frames per second (fps)
-#define EMBEDDING_SLEEP_TIMER_DELAY   45  // This will be in frames per second (fps)
-#define THOUGHTS_SLEEP_TIMER_DELAY    45  // This will be in frames per second (fps)
+#define OLLAMA_SLEEP_TIMER_DELAY      60  // This will be in frames per second (fps)
+#define EMBEDDING_SLEEP_TIMER_DELAY   60  // This will be in frames per second (fps)
+#define THOUGHTS_SLEEP_TIMER_DELAY    60  // This will be in frames per second (fps)
 
 #define TEST_MODE           false
 
