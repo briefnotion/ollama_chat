@@ -121,7 +121,8 @@ class OLLAMA_API_PYTHON_PROPS
   */
 
   string TEST =     "python3 ../python/test.py";
-  string REQUEST =  "python3 ../python/generate_request.py";
+  //string REQUEST =  "python3 ../python/generate_request.py";
+  string REQUEST =  "python3 ../python/generate_request_2.py";
 
 };
 

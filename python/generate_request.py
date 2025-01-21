@@ -3,16 +3,6 @@ from ollama import chat
 # from ollama import ChatResponse
 
 def ask_ollama(question):
-  # response: ChatResponse = chat(model='llama3.2', messages=[
-  #   {
-  #     'role': 'user',
-  #     'content': question,
-  #   },
-  # ])
-  # print(response['message']['content'])
-  # or access fields directly from the response object
-  # print(response.message.content)
-
   stream = chat(
       model='llama3.2',
       messages=[{'role': 'user', 'content': question}],
@@ -22,7 +12,7 @@ def ask_ollama(question):
   for chunk in stream:
     print(chunk['message']['content'], end='', flush=True)
 
-  return 
+  return
 
 if __name__ == "__main__":
   if len(sys.argv) < 2:
@@ -31,4 +21,3 @@ if __name__ == "__main__":
   
   question = " ".join(sys.argv[1:])
   response = ask_ollama(question)
-  #print(response)
