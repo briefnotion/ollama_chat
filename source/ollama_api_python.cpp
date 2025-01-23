@@ -726,7 +726,10 @@ void OLLAMA_API_PYTHON::submit_question(string Role, string Name, string Questio
       }
 
       //string bcommand = PROPS.ENVIRONMENT + aa + PROPS.TEST + sp;
-      string bcommand = PROPS.ENVIRONMENT + aa + PROPS.REQUEST + sp + Question;
+      string bcommand = PROPS.ENVIRONMENT + aa + PROPS.REQUEST + sp + 
+                                    (EXCHANGE_DIRECTORY + PROPS.REQUEST_JSON_FILENAME) + sp + 
+                                    (EXCHANGE_DIRECTORY + PROPS.REQUEST_JSON_FILENAME) + sp + 
+                                    Question;
 
       if (PROPS.BASH_SHELL.size() > 0)
       {

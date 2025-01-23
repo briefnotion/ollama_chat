@@ -1,4 +1,7 @@
-0.035-250112
+0.037-250123
+  - Made some progress at saving context via the generate_request_3.py.
+
+0.036-250121
   - Got Tools Function semi working via the generate_request_2.py. Still trying different 
       options. 
 

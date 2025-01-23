@@ -21,7 +21,7 @@
 // DEFINITIONS
 // -------------------------------------------------------------------------------------
 
-#define Revision "0.036-250121"
+#define Revision "0.037-250123"
 #define  QACODE  "Z782"
 
 // -------------------------------------------------------------------------------------
@@ -54,5 +54,6 @@
 // StupidRandom Parameters
 #define StuRNDsize              100
 #define DUMP_DIRECTORY          "/home/briefn/chat_api/dump/"
+#define EXCHANGE_DIRECTORY      "/home/briefn/chat_api/exchange/"
 
 #endif
