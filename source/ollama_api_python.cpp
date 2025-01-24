@@ -10,7 +10,7 @@ using namespace std;
 void OLLAMA_API_MUTEX_PYTHON::set_command_line(string Command)
 {
   lock_guard<mutex> lock(MUTEX_);
-  COMPLETE_RESPONSE = "";
+  //COMPLETE_RESPONSE = "";
   COMMAND_LINE = Command;
 }
 
@@ -20,12 +20,14 @@ string OLLAMA_API_MUTEX_PYTHON::command_line() const
   return COMMAND_LINE;
 }
 
+/*
 string OLLAMA_API_MUTEX_PYTHON::get_complete_response() const
 {
   lock_guard<mutex> lock(MUTEX_);
 
   return COMPLETE_RESPONSE;
 }
+*/
 
 /*
 void OLLAMA_API_MUTEX_PYTHON::set_complete_response_after_done(ollama::response Response)
@@ -180,6 +182,8 @@ void OLLAMA_API_PYTHON::exec_thread_question()
   {
     OLLAMA_MUTEX.add_to_response(buffer.data());
   }
+
+  RESPONSE = nlohmann::json::parse(file_to_string(EXCHANGE_DIRECTORY + PROPS.RESPONSE_JSON_FILENAME));
 
   OLLAMA_MUTEX.set_done(OLLAMA_API_RESPONSE_DONE);
 }
@@ -394,6 +398,8 @@ void OLLAMA_API_PYTHON::proc_render_thread()
 nlohmann::json OLLAMA_API_PYTHON::build_request(string Role, string Name, string Content)
 {
   nlohmann::json request;
+
+  /*
   request["model"] = "default"; // Specify the model name
 
   std::string modifiedContent = Content;
@@ -408,6 +414,16 @@ nlohmann::json OLLAMA_API_PYTHON::build_request(string Role, string Name, string
   {
       {{"role", Role}, {"content", modifiedContent}}
   };
+  */
+
+  (void)Name;
+
+  request["model"] = PROPS.MODEL; 
+
+  request["messages"] = RESPONSE["messages"];
+  request["messages"].push_back({{"role", Role}, {"content", Content}});
+
+  request["stream"] = true;
 
   return request; // Return the built request
 }
@@ -714,7 +730,9 @@ void OLLAMA_API_PYTHON::submit_question(string Role, string Name, string Questio
       // this isn't consistant enough to work. shame, because i wanted the system to talk to multiple people.
       //REQUEST = build_request(Role, Name, Question).dump();
       
-      REQUEST = Question;
+      //REQUEST = Question;
+      REQUEST = build_request(Role, Name, Question);
+      string_to_file((EXCHANGE_DIRECTORY + PROPS.REQUEST_JSON_FILENAME), REQUEST.dump(), false);
       
       RESPONSE_FULL = "";
 
@@ -728,8 +746,7 @@ void OLLAMA_API_PYTHON::submit_question(string Role, string Name, string Questio
       //string bcommand = PROPS.ENVIRONMENT + aa + PROPS.TEST + sp;
       string bcommand = PROPS.ENVIRONMENT + aa + PROPS.REQUEST + sp + 
                                     (EXCHANGE_DIRECTORY + PROPS.REQUEST_JSON_FILENAME) + sp + 
-                                    (EXCHANGE_DIRECTORY + PROPS.REQUEST_JSON_FILENAME) + sp + 
-                                    Question;
+                                    (EXCHANGE_DIRECTORY + PROPS.RESPONSE_JSON_FILENAME);
 
       if (PROPS.BASH_SHELL.size() > 0)
       {
@@ -785,7 +802,7 @@ void OLLAMA_API_PYTHON::check_response_done()
   if (OLLAMA_MUTEX.done() == 5)
   {
     //RESPONSE = OLLAMA_MUTEX.get_complete_response_after_done();
-    RESPONSE = OLLAMA_MUTEX.get_complete_response();
+    //RESPONSE = OLLAMA_MUTEX.get_complete_response();
     
     if (REMEMBER_CONTEXT)
     {
@@ -794,7 +811,7 @@ void OLLAMA_API_PYTHON::check_response_done()
       if (CONSIDER_CONTEXT)
       {
         //dump_string(DUMP_DIRECTORY, "response.txt", OLLAMA_MUTEX.get_complete_response_after_done().dump());
-        dump_string(DUMP_DIRECTORY, "response.txt", OLLAMA_MUTEX.get_complete_response());
+        //dump_string(DUMP_DIRECTORY, "response.txt", OLLAMA_MUTEX.get_complete_response());
         CONTEXT = RESPONSE;
       }
       else

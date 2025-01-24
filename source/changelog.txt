@@ -1,3 +1,8 @@
+0.038-250124
+  - Request and response json are handled by ollama_chat.
+  - Streaming resonses are back.
+  - Not everything is working as was.
+
 0.037-250123
   - Made some progress at saving context via the generate_request_3.py.
 

@@ -49,8 +49,8 @@ class OLLAMA_API_MUTEX_PYTHON
   mutable mutex MUTEX_;
 
   vector<string> RESPONSE_VECTOR;
-  string COMPLETE_RESPONSE = "";
-  nlohmann::json RESPONSE;
+  //string COMPLETE_RESPONSE = "";
+  //nlohmann::json RESPONSE;
 
   int DONE = 0;
 
@@ -69,7 +69,7 @@ class OLLAMA_API_MUTEX_PYTHON
   string command_line() const;
 
   // Getting a copy of the response afte it is done.
-  string get_complete_response() const;
+  //string get_complete_response() const;
 
   // Getting a copy of the response afte it is done.
   //void set_complete_response_after_done(ollama::response Response);
@@ -123,9 +123,11 @@ class OLLAMA_API_PYTHON_PROPS
   string TEST =     "python3 ../python/test.py";
   //string REQUEST =  "python3 ../python/generate_request.py";
   //string REQUEST =  "python3 ../python/generate_request_2.py";
-  string REQUEST =  "python3 ../python/generate_request_3.py";
+  //string REQUEST =  "python3 ../python/generate_request_3.py";
+  string REQUEST =  "python3 ../python/generate_request_4.py";
 
   string REQUEST_JSON_FILENAME = "request.json";
+  string RESPONSE_JSON_FILENAME = "response.json";
 
 };
 
@@ -191,7 +193,7 @@ class OLLAMA_API_PYTHON
                               //  as fall back
 
   // Sending
-  string REQUEST = "";
+  nlohmann::json REQUEST = "";
 
   private:
   
