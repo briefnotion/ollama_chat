@@ -1,3 +1,6 @@
+0.038-250124b
+  - Missed sending generate_request_4.py to git.
+  
 0.038-250124
   - Request and response json are handled by ollama_chat.
   - Streaming resonses are back.
