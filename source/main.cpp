@@ -64,7 +64,6 @@ int main()
 
   {
     // Only run main look if connection to server is sucessful.
-    //sdSystem.OLLAMA_SYSTEM.PROPS.MODEL = "llama3.1:8b";
     THOUGHTS_SYSTEM.OLLAMA_SYSTEM.PROPS.MODEL = "llama3.2:latest";
     THOUGHTS_SYSTEM.OLLAMA_SYSTEM.PROPS.URL = "http://localhost:11434";
   }

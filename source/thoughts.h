@@ -60,6 +60,14 @@ class THOUGHT
   RESOLUTION_RESULTS RESOLUTION;
 };
 
+class THOUGHTS_PROPERTIES
+{
+  public:
+
+  string USER_NAME = "";  // placeholer
+
+};
+
 class THOUGHTS
 {
   private:
@@ -82,8 +90,6 @@ class THOUGHTS
   void check_simple_keywords(THOUGHT &Thought);
   void check_intentions(THOUGHT &Thought);
 
-  string USER_NAME = "Bob";
-
   public:
   // Ollama System
   //OLLAMA_API      OLLAMA_SYSTEM;
@@ -100,6 +106,8 @@ class THOUGHTS
   void process_input(SYSTEM &System);
   void process_thinking(SYSTEM &System);
   void process_resolution();
+
+  THOUGHTS_PROPERTIES PROPS;
 
   public:
   int thought_count();

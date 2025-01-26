@@ -50,11 +50,11 @@ void THOUGHTS::process_input_stages(SYSTEM &System)
       {
         System.OUTPUT_OLLAMA_RESPONSE.add_to("   *---- DOCUMENTATION WAS FOUND\n", System.OUTPUT_FOCUS);  // Temporary Note for debugging
         string assisted_documents = " Use the following information, sourced from local files, provided: " + gathered_documents;
-        OLLAMA_SYSTEM.submit_question(ROLE_USER, "Documenation", assisted_documents, ROLE_USER, USER_NAME, TRAIN_OF_THOUGH.back().SUBJECT, true, true, true);
+        OLLAMA_SYSTEM.submit_question(ROLE_USER, "Documenation", assisted_documents, ROLE_USER, PROPS.USER_NAME, TRAIN_OF_THOUGH.back().SUBJECT, true, true, true);
       }
       else
       {
-        OLLAMA_SYSTEM.submit_question(ROLE_USER, USER_NAME, TRAIN_OF_THOUGH.back().SUBJECT, true, true, true);
+        OLLAMA_SYSTEM.submit_question(ROLE_USER, PROPS.USER_NAME, TRAIN_OF_THOUGH.back().SUBJECT, true, true, true);
       }
     }
   }

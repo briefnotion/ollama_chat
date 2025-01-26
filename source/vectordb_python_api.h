@@ -7,7 +7,7 @@
 #include <stdexcept>
 #include <array>
 
-#include "ollama_api.h"
+//#include "ollama_api.h"
 #include "threading.h"
 #include "stringthings.h"
 

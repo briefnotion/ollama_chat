@@ -49,14 +49,16 @@ class OLLAMA_API_MUTEX_PYTHON
   mutable mutex MUTEX_;
 
   vector<string> RESPONSE_VECTOR;
-  //string COMPLETE_RESPONSE = "";
+  
+  // Complete text response
+  string COMPLETE_RESPONSE = "";
   //nlohmann::json RESPONSE;
 
   int DONE = 0;
 
   string COMMAND_LINE = "";
 
-  //ollama::response COMPLETE_RESPONSE_AFTER_DONE;
+  // Full JSON Response after done.
   nlohmann::json COMPLETE_RESPONSE_AFTER_DONE;
   bool COMPLETE_RESPONSE_READY_AFTER_DONE = false;
 
@@ -68,16 +70,15 @@ class OLLAMA_API_MUTEX_PYTHON
   void set_command_line(string Command);
   string command_line() const;
 
-  // Getting a copy of the response afte it is done.
-  //string get_complete_response() const;
+  // Getting a copy of the text response afte it is done.
+  string get_complete_response() const;
 
   // Getting a copy of the response afte it is done.
-  //void set_complete_response_after_done(ollama::response Response);
+  void set_complete_response_after_done(nlohmann::json Response);
 
-  //ollama::response get_complete_response_after_done();
-  //nlohmann::json get_complete_response_after_done();
+  nlohmann::json get_complete_response_after_done();
 
-  //bool complete_response_ready_after_done() const;
+  bool complete_response_ready_after_done() const;
 
   // Generating Response Complete
   int done() const;
@@ -128,6 +129,7 @@ class OLLAMA_API_PYTHON_PROPS
 
   string REQUEST_JSON_FILENAME = "request.json";
   string RESPONSE_JSON_FILENAME = "response.json";
+  string TOOL_CALL_JSON_FILENAME = "tool_call.json";
 
 };
 
@@ -171,10 +173,9 @@ class OLLAMA_API_PYTHON
   nlohmann::json RESPONSE;
 
   // CHAT MODEL
-  //ollama::messages CONVERSATION;
+  nlohmann::json CONVERSATION;
 
-  nlohmann::json CONTEXT;
-  //vector<ollama::response> CONTEXT_PAUSED;
+  //nlohmann::json CONTEXT;
   vector<nlohmann::json> CONTEXT_PAUSED;
 
   // Different types of ask.
@@ -197,10 +198,9 @@ class OLLAMA_API_PYTHON
 
   private:
   
-  std::vector<MESSAGE_PYTHON> conversation;
-
+  nlohmann::json build_request(string Role_1, string Name_1, string Content_1, 
+                                string Role_2, string Name_2, string Content_2);
   nlohmann::json build_request(string Role, string Name, string Content);
-  nlohmann::json build_request(string Role1, string Name1, string Content1, string Role2, string Name2, string Content2);
 
   void create();
   // Generates connection between Ollama server and Ollama API.
@@ -221,6 +221,9 @@ class OLLAMA_API_PYTHON
   void check();
   // Check to see if Ollama server is connected then creates the api session if not. 
 
+  void submit_question(string Role_1, string Name_1, string Question_1, 
+                        string Role_2, string Name_2, string Question_2, 
+                        bool Output_To_Response, bool Consider_Context, bool Remember_Context);
   void submit_question(string Role, string Name, string Question, bool Output_To_Response, bool Consider_Context, bool Remember_Context);
   // Question - Input into ollama ai
   // Role - system assistant or user
@@ -230,9 +233,6 @@ class OLLAMA_API_PYTHON
   // Remember_Context - if true, generated response is remembered for future use.
   //                    if Consider_Context is false, generated context will be combined  
   //                    with previous context.
-  void submit_question(string Role_1, string Name_1, string Question_1, 
-                        string Role_2, string Name_2, string Question_2, 
-                        bool Output_To_Response, bool Consider_Context, bool Remember_Context);
 
   int check_response();
   // Routine to get a currently running ollama response and update 
