@@ -129,7 +129,6 @@ class OLLAMA_API_PYTHON_PROPS
 
   string REQUEST_JSON_FILENAME = "request.json";
   string RESPONSE_JSON_FILENAME = "response.json";
-  string TOOL_CALL_JSON_FILENAME = "tool_call.json";
 
 };
 

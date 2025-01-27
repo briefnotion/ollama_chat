@@ -1,4 +1,9 @@
 0.039-250125
+  - generate_request_4.py now only produces one output response file.
+  - streaming retained with tool_call.
+  - Tool Call not yet completed.
+
+0.039-250125
   - Mostly restored the functionality of the staged thoughts.
   - Made changes to how the responses and conversation is being remembered.
   - Started working on tool calls again.

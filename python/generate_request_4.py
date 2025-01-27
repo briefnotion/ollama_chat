@@ -6,7 +6,6 @@ import os
 def get_current_weather(location, format):
     # Implement your weather fetching logic here
     # For demonstration, we'll use a placeholder response
-    print("---\nget_current_weather\n---\n")
     return f"The current weather in {location} has a temperature of 25°C."
 
 def print_json(json_data, name, show):
@@ -16,7 +15,7 @@ def print_json(json_data, name, show):
         print(json.dumps(json_data, indent=2))
         print("---")
 
-def ask_ollama(model, input_filename, output_filename, tool_call_filename):
+def ask_ollama(model, input_filename, output_filename):
     try:
         # Load the existing context from the input file
         if os.path.exists(input_filename):
@@ -34,7 +33,7 @@ def ask_ollama(model, input_filename, output_filename, tool_call_filename):
         print_json(payload, "Second Payload", False)
 
         full_content = ""
-        tool_call_content = []
+        tool_calls_content = []
 
         # Submit the request with the payload and stream response
         with requests.post("http://localhost:11434/api/chat", json=payload, stream=True) as response:
@@ -44,45 +43,39 @@ def ask_ollama(model, input_filename, output_filename, tool_call_filename):
                 if line:
                     try:
                         response_json = json.loads(line.decode('utf-8').strip())
-                        
-                        # Check for tool_calls within message
+
+                        # Add tool_calls directly to tool_calls_content
                         if 'message' in response_json and 'tool_calls' in response_json['message']:
-                            tool_call_content.append({"tool_calls": response_json['message']['tool_calls']})
-                            print(f"Tool call requested: {json.dumps(response_json['message']['tool_calls'], indent=2)}")
+                            for tool_call in response_json['message']['tool_calls']:
+                                tool_calls_content.append(tool_call)
 
                         if 'message' in response_json and 'content' in response_json['message']:
                             print(response_json['message']['content'], end="", flush=True)
                             full_content += response_json['message']['content']
                             
-                            # Open the file in write mode and write the latest line
-                            #with open("/home/briefn/chat_api/dump/respons_stream.json", "w") as output_stream:
-                            #    json.dump(response_json, output_stream, indent=2)
-
                     except json.JSONDecodeError as e:
                         print(f"Decoding JSON has failed: {e}")
 
-        # Append the collected content to the messages
-        response_json["messages"] = {"role": "assistant", "content": full_content}
+        # Prepare the messages with tool_calls and content
+        response_json["messages"] = [{"role": "assistant", "content": full_content}]
+        for tool_call in tool_calls_content:
+            if tool_call:  # Check if tool_call is not an empty dictionary
+                response_json["messages"].append({"tool_calls": tool_call})
 
         # Save the updated context to the output file
         with open(output_filename, "w") as outfile:
             json.dump(response_json, outfile, indent=2)
-
-        # Save the tool call content to the tool call output file
-        with open(tool_call_filename, "w") as toolfile:
-            json.dump(tool_call_content, toolfile, indent=2)
 
     except requests.exceptions.RequestException as e:
         print(f"Request failed: {e}")
 
 if __name__ == "__main__":
     if len(sys.argv) < 4:
-        print("Usage: python3 generate_request.py <ollama_model> <input_filename> <output_filename> <tool_call_filename>")
+        print("Usage: python3 generate_request.py <ollama_model> <input_filename> <output_filename>")
         sys.exit(1)
     
     ollama_model = sys.argv[1]
     input_filename = sys.argv[2]
     output_filename = sys.argv[3]
-    tool_call_filename = sys.argv[4]
 
-    ask_ollama(ollama_model, input_filename, output_filename, tool_call_filename)
+    ask_ollama(ollama_model, input_filename, output_filename)

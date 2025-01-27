@@ -746,8 +746,7 @@ void OLLAMA_API_PYTHON::submit_question(string Role_1, string Name_1, string Que
       string bcommand = PROPS.ENVIRONMENT + aa + PROPS.REQUEST + sp + 
                                     PROPS.MODEL + sp + 
                                     (EXCHANGE_DIRECTORY + PROPS.REQUEST_JSON_FILENAME) + sp + 
-                                    (EXCHANGE_DIRECTORY + PROPS.RESPONSE_JSON_FILENAME) + sp + 
-                                    (EXCHANGE_DIRECTORY + PROPS.TOOL_CALL_JSON_FILENAME);
+                                    (EXCHANGE_DIRECTORY + PROPS.RESPONSE_JSON_FILENAME);
 
       if (PROPS.BASH_SHELL.size() > 0)
       {
@@ -790,7 +789,24 @@ void OLLAMA_API_PYTHON::check_response_done()
       {
         //dump_string(DUMP_DIRECTORY, "response.txt", OLLAMA_MUTEX.get_complete_response_after_done().dump());
         //dump_string(DUMP_DIRECTORY, "response.txt", OLLAMA_MUTEX.get_complete_response());
-        CONVERSATION.push_back(RESPONSE["messages"]);
+        for (const auto& message : RESPONSE["messages"]) 
+        {
+          if (message.contains("tool_calls"))
+          {
+            // resubmit with tool info
+          }
+          else
+          {
+            if (message.contains("role"))
+            {
+              if (message["content"] != "")
+              {
+                // resubmit without tool info
+                CONVERSATION.push_back(message);
+              }
+            }
+          }
+        }
       }
       else
       {
