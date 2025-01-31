@@ -1,4 +1,8 @@
-0.039-250125
+0.041-250130
+  - Made some corrections to the simple_ask routine.
+  - Minor progress made towards implementing the Tool Function.
+
+0.040-250126
   - generate_request_4.py now only produces one output response file.
   - streaming retained with tool_call.
   - Tool Call not yet completed.

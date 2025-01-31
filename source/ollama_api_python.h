@@ -174,13 +174,22 @@ class OLLAMA_API_PYTHON
   // CHAT MODEL
   nlohmann::json CONVERSATION;
 
+  // Tool Function Problems
+  nlohmann::json CONVERSATION_SNAP_SHOT;
+  string ROLE_1_SNAP_SHOT = "";
+  string NAME_1_SNAP_SHOT = "";
+  string QUESTION_1_SNAP_SHOT = "";
+  string ROLE_2_SNAP_SHOT = "";
+  string NAME_2_SNAP_SHOT = "";
+  string QUESTION_2_SNAP_SHOT = "";
+
   //nlohmann::json CONTEXT;
   vector<nlohmann::json> CONTEXT_PAUSED;
 
   // Different types of ask.
-  bool REMEMBER_CONTEXT = true;
-  bool CONSIDER_CONTEXT = true;
   bool ALLOW_OUTPUT     = true;
+  bool CONSIDER_CONTEXT = true;
+  bool REMEMBER_CONTEXT = true;
 
   public:
 
@@ -198,8 +207,10 @@ class OLLAMA_API_PYTHON
   private:
   
   nlohmann::json build_request(string Role_1, string Name_1, string Content_1, 
-                                string Role_2, string Name_2, string Content_2);
-  nlohmann::json build_request(string Role, string Name, string Content);
+                                string Role_2, string Name_2, string Content_2, 
+                                bool Enable_Tool_Function);
+  nlohmann::json build_request(string Role, string Name, string Content, 
+                                bool Enable_Tool_Function);
 
   void create();
   // Generates connection between Ollama server and Ollama API.
@@ -222,8 +233,11 @@ class OLLAMA_API_PYTHON
 
   void submit_question(string Role_1, string Name_1, string Question_1, 
                         string Role_2, string Name_2, string Question_2, 
-                        bool Output_To_Response, bool Consider_Context, bool Remember_Context);
-  void submit_question(string Role, string Name, string Question, bool Output_To_Response, bool Consider_Context, bool Remember_Context);
+                        bool Output_To_Response, bool Consider_Context, 
+                        bool Remember_Context, bool Enable_Tool_Function);
+  void submit_question(string Role, string Name, string Question, 
+                        bool Output_To_Response, bool Consider_Context, 
+                        bool Remember_Context, bool Enable_Tool_Function);
   // Question - Input into ollama ai
   // Role - system assistant or user
   // Name - user name or for user role

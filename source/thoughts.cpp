@@ -50,11 +50,11 @@ void THOUGHTS::process_input_stages(SYSTEM &System)
       {
         System.OUTPUT_OLLAMA_RESPONSE.add_to("   *---- DOCUMENTATION WAS FOUND\n", System.OUTPUT_FOCUS);  // Temporary Note for debugging
         string assisted_documents = " Use the following information, sourced from local files, provided: " + gathered_documents;
-        OLLAMA_SYSTEM.submit_question(ROLE_USER, "Documenation", assisted_documents, ROLE_USER, PROPS.USER_NAME, TRAIN_OF_THOUGH.back().SUBJECT, true, true, true);
+        OLLAMA_SYSTEM.submit_question(ROLE_USER, "Documenation", assisted_documents, ROLE_USER, PROPS.USER_NAME, TRAIN_OF_THOUGH.back().SUBJECT, true, true, true, false);
       }
       else
       {
-        OLLAMA_SYSTEM.submit_question(ROLE_USER, PROPS.USER_NAME, TRAIN_OF_THOUGH.back().SUBJECT, true, true, true);
+        OLLAMA_SYSTEM.submit_question(ROLE_USER, PROPS.USER_NAME, TRAIN_OF_THOUGH.back().SUBJECT, true, true, true, true);
       }
     }
   }
@@ -77,7 +77,8 @@ void THOUGHTS::process_simple_ask_stages()
   if (TRAIN_OF_THOUGH.back().THINKING_STAGE == 0)
   {
     TRAIN_OF_THOUGH.back().THINKING_STAGE = 1;
-    OLLAMA_SYSTEM.submit_question(ROLE_USER, USER_AI, TRAIN_OF_THOUGH.back().SUBJECT, false, false, false);
+    OLLAMA_SYSTEM.context_pause();
+    OLLAMA_SYSTEM.submit_question(ROLE_USER, USER_AI, TRAIN_OF_THOUGH.back().SUBJECT, false, false, false, false);
   }
   else if (TRAIN_OF_THOUGH.back().THINKING_STAGE == 1)
   {
@@ -101,6 +102,8 @@ void THOUGHTS::process_simple_ask_stages()
       {
         TRAIN_OF_THOUGH.back().RESOLUTION.RESOLUTION_SIMPLE = -1;
       }
+
+      OLLAMA_SYSTEM.context_unpause();
     } 
   }
 }
@@ -152,7 +155,7 @@ void THOUGHTS::process_maintenance_mode_cycle(SYSTEM &System)
 
     string introduction = MEMORY.FILE_MANAGER.get_file("maintenance_mode_introduction");
 
-    OLLAMA_SYSTEM.submit_question(ROLE_USER, USER_INSTRUCTIONS, introduction, true, true, true);
+    OLLAMA_SYSTEM.submit_question(ROLE_USER, USER_INSTRUCTIONS, introduction, true, true, true, false);
   }
 
   else if(TRAIN_OF_THOUGH.back().THINKING_STAGE == 1) // clear previous gather request
@@ -246,7 +249,7 @@ void THOUGHTS::process_maintenance_mode_cycle(SYSTEM &System)
       //System.OUTPUT_OLLAMA_RESPONSE.add_to(full_response, System.OUTPUT_FOCUS);
 
       string summary = "Give a quick and short summary of: " + full_response;
-      OLLAMA_SYSTEM.submit_question(ROLE_USER, USER_AI, summary, true, false, true);
+      OLLAMA_SYSTEM.submit_question(ROLE_USER, USER_AI, summary, true, false, true, false);
     }
 
     else if (VECTORDB_SYSTEM.get_status() == VECTORDB_API_READY_FOR_REQUEST)
@@ -316,7 +319,7 @@ void THOUGHTS::process_opening_mode_stages(SYSTEM &System)
     //                              true, true, true);
 
     OLLAMA_SYSTEM.submit_question(ROLE_USER, USER_AI, opening_full,
-                                  true, true, true);
+                                  true, true, true, false);
   }
   else if (TRAIN_OF_THOUGH.back().THINKING_STAGE == 2)
   {
@@ -337,7 +340,7 @@ void THOUGHTS::process_in_conclusion_mode_stages()
   else if (TRAIN_OF_THOUGH.back().THINKING_STAGE == 1)
   {
     TRAIN_OF_THOUGH.back().THINKING_STAGE = 2;
-    OLLAMA_SYSTEM.submit_question(ROLE_USER, USER_AI, TRAIN_OF_THOUGH.back().SUBJECT, false, true, true);
+    OLLAMA_SYSTEM.submit_question(ROLE_USER, USER_AI, TRAIN_OF_THOUGH.back().SUBJECT, false, true, true, false);
   }
   else if (TRAIN_OF_THOUGH.back().THINKING_STAGE == 2)
   {

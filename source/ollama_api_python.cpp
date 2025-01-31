@@ -170,201 +170,11 @@ void OLLAMA_API_PYTHON::thread()
   }
 }
 
-/*
-void OLLAMA_API_PYTHON::on_receive_response(const ollama::response& response) 
-{
-  if (response.as_json()["done"] == true) 
-  {
-    OLLAMA_MUTEX.add_to_response(response);
-    OLLAMA_MUTEX.set_done(OLLAMA_API_RESPONSE_DONE);
-    OLLAMA_MUTEX.set_complete_response_after_done(response);
-  }
-  else
-  {
-    OLLAMA_MUTEX.add_to_response(response);
-  }
-}
-*/
-
-/*
-void OLLAMA_API_PYTHON::proc_render_thread() 
-{
-  OLLAMA_MUTEX.set_done(OLLAMA_API_RESPONS_GENERATING);
-
-  // Set the callback to the member function
-  std::function<void(const ollama::response&)> response_callback = [this](const ollama::response& res) 
-  {
-    this->on_receive_response(res);
-  };
-
-  //1 - ollama::response generate(ollama::request &request)
-
-  //2 - bool generate(ollama::request &request, 
-                  //  std::function<void (const ollama::response &)> on_receive_response)
-
-  //3 - ollama::response generate(const std::string &model, 
-                  //  const std::string &prompt, 
-                  //  const ollama::json &options = nullptr, 
-                  //  const std::vector<std::string> &images = std::vector<std::string>())
-
-  //4 - bool generate(const std::string &model, 
-                  //  const std::string &prompt, 
-                  //  std::function<void (const ollama::response &)> on_receive_response, 
-                  //  const ollama::json &options = nullptr, 
-                  //  const std::vector<std::string> &images = std::vector<std::string>())
-
-  //5 - ollama::response generate(const std::string &model, 
-                  //  const std::string &prompt, 
-                  //  const ollama::response &context, 
-                  //  const ollama::json &options = nullptr, 
-                  //  const std::vector<std::string> &images = std::vector<std::string>())
-
-  //6 - bool generate(const std::string &model, 
-                  //  const std::string &prompt, 
-                  //  ollama::response &context, 
-                  //  std::function<void (const ollama::response &)> on_receive_response, 
-                  //  const ollama::json &options = nullptr, 
-                  //  const std::vector<std::string> &images = std::vector<std::string>())
-
-  //cout << "-------------" << endl;
-
-  //cout << "Response JSON: " << CONTEXT.as_json().dump() << endl << endl;
-  //cout << "Response STRING: " << CONTEXT.as_json_string() << endl  << endl;
-
-  //OLLAMA_MUTEX.set_context(CONTEXT);
-
-  //ollama::request request(ollama::message_type::generation);
-  //request["model"]=     "llama3.1:8b";
-  //request["prompt"]=    OLLAMA_MUTEX.request();
-  //request["context"] =  OLLAMA_MUTEX.context();
-
-  //std::cout << OLLAMA_MUTEX.context().as_simple_string() << std::endl;
-
-  try
-  {
-    int type = 4;
-
-    if (type == 0)  // Generation via prompt and context
-    {
-      if (CONSIDER_CONTEXT)
-      {
-        ollama::generate(PROPS.MODEL, REQUEST, CONTEXT, response_callback, OPTIONS);
-      }
-      else
-      {
-        ollama::generate(PROPS.MODEL, REQUEST, response_callback, OPTIONS);
-      }
-    }
-
-    else if (type == 1)  // Generation via ollama::request 
-    {
-      ollama::request request(PROPS.MODEL, REQUEST, OPTIONS);
-
-      if (CONSIDER_CONTEXT)
-      {
-        if ( CONTEXT.as_json().contains("context") ) 
-        {
-          request["context"] = CONTEXT.as_json()["context"];
-        }
-      }
-
-      ollama::generate(request, response_callback);
-    }
-
-    else if (type == 2)  // Generation via ollama::chat  With Streaming On
-    {
-      CONVERSATION.push_back({ROLE_USER, REQUEST});
-
-      ollama::request request(PROPS.MODEL, REQUEST, OPTIONS, true);
-
-      if (CONSIDER_CONTEXT)
-      {
-        if ( CONTEXT.as_json().contains("context") ) 
-        {
-          request["context"] = CONTEXT.as_json()["context"];
-        }
-      }
-
-      ollama::generate(request, response_callback);
-    }
-
-    else if (type == 3)  // Generation via ollama::chat  With Streaming Off
-    {
-      CONVERSATION.push_back({ROLE_USER, REQUEST});
-
-      ollama::request request(PROPS.MODEL, REQUEST, OPTIONS, false);
-
-      if (CONSIDER_CONTEXT)
-      {
-        if ( CONTEXT.as_json().contains("context") ) 
-        {
-          request["context"] = CONTEXT.as_json()["context"];
-        }
-      }
-
-      ollama::generate(request, response_callback);
-    }
-    
-    else if (type == 4)  // Generation via ollama::chat  With Streaming Off, tool
-    {
-      //nlohmann::json function_call = "auto";
-
-      nlohmann::json tool_wheather = 
-      {
-        {"type", "function"},
-        {"function", {
-          {"name", "get_current_weather"},
-          {"description", "Get the current weather for a location"},
-          {"parameters", {
-            {"type", "object"},
-            {"properties", {
-              {"location", {
-                {"type", "string"},
-                {"description", "The location to get the weather for, e.g. San Francisco, CA"}
-              }},
-              {"format", {
-                {"type", "string"},
-                {"description", "The format to return the weather in, e.g. 'celsius' or 'fahrenheit'"},
-                {"enum", {"celsius", "fahrenheit"}}
-              }}
-            }},
-            {"required", {"location", "format"}}
-          }}
-        }}
-      };
-
-      CONVERSATION.push_back({ROLE_USER, REQUEST});
-
-      ollama::request request(PROPS.MODEL, REQUEST, OPTIONS, false);
-
-      if (CONSIDER_CONTEXT)
-      {
-        if ( CONTEXT.as_json().contains("context") ) 
-        {
-          request["context"] = CONTEXT.as_json()["context"];
-        }
-      }
-
-      request["tools"] = tool_wheather;
-      request["function_call"] = "auto";
-
-      dump_string(DUMP_DIRECTORY, "request_submit.txt", request.dump());
-
-      ollama::generate(request, response_callback);
-    }
-  }
-  catch(const std::exception& e)
-  {
-    std::cerr << e.what() << '\n';
-  }
-  
-}
-*/
-
 // ------------------------------------------------------------------------- //
 
 nlohmann::json OLLAMA_API_PYTHON::build_request(string Role_1, string Name_1, string Content_1, 
-                                                string Role_2, string Name_2, string Content_2)
+                                                string Role_2, string Name_2, string Content_2, 
+                                                bool Enable_Tool_Function)
 {
   nlohmann::json request;
 
@@ -402,6 +212,7 @@ nlohmann::json OLLAMA_API_PYTHON::build_request(string Role_1, string Name_1, st
   }
 
   // tools
+  if (Enable_Tool_Function) 
   {
     nlohmann::json tool_wheather = 
     {
@@ -427,7 +238,7 @@ nlohmann::json OLLAMA_API_PYTHON::build_request(string Role_1, string Name_1, st
       }}
     };
 
-    //request["tools"] = {tool_wheather};
+    request["tools"] = {tool_wheather};
 
   }
 
@@ -447,9 +258,10 @@ nlohmann::json OLLAMA_API_PYTHON::build_request(string Role_1, string Name_1, st
   return request; // Return the built request
 }
 
-nlohmann::json OLLAMA_API_PYTHON::build_request(string Role, string Name, string Content)
+nlohmann::json OLLAMA_API_PYTHON::build_request(string Role, string Name, string Content, 
+                                                bool Enable_Tool_Function)
 {
-  return build_request(Role, Name, Content, "", "", "");
+  return build_request(Role, Name, Content, "", "", "", Enable_Tool_Function);
 }
 
 void OLLAMA_API_PYTHON::create() // ↑ ↓ → ←
@@ -671,15 +483,6 @@ void OLLAMA_API_PYTHON::create() // ↑ ↓ → ←
   */
 }
 
-/*
-void OLLAMA_API_PYTHON::exec_question()
-{
-  // Be careful with this because it looks like black magic to me.
-  OLLAMA_RESPONSE_THREAD.start_render_thread([&]() 
-                {  proc_render_thread();  });
-}
-*/
-
 void OLLAMA_API_PYTHON::set_status(int Status)
 {
   OLLAMA_MUTEX.set_done(Status);
@@ -711,36 +514,39 @@ void OLLAMA_API_PYTHON::check()
 }
 
 void OLLAMA_API_PYTHON::submit_question(string Role_1, string Name_1, string Question_1, 
-                                  string Role_2, string Name_2, string Question_2, 
-                                  bool Output_To_Response, bool Consider_Context, bool Remember_Context)
+                                        string Role_2, string Name_2, string Question_2, 
+                                        bool Output_To_Response, bool Consider_Context, 
+                                        bool Remember_Context, bool Enable_Tool_Function)
 {
   if (CONNECTION_STATUS == OLLAMA_SERVER_CONNECTED)
   {
     if (OLLAMA_MUTEX.done() == OLLAMA_API_READY_FOR_REQUEST)
     {
-      REMEMBER_CONTEXT = Remember_Context;
-      CONSIDER_CONTEXT = Consider_Context;
       ALLOW_OUTPUT = Output_To_Response;
+      CONSIDER_CONTEXT = Consider_Context;
+      REMEMBER_CONTEXT = Remember_Context;
+
+      // Take a snapshot of the conversation, in case it needs to be undone by the tool function.
+      CONVERSATION_SNAP_SHOT = CONVERSATION;
+      ROLE_1_SNAP_SHOT = Role_1;
+      NAME_1_SNAP_SHOT = Name_1;
+      QUESTION_1_SNAP_SHOT = Question_1;
+      ROLE_2_SNAP_SHOT = Role_2;
+      NAME_2_SNAP_SHOT = Name_2;
+      QUESTION_2_SNAP_SHOT = Question_2;
 
       if (Role_2 == "") // singele message
       {
-        REQUEST = build_request(Role_1, Name_1, Question_1);
+        REQUEST = build_request(Role_1, Name_1, Question_1, Enable_Tool_Function);
       }
       else              // multi message
       {
-        REQUEST = build_request(Role_1, Name_1, Question_1, Role_2, Name_2, Question_2);
+        REQUEST = build_request(Role_1, Name_1, Question_1, Role_2, Name_2, Question_2, Enable_Tool_Function);
       }
 
       string_to_file((EXCHANGE_DIRECTORY + PROPS.REQUEST_JSON_FILENAME), REQUEST.dump(2), false);
       
       RESPONSE_FULL = "";
-
-      if (1 == 0)
-      {
-        kb_pause( "Response:\n  " + RESPONSE.dump() +
-                  //"\nContext:\n" + CONTEXT.as_json_string() +
-                  "\n\n" );
-      }
 
       //string bcommand = PROPS.ENVIRONMENT + aa + PROPS.TEST + sp;
       string bcommand = PROPS.ENVIRONMENT + aa + PROPS.REQUEST + sp + 
@@ -762,9 +568,13 @@ void OLLAMA_API_PYTHON::submit_question(string Role_1, string Name_1, string Que
   }
 }
 
-void OLLAMA_API_PYTHON::submit_question(string Role, string Name, string Question, bool Output_To_Response, bool Consider_Context, bool Remember_Context)
+void OLLAMA_API_PYTHON::submit_question(string Role, string Name, string Question, 
+                                        bool Output_To_Response, bool Consider_Context, 
+                                        bool Remember_Context, bool Enable_Tool_Function)
 {
-  submit_question(Role, Name, Question, "", "", "", Output_To_Response, Consider_Context, Remember_Context);
+  submit_question(Role, Name, Question, "", "", "", 
+                  Output_To_Response, Consider_Context, 
+                  Remember_Context, Enable_Tool_Function);
 }
 
 int OLLAMA_API_PYTHON::check_response()
@@ -775,42 +585,77 @@ int OLLAMA_API_PYTHON::check_response()
 
 void OLLAMA_API_PYTHON::check_response_done()
 {
-  //if (OLLAMA_MUTEX.complete_response_ready_after_done())
-  if (OLLAMA_MUTEX.done() == 5)
+  if (OLLAMA_MUTEX.done() == OLLAMA_API_READY_TO_GATHER)
   {
     RESPONSE = OLLAMA_MUTEX.get_complete_response_after_done();
-    //RESPONSE = OLLAMA_MUTEX.get_complete_response();
     
-    if (REMEMBER_CONTEXT)
+    for (const auto& message : RESPONSE["messages"]) 
     {
-      // Recombine old context with new context if response is suposed to be 
-      //  remembered but no context was provided with the question.
-      if (CONSIDER_CONTEXT)
+
+      // tack on tool_call info if found.
+      if (message.contains("tool_calls"))
       {
-        //dump_string(DUMP_DIRECTORY, "response.txt", OLLAMA_MUTEX.get_complete_response_after_done().dump());
-        //dump_string(DUMP_DIRECTORY, "response.txt", OLLAMA_MUTEX.get_complete_response());
-        for (const auto& message : RESPONSE["messages"]) 
+        // UNDO to Resubmit
+        OLLAMA_MUTEX.set_done(OLLAMA_API_READY_FOR_REQUEST);
+        CONVERSATION = CONVERSATION_SNAP_SHOT;
+
+        for (const auto& tool_call : message["tool_calls"]) 
         {
-          if (message.contains("tool_calls"))
+          if (tool_call.contains("function") && 
+              tool_call["function"].contains("name"))
           {
-            // resubmit with tool info
-          }
-          else
-          {
-            if (message.contains("role"))
+            if (tool_call["function"]["name"] == "get_current_weather") 
             {
-              if (message["content"] != "")
+              std::string location = tool_call["function"]["arguments"]["location"];
+              std::string format = tool_call["function"]["arguments"]["format"];
+              //std::string weather_info = get_current_weather(location, format);
+              string weather_info = "The current weather in " + location + " has a temperature of 25°C.";
+
+              // Update the payload with the weather information
+              nlohmann::json message_tool = 
               {
-                // resubmit without tool info
-                CONVERSATION.push_back(message);
-              }
+                {"role", "tool"},
+                {"content", weather_info}
+              };
+
+              CONVERSATION.push_back(message_tool);
+            }
+            else
+            {
+              nlohmann::json message_tool = 
+              {
+                {"role", "tool"},
+                {"content", "The current weather on Mars has a temperature of -25°C."}
+              };
+
+              CONVERSATION.push_back(message_tool);
             }
           }
         }
+
+        // Resubmit question without tool info
+        {
+          submit_question(ROLE_1_SNAP_SHOT, NAME_1_SNAP_SHOT, QUESTION_1_SNAP_SHOT, 
+                          ROLE_2_SNAP_SHOT, NAME_2_SNAP_SHOT, QUESTION_2_SNAP_SHOT, 
+                          ALLOW_OUTPUT, CONSIDER_CONTEXT, 
+                          REMEMBER_CONTEXT, false);
+        }
       }
+
+      // If no tool call found, store the response.
       else
       {
-        submit_question(ROLE_USER, "", get_complete_text_response(), ALLOW_OUTPUT, true, true);
+        if (message.contains("role"))
+        {
+          if (message["content"] != "")
+          {
+            if (REMEMBER_CONTEXT)
+            {
+              // resubmit without tool info
+              CONVERSATION.push_back(message);
+            }
+          }
+        }
       }
     }
   }
