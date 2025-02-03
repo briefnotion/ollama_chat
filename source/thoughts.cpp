@@ -365,13 +365,15 @@ void THOUGHTS::check_simple_keywords(THOUGHT &Thought)
 {
   if (keyword_search(TRAIN_OF_THOUGH.back().SUBJECT, {"time"}))
   {
-    Thought.SUBJECT += " (Update your internal clock to the current real time of " + current_time() + ".)";
-    //Thought.SUBJECT += "But, dont respond to the current time if it isn't what was intended)";
+    //Thought.SUBJECT += " (Update your internal clock to the current real time of " + current_time() + ".)";
+    string dummy = Thought.SUBJECT;
+    (void)dummy;
   }
+  
   if (keyword_search(TRAIN_OF_THOUGH.back().SUBJECT, {"date"}))
   {
-    Thought.SUBJECT += " (Update your internal clock to the current real date of " + current_date() + ".)";
-    //Thought.SUBJECT += "But, dont respond to the current date if it isn't what was intended)";
+    //Thought.SUBJECT += " (Update your internal clock to the current real date of " + current_date() + ".)";
+    
   }
 }
 

@@ -72,7 +72,7 @@ def ask_ollama(input_filename, output_filename, question):
                     weather_info = get_current_weather(location, format)
 
                     # Update the payload with the weather information
-                    message_tool = {"role": "tool", "content": weather_info}
+                    message_tool = {"role": "tool", "content": weather_info, "name": "get_current_weather"}
 
                     payload["messages"].append(message_tool)
         

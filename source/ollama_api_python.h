@@ -208,9 +208,7 @@ class OLLAMA_API_PYTHON
   
   nlohmann::json build_request(string Role_1, string Name_1, string Content_1, 
                                 string Role_2, string Name_2, string Content_2, 
-                                bool Enable_Tool_Function);
-  nlohmann::json build_request(string Role, string Name, string Content, 
-                                bool Enable_Tool_Function);
+                                bool Enable_Tool_Function, nlohmann::json Message_Append);
 
   void create();
   // Generates connection between Ollama server and Ollama API.
@@ -230,7 +228,12 @@ class OLLAMA_API_PYTHON
 
   void check();
   // Check to see if Ollama server is connected then creates the api session if not. 
-
+  
+  void submit_question(string Role_1, string Name_1, string Question_1, 
+                        string Role_2, string Name_2, string Question_2, 
+                        bool Output_To_Response, bool Consider_Context, 
+                        bool Remember_Context, bool Enable_Tool_Function, 
+                        nlohmann::json Message_Append);
   void submit_question(string Role_1, string Name_1, string Question_1, 
                         string Role_2, string Name_2, string Question_2, 
                         bool Output_To_Response, bool Consider_Context, 

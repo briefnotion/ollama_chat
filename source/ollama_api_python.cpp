@@ -174,7 +174,7 @@ void OLLAMA_API_PYTHON::thread()
 
 nlohmann::json OLLAMA_API_PYTHON::build_request(string Role_1, string Name_1, string Content_1, 
                                                 string Role_2, string Name_2, string Content_2, 
-                                                bool Enable_Tool_Function)
+                                                bool Enable_Tool_Function, nlohmann::json Message_Append)
 {
   nlohmann::json request;
 
@@ -198,6 +198,21 @@ nlohmann::json OLLAMA_API_PYTHON::build_request(string Role_1, string Name_1, st
 
   // add messages
   {
+
+    int append_position = 1;
+
+    // Before
+    if (append_position == -1)
+    {
+      if (!Message_Append.empty())
+      {
+        for (const auto& message : Message_Append)
+        {
+          CONVERSATION.push_back(message);
+        }
+      }
+    }
+
     if (Role_2 == "") // single message
     {
       CONVERSATION.push_back({{"role", Role_1}, {"content", Content_1}});
@@ -206,6 +221,18 @@ nlohmann::json OLLAMA_API_PYTHON::build_request(string Role_1, string Name_1, st
     {
       CONVERSATION.push_back({{"role", Role_1}, {"content", Content_1}});
       CONVERSATION.push_back({{"role", Role_2}, {"content", Content_2}});
+    }
+
+    // After
+    if (append_position == 1)
+    {
+      if (!Message_Append.empty())
+      {
+        for (const auto& message : Message_Append)
+        {
+          CONVERSATION.push_back(message);
+        }
+      }
     }
 
     request["messages"] = CONVERSATION;
@@ -238,14 +265,24 @@ nlohmann::json OLLAMA_API_PYTHON::build_request(string Role_1, string Name_1, st
       }}
     };
 
-    request["tools"] = {tool_wheather};
+    nlohmann::json tool_clock = 
+    {
+      {"type", "function"},
+      {"function", {
+        {"name", "get_current_time"},
+        {"description", "Get the current time"}
+      }}
+    };
 
+    request["tools"] = {tool_wheather, tool_clock};
   }
 
   // options
   {
     request["stream"] = true;
-    request["function_call"] = "auto";
+    request["tool_choice"] = "auto";    // Default auto, any, none // Not seeing this do anything
+    request["function_call"] = "auto";  // Not seeing this do anything
+    
     //request["stop_sequences"] = "";
     //request["max_tokens"] = 2048;
     //request["temperature"] = 1.0;
@@ -256,12 +293,6 @@ nlohmann::json OLLAMA_API_PYTHON::build_request(string Role_1, string Name_1, st
   }
 
   return request; // Return the built request
-}
-
-nlohmann::json OLLAMA_API_PYTHON::build_request(string Role, string Name, string Content, 
-                                                bool Enable_Tool_Function)
-{
-  return build_request(Role, Name, Content, "", "", "", Enable_Tool_Function);
 }
 
 void OLLAMA_API_PYTHON::create() // ↑ ↓ → ←
@@ -516,7 +547,8 @@ void OLLAMA_API_PYTHON::check()
 void OLLAMA_API_PYTHON::submit_question(string Role_1, string Name_1, string Question_1, 
                                         string Role_2, string Name_2, string Question_2, 
                                         bool Output_To_Response, bool Consider_Context, 
-                                        bool Remember_Context, bool Enable_Tool_Function)
+                                        bool Remember_Context, bool Enable_Tool_Function, 
+                                        nlohmann::json Message_Append)
 {
   if (CONNECTION_STATUS == OLLAMA_SERVER_CONNECTED)
   {
@@ -535,14 +567,7 @@ void OLLAMA_API_PYTHON::submit_question(string Role_1, string Name_1, string Que
       NAME_2_SNAP_SHOT = Name_2;
       QUESTION_2_SNAP_SHOT = Question_2;
 
-      if (Role_2 == "") // singele message
-      {
-        REQUEST = build_request(Role_1, Name_1, Question_1, Enable_Tool_Function);
-      }
-      else              // multi message
-      {
-        REQUEST = build_request(Role_1, Name_1, Question_1, Role_2, Name_2, Question_2, Enable_Tool_Function);
-      }
+      REQUEST = build_request(Role_1, Name_1, Question_1, Role_2, Name_2, Question_2, Enable_Tool_Function, Message_Append);
 
       string_to_file((EXCHANGE_DIRECTORY + PROPS.REQUEST_JSON_FILENAME), REQUEST.dump(2), false);
       
@@ -568,13 +593,25 @@ void OLLAMA_API_PYTHON::submit_question(string Role_1, string Name_1, string Que
   }
 }
 
+void OLLAMA_API_PYTHON::submit_question(string Role_1, string Name_1, string Question_1, 
+                                        string Role_2, string Name_2, string Question_2, 
+                                        bool Output_To_Response, bool Consider_Context, 
+                                        bool Remember_Context, bool Enable_Tool_Function)
+{
+  nlohmann::json empty_json;
+  submit_question(Role_1, Name_1, Question_1, Role_2, Name_2, Question_2, 
+                  Output_To_Response, Consider_Context, 
+                  Remember_Context, Enable_Tool_Function, empty_json);
+}
+
 void OLLAMA_API_PYTHON::submit_question(string Role, string Name, string Question, 
                                         bool Output_To_Response, bool Consider_Context, 
                                         bool Remember_Context, bool Enable_Tool_Function)
 {
+  nlohmann::json empty_json;
   submit_question(Role, Name, Question, "", "", "", 
                   Output_To_Response, Consider_Context, 
-                  Remember_Context, Enable_Tool_Function);
+                  Remember_Context, Enable_Tool_Function, empty_json);
 }
 
 int OLLAMA_API_PYTHON::check_response()
@@ -589,9 +626,11 @@ void OLLAMA_API_PYTHON::check_response_done()
   {
     RESPONSE = OLLAMA_MUTEX.get_complete_response_after_done();
     
+    bool tool_calls_found = false;
+    nlohmann::json tool_reply;
+
     for (const auto& message : RESPONSE["messages"]) 
     {
-
       // tack on tool_call info if found.
       if (message.contains("tool_calls"))
       {
@@ -599,61 +638,76 @@ void OLLAMA_API_PYTHON::check_response_done()
         OLLAMA_MUTEX.set_done(OLLAMA_API_READY_FOR_REQUEST);
         CONVERSATION = CONVERSATION_SNAP_SHOT;
 
-        for (const auto& tool_call : message["tool_calls"]) 
+        dump_string(DUMP_DIRECTORY, "tool_respons.json", RESPONSE.dump(2));
+
+        if (message["tool_calls"].contains("function"))
         {
-          if (tool_call.contains("function") && 
-              tool_call["function"].contains("name"))
+          dump_string(DUMP_DIRECTORY, "item_1.txt", message["tool_calls"]["function"].dump(2));
+          if (message["tool_calls"]["function"].contains("name"))
           {
-            if (tool_call["function"]["name"] == "get_current_weather") 
+
+            // get current weather
+            if (message["tool_calls"]["function"]["name"] == "get_current_weather")
             {
-              std::string location = tool_call["function"]["arguments"]["location"];
-              std::string format = tool_call["function"]["arguments"]["format"];
-              //std::string weather_info = get_current_weather(location, format);
-              string weather_info = "The current weather in " + location + " has a temperature of 25°C.";
-
-              // Update the payload with the weather information
-              nlohmann::json message_tool = 
+              if (message["tool_calls"]["function"].contains("arguments"))
               {
-                {"role", "tool"},
-                {"content", weather_info}
-              };
+                if (message["tool_calls"]["function"]["arguments"].contains("format") &&
+                    message["tool_calls"]["function"]["arguments"].contains("location"))
+                {
+                  string format = message["tool_calls"]["function"]["arguments"]["format"];
+                  string location = message["tool_calls"]["function"]["arguments"]["location"];
 
-              CONVERSATION.push_back(message_tool);
+                  tool_calls_found = true;
+                  tool_reply.push_back(
+                                        {
+                                          {"role", "tool"},
+                                          {"content", "The current weather in " + location + " has a temperature of 25° " + format + "."}, 
+                                          {"name", "get_current_weather"}
+                                        }
+                                      );
+                }
+              }
             }
-            else
+
+
+            // get current weather
+            if (message["tool_calls"]["function"]["name"] == "get_current_time")
             {
-              nlohmann::json message_tool = 
-              {
-                {"role", "tool"},
-                {"content", "The current weather on Mars has a temperature of -25°C."}
-              };
-
-              CONVERSATION.push_back(message_tool);
+              tool_calls_found = true;
+              tool_reply.push_back(
+                                    {
+                                      {"role", "tool"},
+                                      {"content", "The current time is  " + current_time() + "."}, 
+                                      {"name", "get_current_time"}
+                                    }
+                                  );
             }
+
           }
         }
-
-        // Resubmit question without tool info
-        {
-          submit_question(ROLE_1_SNAP_SHOT, NAME_1_SNAP_SHOT, QUESTION_1_SNAP_SHOT, 
-                          ROLE_2_SNAP_SHOT, NAME_2_SNAP_SHOT, QUESTION_2_SNAP_SHOT, 
-                          ALLOW_OUTPUT, CONSIDER_CONTEXT, 
-                          REMEMBER_CONTEXT, false);
-        }
       }
+    }
 
+    if (tool_calls_found)
+    {
+      // Resubmit question with or without tool reply
+      submit_question(ROLE_1_SNAP_SHOT, NAME_1_SNAP_SHOT, QUESTION_1_SNAP_SHOT, 
+                      ROLE_2_SNAP_SHOT, NAME_2_SNAP_SHOT, QUESTION_2_SNAP_SHOT, 
+                      ALLOW_OUTPUT, CONSIDER_CONTEXT, 
+                      REMEMBER_CONTEXT, false, tool_reply);
+    }
+    else
+    {
+      //dump_string(DUMP_DIRECTORY, "tool_respons.json", RESPONSE.dump(2));
       // If no tool call found, store the response.
-      else
+      if (RESPONSE.contains("role"))
       {
-        if (message.contains("role"))
+        if (RESPONSE["content"] != "")
         {
-          if (message["content"] != "")
+          if (REMEMBER_CONTEXT)
           {
-            if (REMEMBER_CONTEXT)
-            {
-              // resubmit without tool info
-              CONVERSATION.push_back(message);
-            }
+            // resubmit without tool info
+            CONVERSATION.push_back(RESPONSE);
           }
         }
       }

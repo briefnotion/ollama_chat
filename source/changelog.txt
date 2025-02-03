@@ -1,3 +1,6 @@
+0.042-250203
+  - Minor progress made towards implementing the Tool Function.
+
 0.041-250130
   - Made some corrections to the simple_ask routine.
   - Minor progress made towards implementing the Tool Function.
