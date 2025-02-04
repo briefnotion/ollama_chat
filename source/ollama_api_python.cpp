@@ -241,40 +241,22 @@ nlohmann::json OLLAMA_API_PYTHON::build_request(string Role_1, string Name_1, st
   // tools
   if (Enable_Tool_Function) 
   {
-    nlohmann::json tool_wheather = 
-    {
-      {"type", "function"},
-      {"function", {
-        {"name", "get_current_weather"},
-        {"description", "Get the current weather for a location"},
-        {"parameters", {
-          {"type", "object"},
-          {"properties", {
-            {"location", {
-              {"type", "string"},
-              {"description", "The location to get the weather for, e.g. San Francisco, CA"}
-            }},
-            {"format", {
-              {"type", "string"},
-              {"description", "The format to return the weather in, e.g. 'celsius' or 'fahrenheit'"},
-              {"enum", {"celsius", "fahrenheit"}}
-            }}
-          }},
-          {"required", {"location", "format"}}
-        }}
-      }}
-    };
+    nlohmann::json tools_list;
 
-    nlohmann::json tool_clock = 
+    if (TOOLS.WEATHER_TOOL_SUBMIT.submit())
     {
-      {"type", "function"},
-      {"function", {
-        {"name", "get_current_time"},
-        {"description", "Get the current time"}
-      }}
-    };
+      tools_list.push_back(TOOLS.weather_tool());
+    }
 
-    request["tools"] = {tool_wheather, tool_clock};
+    if (TOOLS.CLOCK_TOOL_SUBMIT.submit())
+    {
+      tools_list.push_back(TOOLS.clock_tool());
+    }
+
+    if (!tools_list.empty())
+    {
+      request["tools"] = tools_list;
+    }
   }
 
   // options
@@ -627,6 +609,8 @@ void OLLAMA_API_PYTHON::check_response_done()
     RESPONSE = OLLAMA_MUTEX.get_complete_response_after_done();
     
     bool tool_calls_found = false;
+    bool tool_calls_submittted = false;
+
     nlohmann::json tool_reply;
 
     for (const auto& message : RESPONSE["messages"]) 
@@ -637,6 +621,7 @@ void OLLAMA_API_PYTHON::check_response_done()
         // UNDO to Resubmit
         OLLAMA_MUTEX.set_done(OLLAMA_API_READY_FOR_REQUEST);
         CONVERSATION = CONVERSATION_SNAP_SHOT;
+        tool_calls_found = true;
 
         dump_string(DUMP_DIRECTORY, "tool_respons.json", RESPONSE.dump(2));
 
@@ -654,33 +639,20 @@ void OLLAMA_API_PYTHON::check_response_done()
                 if (message["tool_calls"]["function"]["arguments"].contains("format") &&
                     message["tool_calls"]["function"]["arguments"].contains("location"))
                 {
-                  string format = message["tool_calls"]["function"]["arguments"]["format"];
-                  string location = message["tool_calls"]["function"]["arguments"]["location"];
+                  TOOLS.WEATHER_TOOL_PARAM_FORMAT = message["tool_calls"]["function"]["arguments"]["format"];
+                  TOOLS.WEATHER_TOOL_PARAM_LOCATION = message["tool_calls"]["function"]["arguments"]["location"];
 
-                  tool_calls_found = true;
-                  tool_reply.push_back(
-                                        {
-                                          {"role", "tool"},
-                                          {"content", "The current weather in " + location + " has a temperature of 25° " + format + "."}, 
-                                          {"name", "get_current_weather"}
-                                        }
-                                      );
+                  tool_calls_submittted = true;
+                  tool_reply.push_back(TOOLS.weather_tool_reply());
                 }
               }
             }
 
-
-            // get current weather
+            // get current time
             if (message["tool_calls"]["function"]["name"] == "get_current_time")
             {
-              tool_calls_found = true;
-              tool_reply.push_back(
-                                    {
-                                      {"role", "tool"},
-                                      {"content", "The current time is  " + current_time() + "."}, 
-                                      {"name", "get_current_time"}
-                                    }
-                                  );
+              tool_calls_submittted = true;
+              tool_reply.push_back(TOOLS.clock_tool_reply());
             }
 
           }
@@ -690,11 +662,23 @@ void OLLAMA_API_PYTHON::check_response_done()
 
     if (tool_calls_found)
     {
-      // Resubmit question with or without tool reply
-      submit_question(ROLE_1_SNAP_SHOT, NAME_1_SNAP_SHOT, QUESTION_1_SNAP_SHOT, 
-                      ROLE_2_SNAP_SHOT, NAME_2_SNAP_SHOT, QUESTION_2_SNAP_SHOT, 
-                      ALLOW_OUTPUT, CONSIDER_CONTEXT, 
-                      REMEMBER_CONTEXT, false, tool_reply);
+      if (tool_calls_submittted)
+      {
+        // Resubmit question with tool reply
+        submit_question(ROLE_1_SNAP_SHOT, NAME_1_SNAP_SHOT, QUESTION_1_SNAP_SHOT, 
+                        ROLE_2_SNAP_SHOT, NAME_2_SNAP_SHOT, QUESTION_2_SNAP_SHOT, 
+                        ALLOW_OUTPUT, CONSIDER_CONTEXT, 
+                        REMEMBER_CONTEXT, false, tool_reply);
+      }
+      else
+      {
+        // Resubmit question without tool reply
+        //  Likely called by a tool request that doesnt exist or exist elsewhere.
+        submit_question(ROLE_1_SNAP_SHOT, NAME_1_SNAP_SHOT, QUESTION_1_SNAP_SHOT, 
+                        ROLE_2_SNAP_SHOT, NAME_2_SNAP_SHOT, QUESTION_2_SNAP_SHOT, 
+                        ALLOW_OUTPUT, CONSIDER_CONTEXT, 
+                        REMEMBER_CONTEXT, false);
+      }
     }
     else
     {

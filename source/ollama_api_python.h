@@ -13,6 +13,7 @@
 #include "threading.h"
 
 #include "rasapi.h"
+#include "tool_functions.h"
 
 #define OLLAMA_SERVER_NOT_CONNECTED     0
 #define OLLAMA_SERVER_CONNECTED         1
@@ -175,6 +176,8 @@ class OLLAMA_API_PYTHON
   nlohmann::json CONVERSATION;
 
   // Tool Function Problems
+  TOOL_FUNCTIONS TOOLS;
+
   nlohmann::json CONVERSATION_SNAP_SHOT;
   string ROLE_1_SNAP_SHOT = "";
   string NAME_1_SNAP_SHOT = "";

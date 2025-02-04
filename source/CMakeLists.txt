@@ -72,6 +72,7 @@ add_executable(chatapi
     threading.cpp
     rasapi.cpp
     remember.cpp
+    tool_functions.cpp
 )
 
 target_include_directories(chatapi PRIVATE
