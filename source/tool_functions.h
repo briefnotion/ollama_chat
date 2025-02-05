@@ -43,6 +43,11 @@ class TOOL_FUNCTIONS
   nlohmann::json clock_tool();
   nlohmann::json clock_tool_reply();
 
+  // Date Tool
+  TOOL_TRACKER DATE_TOOL_SUBMIT;
+  nlohmann::json date_tool();
+  nlohmann::json date_tool_reply();
+
 };
 
 // ------------------------------------------------------------------------- //

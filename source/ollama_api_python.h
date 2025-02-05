@@ -213,6 +213,8 @@ class OLLAMA_API_PYTHON
                                 string Role_2, string Name_2, string Content_2, 
                                 bool Enable_Tool_Function, nlohmann::json Message_Append);
 
+  void clean_conversation();
+
   void create();
   // Generates connection between Ollama server and Ollama API.
 
@@ -220,6 +222,8 @@ class OLLAMA_API_PYTHON
   // Starts new thread with parameters set in mutex
 
   public:
+
+  //string tools();
 
   void set_status(int Status);
   // force sets OLLAMA_API_STATUS as defined in header

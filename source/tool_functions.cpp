@@ -9,6 +9,7 @@ using namespace std;
 
 bool TOOL_TRACKER::submit()
 {
+  /*
   if (SUBMIT)
   {
     SUBMIT = false;
@@ -18,6 +19,8 @@ bool TOOL_TRACKER::submit()
   {
     return false;
   }
+  */
+  return true;
 }
 
 // ------------------------------------------------------------------------- //
@@ -54,12 +57,33 @@ nlohmann::json TOOL_FUNCTIONS::weather_tool()
 
 nlohmann::json TOOL_FUNCTIONS::weather_tool_reply()
 {
-  return
+  if (WEATHER_TOOL_PARAM_FORMAT == "celsius")
   {
-    {"role", "tool"},
-    {"content", "The current weather in " + WEATHER_TOOL_PARAM_LOCATION + " has a temperature of 25° " + WEATHER_TOOL_PARAM_FORMAT + "."}, 
-    {"name", "get_current_weather"}
-  };
+    return
+    {
+      {"role", "tool"},
+      {"content", "The current weather in " + WEATHER_TOOL_PARAM_LOCATION + " has a temperature of 25° " + WEATHER_TOOL_PARAM_FORMAT + "."}, 
+      {"name", "get_current_weather"}
+    };
+  }
+  else if (WEATHER_TOOL_PARAM_FORMAT == "fahrenheit")
+  {
+    return
+    {
+      {"role", "tool"},
+      {"content", "The current weather in " + WEATHER_TOOL_PARAM_LOCATION + " has a temperature of 77° " + WEATHER_TOOL_PARAM_FORMAT + "."}, 
+      {"name", "get_current_weather"}
+    };
+  }
+  else
+  {
+    return
+    {
+      {"role", "tool"},
+      {"content", "Would you like the temperature to be in fahrenheit or celsius?"}, 
+      {"name", "get_current_weather"}
+    };
+  }
 }
 
 // ------------------------------------------------------------------------- //
@@ -71,7 +95,7 @@ nlohmann::json TOOL_FUNCTIONS::clock_tool()
     {"type", "function"},
     {"function", {
       {"name", "get_current_time"},
-      {"description", "Get the current time"}
+      {"description", "Get the time"}
     }}
   };
 
@@ -82,8 +106,34 @@ nlohmann::json TOOL_FUNCTIONS::clock_tool_reply()
   return
   {
     {"role", "tool"},
-    {"content", "The current time is  " + current_time() + "."}, 
+    {"content", "The time is " + current_time() + "."}, 
     {"name", "get_current_time"}
+  };
+}
+
+
+// ------------------------------------------------------------------------- //
+
+nlohmann::json TOOL_FUNCTIONS::date_tool()
+{
+  return 
+  {
+    {"type", "function"},
+    {"function", {
+      {"name", "get_current_date"},
+      {"description", "Get the date"}
+    }}
+  };
+
+}
+
+nlohmann::json TOOL_FUNCTIONS::date_tool_reply()
+{
+  return
+  {
+    {"role", "tool"},
+    {"content", "The date is " + current_date() + "."}, 
+    {"name", "get_current_date"}
   };
 
 }

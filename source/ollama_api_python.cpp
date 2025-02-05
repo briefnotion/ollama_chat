@@ -178,6 +178,9 @@ nlohmann::json OLLAMA_API_PYTHON::build_request(string Role_1, string Name_1, st
 {
   nlohmann::json request;
 
+  // testing
+  Enable_Tool_Function = true;
+
   // modify with names
   {
     if (!Name_1.empty()) 
@@ -195,6 +198,32 @@ nlohmann::json OLLAMA_API_PYTHON::build_request(string Role_1, string Name_1, st
     request["model"] = PROPS.MODEL; 
   }
 
+  // tools
+  if (Enable_Tool_Function) 
+  {
+    nlohmann::json tools_list;
+
+    if (TOOLS.WEATHER_TOOL_SUBMIT.submit())
+    {
+      tools_list.push_back(TOOLS.weather_tool());
+    }
+
+    if (TOOLS.CLOCK_TOOL_SUBMIT.submit())
+    {
+      tools_list.push_back(TOOLS.clock_tool());
+    }
+
+    if (TOOLS.DATE_TOOL_SUBMIT.submit())
+    {
+      tools_list.push_back(TOOLS.date_tool());
+    }
+
+
+    if (!tools_list.empty())
+    {
+      request["tools"] = tools_list;
+    }
+  }
 
   // add messages
   {
@@ -238,27 +267,6 @@ nlohmann::json OLLAMA_API_PYTHON::build_request(string Role_1, string Name_1, st
     request["messages"] = CONVERSATION;
   }
 
-  // tools
-  if (Enable_Tool_Function) 
-  {
-    nlohmann::json tools_list;
-
-    if (TOOLS.WEATHER_TOOL_SUBMIT.submit())
-    {
-      tools_list.push_back(TOOLS.weather_tool());
-    }
-
-    if (TOOLS.CLOCK_TOOL_SUBMIT.submit())
-    {
-      tools_list.push_back(TOOLS.clock_tool());
-    }
-
-    if (!tools_list.empty())
-    {
-      request["tools"] = tools_list;
-    }
-  }
-
   // options
   {
     request["stream"] = true;
@@ -275,6 +283,17 @@ nlohmann::json OLLAMA_API_PYTHON::build_request(string Role_1, string Name_1, st
   }
 
   return request; // Return the built request
+}
+
+void OLLAMA_API_PYTHON::clean_conversation()
+{
+  // Remove entries with "role": "tool"
+  CONVERSATION.erase(std::remove_if(CONVERSATION.begin(), CONVERSATION.end(),
+                                    [](const nlohmann::json& entry) 
+                                    {
+                                        return entry["role"] == "tool";
+                                    }),
+                      CONVERSATION.end());
 }
 
 void OLLAMA_API_PYTHON::create() // ↑ ↓ → ←
@@ -496,6 +515,31 @@ void OLLAMA_API_PYTHON::create() // ↑ ↓ → ←
   */
 }
 
+/*
+string OLLAMA_API_PYTHON::tools()
+{
+  nlohmann::json tools_list_full;
+  nlohmann::json tools_list;
+
+  if (TOOLS.WEATHER_TOOL_SUBMIT.submit())
+  {
+    tools_list.push_back(TOOLS.weather_tool());
+  }
+
+  if (TOOLS.CLOCK_TOOL_SUBMIT.submit())
+  {
+    tools_list.push_back(TOOLS.clock_tool());
+  }
+
+  if (!tools_list.empty())
+  {
+    tools_list_full["tools"] = tools_list;
+  }
+
+  return tools_list_full.dump();
+}
+*/
+
 void OLLAMA_API_PYTHON::set_status(int Status)
 {
   OLLAMA_MUTEX.set_done(Status);
@@ -569,6 +613,9 @@ void OLLAMA_API_PYTHON::submit_question(string Role_1, string Name_1, string Que
       OLLAMA_MUTEX.set_command_line (bcommand);
 
       dump_string(DUMP_DIRECTORY, "pycall.txt", bcommand);
+
+      // Remove any unnecessary items from the conversation 
+      clean_conversation();
 
       thread();
     }
@@ -653,6 +700,13 @@ void OLLAMA_API_PYTHON::check_response_done()
             {
               tool_calls_submittted = true;
               tool_reply.push_back(TOOLS.clock_tool_reply());
+            }
+
+            // get current time
+            if (message["tool_calls"]["function"]["name"] == "get_current_date")
+            {
+              tool_calls_submittted = true;
+              tool_reply.push_back(TOOLS.date_tool_reply());
             }
 
           }

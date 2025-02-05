@@ -299,7 +299,9 @@ void THOUGHTS::process_opening_mode_stages(SYSTEM &System)
   {
     TRAIN_OF_THOUGH.back().THINKING_STAGE = 2;
 
-    string system_set = "You are a helpful assistant.";
+    //string system_set = "You are a helpful assistant.";
+    //string system_set = "You find the most appropriate tool or tools to execute, along with the parameters required to run the tool. Respond as JSON using the following schema: {\"functionName\": \"function name\", \"parameters\": [{\"parameterName\": \"name of parameter\", \"parameterValue\": \"value of parameter\"}]}. The tools are: " +  OLLAMA_SYSTEM.tools();
+    //string system_set = "If needed, you find the most appropriate tool or tools to execute, along with the parameters required to run the tool. The tools are: " +  OLLAMA_SYSTEM.tools();
 
     string opening_intro = 
       //"Continue or current conversation from the following summary, and disregard any mentions of, not having a previous conversation: ";
@@ -312,14 +314,15 @@ void THOUGHTS::process_opening_mode_stages(SYSTEM &System)
     
     string opening_full = opening_intro + MEMORY.FILE_MANAGER.get_file("conversation_closing_previous");
 
-    //System.OUTPUT_OLLAMA_RESPONSE.add_to(opening_full, System.OUTPUT_FOCUS);
+    System.OUTPUT_OLLAMA_RESPONSE.add_to(opening_full, System.OUTPUT_FOCUS);
 
     //OLLAMA_SYSTEM.submit_question(ROLE_SYSTEM, "", system_set,
     //                              ROLE_USER, USER_AI, opening_full,
-    //                              true, true, true);
+    //                              true, true, true, false);
 
-    OLLAMA_SYSTEM.submit_question(ROLE_USER, USER_AI, opening_full,
+    OLLAMA_SYSTEM.submit_question(ROLE_ASSISTANT, USER_AI, opening_full,
                                   true, true, true, false);
+
   }
   else if (TRAIN_OF_THOUGH.back().THINKING_STAGE == 2)
   {
