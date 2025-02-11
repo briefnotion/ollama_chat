@@ -227,44 +227,72 @@ nlohmann::json OLLAMA_API_PYTHON::build_request(string Role_1, string Name_1, st
 
   // add messages
   {
+    int method = 1; // 0 = chat
+                    // 1 = generate
 
-    int append_position = 1;
-
-    // Before
-    if (append_position == -1)
+    if (method == 0)
     {
-      if (!Message_Append.empty())
+      nlohmann::json message_1;
+      nlohmann::json message_2;
+
+      nlohmann::json message_send_list;
+
+      int append_position = 1;
+
+      // Before
+      if (append_position == 0)
       {
-        for (const auto& message : Message_Append)
+        if (!Message_Append.empty())
         {
-          CONVERSATION.push_back(message);
+          for (const auto& message : Message_Append)
+          {
+            CONVERSATION.push_back(message);
+          }
         }
       }
-    }
-
-    if (Role_2 == "") // single message
-    {
-      CONVERSATION.push_back({{"role", Role_1}, {"content", Content_1}});
-    }
-    else  // multi message
-    {
-      CONVERSATION.push_back({{"role", Role_1}, {"content", Content_1}});
-      CONVERSATION.push_back({{"role", Role_2}, {"content", Content_2}});
-    }
-
-    // After
-    if (append_position == 1)
-    {
-      if (!Message_Append.empty())
+  
+      // Rebuild conversation.
+      message_1 = {{"role", Role_1}, {"content", Content_1}};
+      message_2 = {{"role", Role_2}, {"content", Content_2}};
+  
+      if (Role_1 != "")
       {
-        for (const auto& message : Message_Append)
+        CONVERSATION.push_back(message_1);
+        message_send_list.push_back(message_1);
+      }
+  
+      if (Role_2 != "") // single message
+      {
+        CONVERSATION.push_back(message_2);
+        message_send_list.push_back(message_2);
+      }
+  
+      // After
+      if (append_position == 1)
+      {
+        if (!Message_Append.empty())
         {
-          CONVERSATION.push_back(message);
+          for (const auto& message : Message_Append)
+          {
+            CONVERSATION.push_back(message);
+            //message_send_list.push_back(message);
+          }
         }
       }
+  
+      request["messages"] = CONVERSATION;
+      //request["messages"] = message_send_list;
     }
 
-    request["messages"] = CONVERSATION;
+    // method generate.
+    else if (method == 1)
+    {
+      request["prompt"] = Content_1;
+      if (!CONVERSATION_CONTEXT.empty())
+      {
+        request["context"] = CONVERSATION_CONTEXT;
+      }
+    }
   }
 
   // options
@@ -272,6 +300,10 @@ nlohmann::json OLLAMA_API_PYTHON::build_request(string Role_1, string Name_1, st
     request["stream"] = true;
     request["tool_choice"] = "auto";    // Default auto, any, none // Not seeing this do anything
     request["function_call"] = "auto";  // Not seeing this do anything
+    request["keep_alive"] = 3600;
+
+    // Additional Options
+    request["options"] = {{"num_ctx", 4096}};
     
     //request["stop_sequences"] = "";
     //request["max_tokens"] = 2048;
@@ -287,13 +319,17 @@ nlohmann::json OLLAMA_API_PYTHON::build_request(string Role_1, string Name_1, st
 
 void OLLAMA_API_PYTHON::clean_conversation()
 {
-  // Remove entries with "role": "tool"
-  CONVERSATION.erase(std::remove_if(CONVERSATION.begin(), CONVERSATION.end(),
-                                    [](const nlohmann::json& entry) 
-                                    {
-                                        return entry["role"] == "tool";
-                                    }),
-                      CONVERSATION.end());
+  if (!CONVERSATION.empty())
+  {
+    // Remove entries with "role": "tool"
+    CONVERSATION.erase(std::remove_if(CONVERSATION.begin(), CONVERSATION.end(),
+                                      [](const nlohmann::json& entry) 
+                                      {
+                                          return entry["role"] == "tool";
+                                      }),
+                        CONVERSATION.end());
+
+  }
 }
 
 void OLLAMA_API_PYTHON::create() // ↑ ↓ → ←
@@ -660,93 +696,115 @@ void OLLAMA_API_PYTHON::check_response_done()
 
     nlohmann::json tool_reply;
 
-    for (const auto& message : RESPONSE["messages"]) 
+    if (RESPONSE.contains("messages"))
     {
-      // tack on tool_call info if found.
-      if (message.contains("tool_calls"))
+      for (const auto& message : RESPONSE["messages"]) 
       {
-        // UNDO to Resubmit
-        OLLAMA_MUTEX.set_done(OLLAMA_API_READY_FOR_REQUEST);
-        CONVERSATION = CONVERSATION_SNAP_SHOT;
-        tool_calls_found = true;
-
-        dump_string(DUMP_DIRECTORY, "tool_respons.json", RESPONSE.dump(2));
-
-        if (message["tool_calls"].contains("function"))
+        // tack on tool_call info if found.
+        if (message.contains("tool_calls"))
         {
-          dump_string(DUMP_DIRECTORY, "item_1.txt", message["tool_calls"]["function"].dump(2));
-          if (message["tool_calls"]["function"].contains("name"))
+          // UNDO to Resubmit
+          OLLAMA_MUTEX.set_done(OLLAMA_API_READY_FOR_REQUEST);
+          CONVERSATION = CONVERSATION_SNAP_SHOT;
+          tool_calls_found = true;
+  
+          dump_string(DUMP_DIRECTORY, "tool_response.json", RESPONSE.dump(2));
+  
+          if (message["tool_calls"].contains("function"))
           {
-
-            // get current weather
-            if (message["tool_calls"]["function"]["name"] == "get_current_weather")
+            dump_string(DUMP_DIRECTORY, "item_1.txt", message["tool_calls"]["function"].dump(2));
+            if (message["tool_calls"]["function"].contains("name"))
             {
-              if (message["tool_calls"]["function"].contains("arguments"))
+  
+              // get current weather
+              if (message["tool_calls"]["function"]["name"] == "get_current_weather")
               {
-                if (message["tool_calls"]["function"]["arguments"].contains("format") &&
-                    message["tool_calls"]["function"]["arguments"].contains("location"))
+                if (message["tool_calls"]["function"].contains("arguments"))
                 {
-                  TOOLS.WEATHER_TOOL_PARAM_FORMAT = message["tool_calls"]["function"]["arguments"]["format"];
-                  TOOLS.WEATHER_TOOL_PARAM_LOCATION = message["tool_calls"]["function"]["arguments"]["location"];
-
-                  tool_calls_submittted = true;
-                  tool_reply.push_back(TOOLS.weather_tool_reply());
+                  if (message["tool_calls"]["function"]["arguments"].contains("format") &&
+                      message["tool_calls"]["function"]["arguments"].contains("location"))
+                  {
+                    TOOLS.WEATHER_TOOL_PARAM_FORMAT = message["tool_calls"]["function"]["arguments"]["format"];
+                    TOOLS.WEATHER_TOOL_PARAM_LOCATION = message["tool_calls"]["function"]["arguments"]["location"];
+  
+                    tool_calls_submittted = true;
+                    tool_reply.push_back(TOOLS.weather_tool_reply());
+                  }
                 }
               }
+  
+              // get current time
+              if (message["tool_calls"]["function"]["name"] == "get_current_time")
+              {
+                tool_calls_submittted = true;
+                tool_reply.push_back(TOOLS.clock_tool_reply());
+              }
+  
+              // get current time
+              if (message["tool_calls"]["function"]["name"] == "get_current_date")
+              {
+                tool_calls_submittted = true;
+                tool_reply.push_back(TOOLS.date_tool_reply());
+              }
+  
             }
-
-            // get current time
-            if (message["tool_calls"]["function"]["name"] == "get_current_time")
-            {
-              tool_calls_submittted = true;
-              tool_reply.push_back(TOOLS.clock_tool_reply());
-            }
-
-            // get current time
-            if (message["tool_calls"]["function"]["name"] == "get_current_date")
-            {
-              tool_calls_submittted = true;
-              tool_reply.push_back(TOOLS.date_tool_reply());
-            }
-
           }
         }
-      }
-    }
-
-    if (tool_calls_found)
-    {
-      if (tool_calls_submittted)
-      {
-        // Resubmit question with tool reply
-        submit_question(ROLE_1_SNAP_SHOT, NAME_1_SNAP_SHOT, QUESTION_1_SNAP_SHOT, 
-                        ROLE_2_SNAP_SHOT, NAME_2_SNAP_SHOT, QUESTION_2_SNAP_SHOT, 
-                        ALLOW_OUTPUT, CONSIDER_CONTEXT, 
-                        REMEMBER_CONTEXT, false, tool_reply);
-      }
-      else
-      {
-        // Resubmit question without tool reply
-        //  Likely called by a tool request that doesnt exist or exist elsewhere.
-        submit_question(ROLE_1_SNAP_SHOT, NAME_1_SNAP_SHOT, QUESTION_1_SNAP_SHOT, 
-                        ROLE_2_SNAP_SHOT, NAME_2_SNAP_SHOT, QUESTION_2_SNAP_SHOT, 
-                        ALLOW_OUTPUT, CONSIDER_CONTEXT, 
-                        REMEMBER_CONTEXT, false);
-      }
-    }
-    else
-    {
-      //dump_string(DUMP_DIRECTORY, "tool_respons.json", RESPONSE.dump(2));
-      // If no tool call found, store the response.
-      if (RESPONSE.contains("role"))
-      {
-        if (RESPONSE["content"] != "")
+        else if (message.contains("role"))
         {
-          if (REMEMBER_CONTEXT)
+          //dump_string(DUMP_DIRECTORY, "tool_respons.json", RESPONSE.dump(2));
+          // If no tool call found, store the response.
+          if (message["content"] != "")
           {
-            // resubmit without tool info
-            CONVERSATION.push_back(RESPONSE);
+            if (REMEMBER_CONTEXT)
+            {
+              // resubmit without tool info
+              CONVERSATION.push_back(message);
+            }
           }
+        }
+        else if (message.contains("role"))
+        {
+          //dump_string(DUMP_DIRECTORY, "tool_respons.json", RESPONSE.dump(2));
+          // If no tool call found, store the response.
+          if (message["content"] != "")
+          {
+            if (REMEMBER_CONTEXT)
+            {
+              // resubmit without tool info
+              CONVERSATION.push_back(message);
+            }
+          }
+        }
+  
+      }
+
+      // Context
+      if (RESPONSE.contains("context"))
+      {
+        dump_string(DUMP_DIRECTORY, "context_response.json", RESPONSE.dump(2));
+        CONVERSATION_CONTEXT = RESPONSE["context"];
+      }
+    
+      // Tool Calls
+      if (tool_calls_found)
+      {
+        if (tool_calls_submittted)
+        {
+          // Resubmit question with tool reply
+          submit_question(ROLE_1_SNAP_SHOT, NAME_1_SNAP_SHOT, QUESTION_1_SNAP_SHOT, 
+                          ROLE_2_SNAP_SHOT, NAME_2_SNAP_SHOT, QUESTION_2_SNAP_SHOT, 
+                          ALLOW_OUTPUT, CONSIDER_CONTEXT, 
+                          REMEMBER_CONTEXT, false, tool_reply);
+        }
+        else
+        {
+          // Resubmit question without tool reply
+          //  Likely called by a tool request that doesnt exist or exist elsewhere.
+          submit_question(ROLE_1_SNAP_SHOT, NAME_1_SNAP_SHOT, QUESTION_1_SNAP_SHOT, 
+                          ROLE_2_SNAP_SHOT, NAME_2_SNAP_SHOT, QUESTION_2_SNAP_SHOT, 
+                          ALLOW_OUTPUT, CONSIDER_CONTEXT, 
+                          REMEMBER_CONTEXT, false);
         }
       }
     }

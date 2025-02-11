@@ -1,3 +1,7 @@
+0.045-250206
+  - Exploring the api/generate over the api/chat method.  
+  - Major regress made towards implementing the Tool Function.
+
 0.044-250205
   - Minor progress made towards implementing the Tool Function.
 

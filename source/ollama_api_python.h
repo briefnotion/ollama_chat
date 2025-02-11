@@ -126,7 +126,8 @@ class OLLAMA_API_PYTHON_PROPS
   //string REQUEST =  "python3 ../python/generate_request.py";
   //string REQUEST =  "python3 ../python/generate_request_2.py";
   //string REQUEST =  "python3 ../python/generate_request_3.py";
-  string REQUEST =  "python3 ../python/generate_request_4.py";
+  //string REQUEST =  "python3 ../python/generate_request_4.py";
+  string REQUEST =  "python3 ../python/generate_request_5.py";
 
   string REQUEST_JSON_FILENAME = "request.json";
   string RESPONSE_JSON_FILENAME = "response.json";
@@ -174,6 +175,7 @@ class OLLAMA_API_PYTHON
 
   // CHAT MODEL
   nlohmann::json CONVERSATION;
+  nlohmann::json CONVERSATION_CONTEXT;
 
   // Tool Function Problems
   TOOL_FUNCTIONS TOOLS;

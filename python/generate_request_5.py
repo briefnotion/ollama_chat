@@ -3,11 +3,6 @@ import json
 import sys
 import os
 
-def get_current_weather(location, format):
-    # Implement your weather fetching logic here
-    # For demonstration, we'll use a placeholder response
-    return f"The current weather in {location} has a temperature of 25°C."
-
 def print_json(json_data, name, show):
     if show:
         print("---")
@@ -27,7 +22,6 @@ def ask_ollama(model, input_filename, output_filename):
                 "model": model,
                 "messages": [],
                 "stream": True,
-                "keep_alive": 3600,
             }
 
         print_json(payload, "Second Payload", False)
@@ -36,7 +30,7 @@ def ask_ollama(model, input_filename, output_filename):
         tool_calls_content = []
 
         # Submit the request with the payload and stream response
-        with requests.post("http://localhost:11434/api/chat", json=payload, stream=True) as response:
+        with requests.post("http://localhost:11434/api/generate", json=payload, stream=True) as response:
             response.raise_for_status()
             
             for line in response.iter_lines(delimiter=b'\n'):
@@ -44,14 +38,21 @@ def ask_ollama(model, input_filename, output_filename):
                     try:
                         response_json = json.loads(line.decode('utf-8').strip())
 
+                        if 'done_reason' in response_json and response_json['done_reason'] != 'stop':
+                            print("*******\n*******       Done reason:", response_json['done_reason'])
+
                         # Add tool_calls directly to tool_calls_content
                         if 'message' in response_json and 'tool_calls' in response_json['message']:
                             for tool_call in response_json['message']['tool_calls']:
                                 tool_calls_content.append(tool_call)
 
-                        if 'message' in response_json and 'content' in response_json['message']:
+                        elif 'message' in response_json and 'content' in response_json['message']:
                             print(response_json['message']['content'], end="", flush=True)
                             full_content += response_json['message']['content']
+
+                        else:
+                            print(response_json['response'], end="", flush=True)
+                            full_content += response_json['response']
                             
                     except json.JSONDecodeError as e:
                         print(f"Decoding JSON has failed: {e}")
