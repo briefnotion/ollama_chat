@@ -107,8 +107,12 @@ class OLLAMA_API_PYTHON_PROPS
 {
   public:
 
+  // Model
   string MODEL = "";  // "llama3.1:8b"
   string URL   = "";  // "http://localhost:11434"
+
+  // Request as Generate or Chat
+  int REQUEST_MODE = 0; // 0: Chat, 1: Generate
 
   // Command Line Input
   string BASH_SHELL =                   "bash -c '";
@@ -126,8 +130,8 @@ class OLLAMA_API_PYTHON_PROPS
   //string REQUEST =  "python3 ../python/generate_request.py";
   //string REQUEST =  "python3 ../python/generate_request_2.py";
   //string REQUEST =  "python3 ../python/generate_request_3.py";
-  //string REQUEST =  "python3 ../python/generate_request_4.py";
-  string REQUEST =  "python3 ../python/generate_request_5.py";
+  string REQUEST_CHAT     =  "python3 ../python/generate_request_4.py";
+  string REQUEST_GENERATE =  "python3 ../python/generate_request_5.py";
 
   string REQUEST_JSON_FILENAME = "request.json";
   string RESPONSE_JSON_FILENAME = "response.json";
@@ -210,12 +214,24 @@ class OLLAMA_API_PYTHON
   nlohmann::json REQUEST = "";
 
   private:
-  
-  nlohmann::json build_request(string Role_1, string Name_1, string Content_1, 
+
+  void clean_chat_conversation();
+    
+  nlohmann::json build_generate_request(string Request);
+
+  nlohmann::json build_chat_request(string Role_1, string Name_1, string Content_1, 
                                 string Role_2, string Name_2, string Content_2, 
                                 bool Enable_Tool_Function, nlohmann::json Message_Append);
 
-  void clean_conversation();
+  void submit_generate_request(string Request, 
+    bool Output_To_Response, bool Consider_Context, 
+    bool Remember_Context);
+
+  void submit_chat_request(string Role_1, string Name_1, string Question_1, 
+    string Role_2, string Name_2, string Question_2, 
+    bool Output_To_Response, bool Consider_Context, 
+    bool Remember_Context, bool Enable_Tool_Function, 
+    nlohmann::json Message_Append);
 
   void create();
   // Generates connection between Ollama server and Ollama API.
@@ -237,19 +253,19 @@ class OLLAMA_API_PYTHON
 
   void check();
   // Check to see if Ollama server is connected then creates the api session if not. 
-  
-  void submit_question(string Role_1, string Name_1, string Question_1, 
-                        string Role_2, string Name_2, string Question_2, 
-                        bool Output_To_Response, bool Consider_Context, 
-                        bool Remember_Context, bool Enable_Tool_Function, 
-                        nlohmann::json Message_Append);
-  void submit_question(string Role_1, string Name_1, string Question_1, 
-                        string Role_2, string Name_2, string Question_2, 
-                        bool Output_To_Response, bool Consider_Context, 
-                        bool Remember_Context, bool Enable_Tool_Function);
-  void submit_question(string Role, string Name, string Question, 
-                        bool Output_To_Response, bool Consider_Context, 
-                        bool Remember_Context, bool Enable_Tool_Function);
+
+  void submit_request(string Role_1, string Name_1, string Question_1, 
+    string Role_2, string Name_2, string Question_2, 
+    bool Output_To_Response, bool Consider_Context, 
+    bool Remember_Context, bool Enable_Tool_Function, 
+    nlohmann::json Message_Append);
+  void submit_request(string Role_1, string Name_1, string Question_1, 
+    string Role_2, string Name_2, string Question_2, 
+    bool Output_To_Response, bool Consider_Context, 
+    bool Remember_Context, bool Enable_Tool_Function);
+  void submit_request(string Role, string Name, string Question, 
+    bool Output_To_Response, bool Consider_Context, 
+    bool Remember_Context, bool Enable_Tool_Function);
   // Question - Input into ollama ai
   // Role - system assistant or user
   // Name - user name or for user role

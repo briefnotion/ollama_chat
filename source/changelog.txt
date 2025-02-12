@@ -1,3 +1,9 @@
+0.046-250212
+  - Split the request routines into chat and generate, so I can 
+      try to figure out whitch one works best.  At the time, generate 
+      seems the smartest, but chat has more options but more difficult 
+      to handle.
+
 0.045-250206
   - Exploring the api/generate over the api/chat method.  
   - Major regress made towards implementing the Tool Function.

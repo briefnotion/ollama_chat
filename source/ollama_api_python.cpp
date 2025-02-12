@@ -172,7 +172,64 @@ void OLLAMA_API_PYTHON::thread()
 
 // ------------------------------------------------------------------------- //
 
-nlohmann::json OLLAMA_API_PYTHON::build_request(string Role_1, string Name_1, string Content_1, 
+void OLLAMA_API_PYTHON::clean_chat_conversation()
+{
+  if (!CONVERSATION.empty())
+  {
+    // Remove entries with "role": "tool"
+    CONVERSATION.erase(std::remove_if(CONVERSATION.begin(), CONVERSATION.end(),
+                                      [](const nlohmann::json& entry) 
+                                      {
+                                          return entry["role"] == "tool";
+                                      }),
+                        CONVERSATION.end());
+
+  }
+}
+
+nlohmann::json OLLAMA_API_PYTHON::build_generate_request(string Request)
+{
+  nlohmann::json request;
+
+  // build header
+  {
+    request["model"] = PROPS.MODEL; 
+  }
+
+  // add messages
+  {
+    // method generate.
+    request["prompt"] = Request;
+    if (!CONVERSATION_CONTEXT.empty())
+    {
+      request["context"] = CONVERSATION_CONTEXT;
+    }
+  }
+
+  // options
+  {
+    request["stream"] = true;
+    //request["format"] = "json";
+    request["tool_choice"] = "auto";    // Default auto, any, none // Not seeing this do anything
+    request["function_call"] = "auto";  // Not seeing this do anything
+    request["keep_alive"] = 3600;
+
+    // Additional Options
+    request["options"] = {{"num_ctx", 4096}};
+    
+    //request["stop_sequences"] = "";
+    //request["max_tokens"] = 2048;
+    //request["temperature"] = 1.0;
+    //request["top_p"] = 1.0;
+    //request["presence_penalty"] = 0.0;
+    //request["frequency_penalty"] = 0.0;
+    //request["logit_bias"] = {};
+  }
+
+  return request; // Return the built request
+}
+
+nlohmann::json OLLAMA_API_PYTHON::build_chat_request(string Role_1, string Name_1, string Content_1, 
                                                 string Role_2, string Name_2, string Content_2, 
                                                 bool Enable_Tool_Function, nlohmann::json Message_Append)
 {
@@ -227,77 +284,57 @@ nlohmann::json OLLAMA_API_PYTHON::build_request(string Role_1, string Name_1, st
 
   // add messages
   {
-    int method = 1; // 0 = chat
-                    // 1 = generate
 
-    if (method == 0)
+    nlohmann::json message_1;
+    nlohmann::json message_2;
+
+    int append_position = 1;
+
+    // Before
+    if (append_position == 0)
     {
-      nlohmann::json message_1;
-      nlohmann::json message_2;
-
-      nlohmann::json message_send_list;
-
-      int append_position = 1;
-
-      // Before
-      if (append_position == 0)
+      if (!Message_Append.empty())
       {
-        if (!Message_Append.empty())
+        for (const auto& message : Message_Append)
         {
-          for (const auto& message : Message_Append)
-          {
-            CONVERSATION.push_back(message);
-          }
+          CONVERSATION.push_back(message);
         }
       }
-  
-      // Rebuild conversation.
-      message_1 = {{"role", Role_1}, {"content", Content_1}};
-      message_2 = {{"role", Role_2}, {"content", Content_2}};
-  
-      if (Role_1 != "")
-      {
-        CONVERSATION.push_back(message_1);
-        message_send_list.push_back(message_1);
-      }
-  
-      if (Role_2 != "") // single message
-      {
-        CONVERSATION.push_back(message_2);
-        message_send_list.push_back(message_2);
-      }
-  
-      // After
-      if (append_position == 1)
-      {
-        if (!Message_Append.empty())
-        {
-          for (const auto& message : Message_Append)
-          {
-            CONVERSATION.push_back(message);
-            //message_send_list.push_back(message);
-          }
-        }
-      }
-  
-      request["messages"] = CONVERSATION;
-      //request["messages"] = message_send_list;
     }
 
-    // method generate.
-    else if (method == 1)
+    // Rebuild conversation.
+    message_1 = {{"role", Role_1}, {"content", Content_1}};
+    message_2 = {{"role", Role_2}, {"content", Content_2}};
+
+    if (Role_1 != "")
     {
-      request["prompt"] = Content_1;
-      if (!CONVERSATION_CONTEXT.empty())
+      CONVERSATION.push_back(message_1);
+    }
+
+    if (Role_2 != "") // single message
+    {
+      CONVERSATION.push_back(message_2);
+    }
+
+    // After
+    if (append_position == 1)
+    {
+      if (!Message_Append.empty())
       {
-        request["context"] = CONVERSATION_CONTEXT;
+        for (const auto& message : Message_Append)
+        {
+          CONVERSATION.push_back(message);
+        }
       }
     }
+
+    request["messages"] = CONVERSATION;
   }
 
   // options
   {
     request["stream"] = true;
+    //request["format"] = "json";
     request["tool_choice"] = "auto";    // Default auto, any, none // Not seeing this do anything
     request["function_call"] = "auto";  // Not seeing this do anything
     request["keep_alive"] = 3600;
@@ -317,18 +354,105 @@ nlohmann::json OLLAMA_API_PYTHON::build_request(string Role_1, string Name_1, st
   return request; // Return the built request
 }
 
-void OLLAMA_API_PYTHON::clean_conversation()
+void OLLAMA_API_PYTHON::submit_generate_request(string Request, 
+                                        bool Output_To_Response, bool Consider_Context, 
+                                        bool Remember_Context)
 {
-  if (!CONVERSATION.empty())
+  if (CONNECTION_STATUS == OLLAMA_SERVER_CONNECTED)
   {
-    // Remove entries with "role": "tool"
-    CONVERSATION.erase(std::remove_if(CONVERSATION.begin(), CONVERSATION.end(),
-                                      [](const nlohmann::json& entry) 
-                                      {
-                                          return entry["role"] == "tool";
-                                      }),
-                        CONVERSATION.end());
+    if (OLLAMA_MUTEX.done() == OLLAMA_API_READY_FOR_REQUEST)
+    {
+      ALLOW_OUTPUT = Output_To_Response;
+      CONSIDER_CONTEXT = Consider_Context;
+      REMEMBER_CONTEXT = Remember_Context;
 
+      // Take a snapshot of the conversation, in case it needs to be undone by the tool function.
+      //CONVERSATION_SNAP_SHOT = CONVERSATION;
+      //ROLE_1_SNAP_SHOT = Role_1;
+      //NAME_1_SNAP_SHOT = Name_1;
+      //QUESTION_1_SNAP_SHOT = Question_1;
+      //ROLE_2_SNAP_SHOT = Role_2;
+      //NAME_2_SNAP_SHOT = Name_2;
+      //QUESTION_2_SNAP_SHOT = Question_2;
+
+      REQUEST = build_generate_request(Request);
+
+      string_to_file((EXCHANGE_DIRECTORY + PROPS.REQUEST_JSON_FILENAME), REQUEST.dump(2), false);
+      
+      RESPONSE_FULL = "";
+
+      //string bcommand = PROPS.ENVIRONMENT + aa + PROPS.TEST + sp;
+      string bcommand = PROPS.ENVIRONMENT + aa + PROPS.REQUEST_GENERATE + sp + 
+                                    PROPS.MODEL + sp + 
+                                    (EXCHANGE_DIRECTORY + PROPS.REQUEST_JSON_FILENAME) + sp + 
+                                    (EXCHANGE_DIRECTORY + PROPS.RESPONSE_JSON_FILENAME);
+
+      if (PROPS.BASH_SHELL.size() > 0)
+      {
+        bcommand = PROPS.BASH_SHELL + bcommand + "'";
+      }
+
+      OLLAMA_MUTEX.set_command_line (bcommand);
+
+      dump_string(DUMP_DIRECTORY, "pycall.txt", bcommand);
+
+      // Remove any unnecessary items from the conversation 
+      clean_chat_conversation();
+
+      thread();
+    }
+  }
+}
+
+void OLLAMA_API_PYTHON::submit_chat_request(string Role_1, string Name_1, string Question_1, 
+                                        string Role_2, string Name_2, string Question_2, 
+                                        bool Output_To_Response, bool Consider_Context, 
+                                        bool Remember_Context, bool Enable_Tool_Function, 
+                                        nlohmann::json Message_Append)
+{
+  if (CONNECTION_STATUS == OLLAMA_SERVER_CONNECTED)
+  {
+    if (OLLAMA_MUTEX.done() == OLLAMA_API_READY_FOR_REQUEST)
+    {
+      ALLOW_OUTPUT = Output_To_Response;
+      CONSIDER_CONTEXT = Consider_Context;
+      REMEMBER_CONTEXT = Remember_Context;
+
+      // Take a snapshot of the conversation, in case it needs to be undone by the tool function.
+      CONVERSATION_SNAP_SHOT = CONVERSATION;
+      ROLE_1_SNAP_SHOT = Role_1;
+      NAME_1_SNAP_SHOT = Name_1;
+      QUESTION_1_SNAP_SHOT = Question_1;
+      ROLE_2_SNAP_SHOT = Role_2;
+      NAME_2_SNAP_SHOT = Name_2;
+      QUESTION_2_SNAP_SHOT = Question_2;
+
+      REQUEST = build_chat_request(Role_1, Name_1, Question_1, Role_2, Name_2, Question_2, Enable_Tool_Function, Message_Append);
+
+      string_to_file((EXCHANGE_DIRECTORY + PROPS.REQUEST_JSON_FILENAME), REQUEST.dump(2), false);
+      
+      RESPONSE_FULL = "";
+
+      //string bcommand = PROPS.ENVIRONMENT + aa + PROPS.TEST + sp;
+      string bcommand = PROPS.ENVIRONMENT + aa + PROPS.REQUEST_CHAT + sp + 
+                                    PROPS.MODEL + sp + 
+                                    (EXCHANGE_DIRECTORY + PROPS.REQUEST_JSON_FILENAME) + sp + 
+                                    (EXCHANGE_DIRECTORY + PROPS.RESPONSE_JSON_FILENAME);
+
+      if (PROPS.BASH_SHELL.size() > 0)
+      {
+        bcommand = PROPS.BASH_SHELL + bcommand + "'";
+      }
+
+      OLLAMA_MUTEX.set_command_line (bcommand);
+
+      dump_string(DUMP_DIRECTORY, "pycall.txt", bcommand);
+
+      // Remove any unnecessary items from the conversation 
+      clean_chat_conversation();
+
+      thread();
+    }
   }
 }
 
@@ -606,77 +730,49 @@ void OLLAMA_API_PYTHON::check()
   }
 }
 
-void OLLAMA_API_PYTHON::submit_question(string Role_1, string Name_1, string Question_1, 
-                                        string Role_2, string Name_2, string Question_2, 
-                                        bool Output_To_Response, bool Consider_Context, 
-                                        bool Remember_Context, bool Enable_Tool_Function, 
-                                        nlohmann::json Message_Append)
+void OLLAMA_API_PYTHON::submit_request(string Role_1, string Name_1, string Question_1, 
+  string Role_2, string Name_2, string Question_2, 
+  bool Output_To_Response, bool Consider_Context, 
+  bool Remember_Context, bool Enable_Tool_Function, 
+  nlohmann::json Message_Append)
 {
-  if (CONNECTION_STATUS == OLLAMA_SERVER_CONNECTED)
+  if (PROPS.REQUEST_MODE == 0)
   {
-    if (OLLAMA_MUTEX.done() == OLLAMA_API_READY_FOR_REQUEST)
+    submit_chat_request( Role_1, Name_1, Question_1, Role_2, Name_2, Question_2, 
+      Output_To_Response, Consider_Context, Remember_Context, Enable_Tool_Function, 
+      Message_Append);
+  }
+  else if (PROPS.REQUEST_MODE == 1)
+  {
+    if (!Question_2.empty())
     {
-      ALLOW_OUTPUT = Output_To_Response;
-      CONSIDER_CONTEXT = Consider_Context;
-      REMEMBER_CONTEXT = Remember_Context;
-
-      // Take a snapshot of the conversation, in case it needs to be undone by the tool function.
-      CONVERSATION_SNAP_SHOT = CONVERSATION;
-      ROLE_1_SNAP_SHOT = Role_1;
-      NAME_1_SNAP_SHOT = Name_1;
-      QUESTION_1_SNAP_SHOT = Question_1;
-      ROLE_2_SNAP_SHOT = Role_2;
-      NAME_2_SNAP_SHOT = Name_2;
-      QUESTION_2_SNAP_SHOT = Question_2;
-
-      REQUEST = build_request(Role_1, Name_1, Question_1, Role_2, Name_2, Question_2, Enable_Tool_Function, Message_Append);
-
-      string_to_file((EXCHANGE_DIRECTORY + PROPS.REQUEST_JSON_FILENAME), REQUEST.dump(2), false);
-      
-      RESPONSE_FULL = "";
-
-      //string bcommand = PROPS.ENVIRONMENT + aa + PROPS.TEST + sp;
-      string bcommand = PROPS.ENVIRONMENT + aa + PROPS.REQUEST + sp + 
-                                    PROPS.MODEL + sp + 
-                                    (EXCHANGE_DIRECTORY + PROPS.REQUEST_JSON_FILENAME) + sp + 
-                                    (EXCHANGE_DIRECTORY + PROPS.RESPONSE_JSON_FILENAME);
-
-      if (PROPS.BASH_SHELL.size() > 0)
-      {
-        bcommand = PROPS.BASH_SHELL + bcommand + "'";
-      }
-
-      OLLAMA_MUTEX.set_command_line (bcommand);
-
-      dump_string(DUMP_DIRECTORY, "pycall.txt", bcommand);
-
-      // Remove any unnecessary items from the conversation 
-      clean_conversation();
-
-      thread();
+      //say something because this isnt allowed.
     }
+
+    submit_generate_request(Question_1, 
+      Output_To_Response, Consider_Context, Remember_Context);
   }
 }
 
-void OLLAMA_API_PYTHON::submit_question(string Role_1, string Name_1, string Question_1, 
-                                        string Role_2, string Name_2, string Question_2, 
-                                        bool Output_To_Response, bool Consider_Context, 
-                                        bool Remember_Context, bool Enable_Tool_Function)
+void OLLAMA_API_PYTHON::submit_request(string Role_1, string Name_1, string Question_1, 
+  string Role_2, string Name_2, string Question_2, 
+  bool Output_To_Response, bool Consider_Context, 
+  bool Remember_Context, bool Enable_Tool_Function)
 {
   nlohmann::json empty_json;
-  submit_question(Role_1, Name_1, Question_1, Role_2, Name_2, Question_2, 
+  submit_request(Role_1, Name_1, Question_1, Role_2, Name_2, Question_2, 
                   Output_To_Response, Consider_Context, 
                   Remember_Context, Enable_Tool_Function, empty_json);
 }
-
-void OLLAMA_API_PYTHON::submit_question(string Role, string Name, string Question, 
-                                        bool Output_To_Response, bool Consider_Context, 
-                                        bool Remember_Context, bool Enable_Tool_Function)
+  
+void OLLAMA_API_PYTHON::submit_request(string Role, string Name, string Question, 
+  bool Output_To_Response, bool Consider_Context, 
+  bool Remember_Context, bool Enable_Tool_Function)
 {
   nlohmann::json empty_json;
-  submit_question(Role, Name, Question, "", "", "", 
-                  Output_To_Response, Consider_Context, 
-                  Remember_Context, Enable_Tool_Function, empty_json);
+  submit_request(Role, Name, Question, "", "", "", 
+    Output_To_Response, Consider_Context, 
+    Remember_Context, Enable_Tool_Function, empty_json);
 }
 
 int OLLAMA_API_PYTHON::check_response()
@@ -792,7 +888,7 @@ void OLLAMA_API_PYTHON::check_response_done()
         if (tool_calls_submittted)
         {
           // Resubmit question with tool reply
-          submit_question(ROLE_1_SNAP_SHOT, NAME_1_SNAP_SHOT, QUESTION_1_SNAP_SHOT, 
+          submit_request(ROLE_1_SNAP_SHOT, NAME_1_SNAP_SHOT, QUESTION_1_SNAP_SHOT, 
                           ROLE_2_SNAP_SHOT, NAME_2_SNAP_SHOT, QUESTION_2_SNAP_SHOT, 
                           ALLOW_OUTPUT, CONSIDER_CONTEXT, 
                           REMEMBER_CONTEXT, false, tool_reply);
@@ -801,7 +897,7 @@ void OLLAMA_API_PYTHON::check_response_done()
         {
           // Resubmit question without tool reply
           //  Likely called by a tool request that doesnt exist or exist elsewhere.
-          submit_question(ROLE_1_SNAP_SHOT, NAME_1_SNAP_SHOT, QUESTION_1_SNAP_SHOT, 
+          submit_request(ROLE_1_SNAP_SHOT, NAME_1_SNAP_SHOT, QUESTION_1_SNAP_SHOT, 
                           ROLE_2_SNAP_SHOT, NAME_2_SNAP_SHOT, QUESTION_2_SNAP_SHOT, 
                           ALLOW_OUTPUT, CONSIDER_CONTEXT, 
                           REMEMBER_CONTEXT, false);
