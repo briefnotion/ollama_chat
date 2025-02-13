@@ -184,6 +184,13 @@ void OLLAMA_API_PYTHON::clean_chat_conversation()
                                       }),
                         CONVERSATION.end());
 
+    // Remove entries with "role": "tool"
+    CONVERSATION.erase(std::remove_if(CONVERSATION.begin(), CONVERSATION.end(),
+                                      [](const nlohmann::json& entry) 
+                                      {
+                                          return entry["content"].empty();
+                                      }),
+                        CONVERSATION.end());
   }
 }
 
@@ -215,15 +222,7 @@ nlohmann::json OLLAMA_API_PYTHON::build_generate_request(string Request)
     request["keep_alive"] = 3600;
 
     // Additional Options
-    request["options"] = {{"num_ctx", 4096}};
-    
-    //request["stop_sequences"] = "";
-    //request["max_tokens"] = 2048;
-    //request["temperature"] = 1.0;
-    //request["top_p"] = 1.0;
-    //request["presence_penalty"] = 0.0;
-    //request["frequency_penalty"] = 0.0;
-    //request["logit_bias"] = {};
+    request["options"] = PROPS.OLLAMA_OPTIONS;
   }
 
   return request; // Return the built request
@@ -273,6 +272,11 @@ nlohmann::json OLLAMA_API_PYTHON::build_chat_request(string Role_1, string Name_
     if (TOOLS.DATE_TOOL_SUBMIT.submit())
     {
       tools_list.push_back(TOOLS.date_tool());
+    }
+
+    if (TOOLS.SYSTEM_HELP_SUBMIT.submit())
+    {
+      tools_list.push_back(TOOLS.system_help_tool());
     }
 
 
@@ -340,7 +344,7 @@ nlohmann::json OLLAMA_API_PYTHON::build_chat_request(string Role_1, string Name_
     request["keep_alive"] = 3600;
 
     // Additional Options
-    request["options"] = {{"num_ctx", 4096}};
+    request["options"] = PROPS.OLLAMA_OPTIONS;
     
     //request["stop_sequences"] = "";
     //request["max_tokens"] = 2048;
@@ -461,6 +465,16 @@ void OLLAMA_API_PYTHON::create() // ↑ ↓ → ←
   
   CONNECTION_STATUS =  true;
   CONNECTION_STATUS_CHANGED = true;
+
+  PROPS.OLLAMA_OPTIONS["num_ctx"] = 4096;
+
+  //request["stop_sequences"] = "";
+  //request["max_tokens"] = 2048;
+  //request["temperature"] = 1.0;
+  //request["top_p"] = 1.0;
+  //request["presence_penalty"] = 0.0;
+  //request["frequency_penalty"] = 0.0;
+  //request["logit_bias"] = {};
 
   /*
   bool connection_status = CONNECTION_STATUS;
@@ -675,31 +689,6 @@ void OLLAMA_API_PYTHON::create() // ↑ ↓ → ←
   */
 }
 
-/*
-string OLLAMA_API_PYTHON::tools()
-{
-  nlohmann::json tools_list_full;
-  nlohmann::json tools_list;
-
-  if (TOOLS.WEATHER_TOOL_SUBMIT.submit())
-  {
-    tools_list.push_back(TOOLS.weather_tool());
-  }
-
-  if (TOOLS.CLOCK_TOOL_SUBMIT.submit())
-  {
-    tools_list.push_back(TOOLS.clock_tool());
-  }
-
-  if (!tools_list.empty())
-  {
-    tools_list_full["tools"] = tools_list;
-  }
-
-  return tools_list_full.dump();
-}
-*/
-
 void OLLAMA_API_PYTHON::set_status(int Status)
 {
   OLLAMA_MUTEX.set_done(Status);
@@ -824,6 +813,14 @@ void OLLAMA_API_PYTHON::check_response_done()
                     TOOLS.WEATHER_TOOL_PARAM_LOCATION = message["tool_calls"]["function"]["arguments"]["location"];
   
                     tool_calls_submittted = true;
+
+                    // new tool call
+                    nlohmann::json tmpjson;
+                    tmpjson["content"] = nullptr;
+                    tmpjson["role"] = "assistant";
+                    tmpjson["tool_calls"] = {message["tool_calls"]};
+                    tool_reply.push_back(tmpjson);
+
                     tool_reply.push_back(TOOLS.weather_tool_reply());
                   }
                 }
@@ -833,14 +830,58 @@ void OLLAMA_API_PYTHON::check_response_done()
               if (message["tool_calls"]["function"]["name"] == "get_current_time")
               {
                 tool_calls_submittted = true;
+
+                // new tool call
+                nlohmann::json tmpjson;
+                tmpjson["content"] = nullptr;
+                tmpjson["role"] = "assistant";
+                tmpjson["tool_calls"] = {message["tool_calls"]};
+                tool_reply.push_back(tmpjson);
+
+                // ************* Include ID or INDEX
+                /*
+                {
+                "tool_calls": {
+                  "function": {
+                    "arguments": {},
+                    "index": 2,
+                    "name": "get_current_date"
+                  }
+                }
+                */
+
                 tool_reply.push_back(TOOLS.clock_tool_reply());
+                dump_string(DUMP_DIRECTORY, "test.json", tool_reply.dump(2));
               }
   
               // get current time
               if (message["tool_calls"]["function"]["name"] == "get_current_date")
               {
                 tool_calls_submittted = true;
+
+                // new tool call
+                nlohmann::json tmpjson;
+                tmpjson["content"] = nullptr;
+                tmpjson["role"] = "assistant";
+                tmpjson["tool_calls"] = {message["tool_calls"]};
+                tool_reply.push_back(tmpjson);
+                
                 tool_reply.push_back(TOOLS.date_tool_reply());
+              }
+  
+              // system_help_tool
+              if (message["tool_calls"]["function"]["name"] == "system_help_tool")
+              {
+                tool_calls_submittted = true;
+
+                // new tool call
+                nlohmann::json tmpjson;
+                tmpjson["content"] = nullptr;
+                tmpjson["role"] = "assistant";
+                tmpjson["tool_calls"] = {message["tool_calls"]};
+                tool_reply.push_back(tmpjson);
+                
+                tool_reply.push_back(TOOLS.system_help_reply());
               }
   
             }
@@ -878,7 +919,7 @@ void OLLAMA_API_PYTHON::check_response_done()
       // Context
       if (RESPONSE.contains("context"))
       {
-        dump_string(DUMP_DIRECTORY, "context_response.json", RESPONSE.dump(2));
+        dump_string(DUMP_DIRECTORY, "tool_request.json", RESPONSE.dump(2));
         CONVERSATION_CONTEXT = RESPONSE["context"];
       }
     
@@ -887,6 +928,7 @@ void OLLAMA_API_PYTHON::check_response_done()
       {
         if (tool_calls_submittted)
         {
+          dump_string(DUMP_DIRECTORY, "tool_reply.json", tool_reply.dump(2));
           // Resubmit question with tool reply
           submit_request(ROLE_1_SNAP_SHOT, NAME_1_SNAP_SHOT, QUESTION_1_SNAP_SHOT, 
                           ROLE_2_SNAP_SHOT, NAME_2_SNAP_SHOT, QUESTION_2_SNAP_SHOT, 

@@ -80,7 +80,7 @@ nlohmann::json TOOL_FUNCTIONS::weather_tool_reply()
     return
     {
       {"role", "tool"},
-      {"content", "Would you like the temperature to be in fahrenheit or celsius?"}, 
+      {"content", "I need fahrenheit or celsius?"}, 
       {"name", "get_current_weather"}
     };
   }
@@ -95,7 +95,8 @@ nlohmann::json TOOL_FUNCTIONS::clock_tool()
     {"type", "function"},
     {"function", {
       {"name", "get_current_time"},
-      {"description", "Get the time"}
+      {"description", "Get the time"},
+      {"parameters", {}}
     }}
   };
 
@@ -106,7 +107,7 @@ nlohmann::json TOOL_FUNCTIONS::clock_tool_reply()
   return
   {
     {"role", "tool"},
-    {"content", "The time is " + current_time() + "."}, 
+    {"content", "The time in military timeis " + current_time() + "."}, 
     {"name", "get_current_time"}
   };
 }
@@ -121,7 +122,8 @@ nlohmann::json TOOL_FUNCTIONS::date_tool()
     {"type", "function"},
     {"function", {
       {"name", "get_current_date"},
-      {"description", "Get the date"}
+      {"description", "Get the date"},
+      {"parameters", {}}
     }}
   };
 
@@ -134,6 +136,34 @@ nlohmann::json TOOL_FUNCTIONS::date_tool_reply()
     {"role", "tool"},
     {"content", "The date is " + current_date() + "."}, 
     {"name", "get_current_date"}
+  };
+
+}
+
+
+// ------------------------------------------------------------------------- //
+
+nlohmann::json TOOL_FUNCTIONS::system_help_tool()
+{
+  return 
+  {
+    {"type", "function"},
+    {"function", {
+      {"name", "system_help_tool"},
+      {"description", "The user is asking for help on how to interact with the system."},
+      {"parameters", {}}
+    }}
+  };
+
+}
+
+nlohmann::json TOOL_FUNCTIONS::system_help_reply()
+{
+  return
+  {
+    {"role", "tool"},
+    {"content", "Reply with: Take a deep breath, and count to 100."}, 
+    {"name", "system_help_tool"}
   };
 
 }

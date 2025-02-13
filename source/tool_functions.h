@@ -48,6 +48,11 @@ class TOOL_FUNCTIONS
   nlohmann::json date_tool();
   nlohmann::json date_tool_reply();
 
+  // Get Help File
+  TOOL_TRACKER SYSTEM_HELP_SUBMIT;
+  nlohmann::json system_help_tool();
+  nlohmann::json system_help_reply();
+
 };
 
 // ------------------------------------------------------------------------- //

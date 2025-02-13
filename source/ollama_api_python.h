@@ -110,6 +110,8 @@ class OLLAMA_API_PYTHON_PROPS
   // Model
   string MODEL = "";  // "llama3.1:8b"
   string URL   = "";  // "http://localhost:11434"
+  
+  nlohmann::json OLLAMA_OPTIONS;
 
   // Request as Generate or Chat
   int REQUEST_MODE = 0; // 0: Chat, 1: Generate

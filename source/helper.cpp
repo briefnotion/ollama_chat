@@ -1250,7 +1250,7 @@ string current_time()
 
   time.put_seconds(dur.count());
 
-  ret_date_time = to_string (time.get_hour()) +
+  ret_date_time = linemerge_right_justify(2, "00", to_string (time.get_hour())) +
                   ":" +
                   linemerge_right_justify(2, "00", to_string(time.get_minute()));
 

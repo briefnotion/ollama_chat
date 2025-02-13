@@ -1,3 +1,9 @@
+0.047-250213
+  - Updated to latest version of Ollama "0.5.7"
+  - Changes made to tool function json handling and now it 
+      seems to be working correctly.
+  - Staying with chat api for now.
+
 0.046-250212
   - Split the request routines into chat and generate, so I can 
       try to figure out whitch one works best.  At the time, generate 
