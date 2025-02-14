@@ -44,6 +44,10 @@ string MEMORY_FILE_MANAGER::get_file(string Title)
   {
     ret_file_content = FILES[pos].CONTENT;
   }
+  else
+  {
+    ret_file_content = "Could not find the memory file \"" + Title + "\"\n";
+  }
   return ret_file_content;
 }
 
@@ -66,6 +70,25 @@ void MEMORY_FILE_MANAGER::remove_file(string Title)
   // Currently, unimplemented. This is not necessary at this time.
 }
 */
+
+string MEMORY_FILE_MANAGER::memory_file_list()
+{
+  string ret_list = "";
+
+  if (FILES.size() > 0)
+  {
+    for (int pos = 0; pos < (int)FILES.size(); pos++)
+    {
+      ret_list += "\"" + FILES[pos].TITLE + "\" ";
+    }
+  }
+  else
+  {
+    ret_list = "The memory file list is empty.";
+  }
+
+  return ret_list;
+}
 
 string MEMORY_FILE_MANAGER::load_all_memory_files(string Directory)
 {

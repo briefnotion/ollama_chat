@@ -1,3 +1,6 @@
+0.048-250214
+  - Added a few more tools for testing.
+
 0.047-250213
   - Updated to latest version of Ollama "0.5.7"
   - Changes made to tool function json handling and now it 

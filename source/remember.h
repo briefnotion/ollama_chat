@@ -36,6 +36,9 @@ class MEMORY_FILE_MANAGER
   void add_file(MEMORY_FILE File);  // adds or modifies a file
   //void remove_file(string Title);   // unimplemented.
 
+  string memory_file_list();  // returns a list of all files in the vector array.
+                              // All files are in quotes seperated by a space.
+
   string load_all_memory_files(string Directory);   // loads all memory files from disk.
   bool save_all_memory_files(string Directory);     // saves all memory files to disk.
 };

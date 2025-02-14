@@ -7,26 +7,21 @@ using namespace std;
 
 // ------------------------------------------------------------------------- //
 
-bool TOOL_TRACKER::submit()
+bool TOOL_TRACKER::enabled()
 {
-  /*
-  if (SUBMIT)
-  {
-    SUBMIT = false;
-    return true;
-  }
-  else
-  {
-    return false;
-  }
-  */
-  return true;
+  return ENABLED;
+}
+
+void TOOL_TRACKER::enable_set(bool Enable)
+{
+  ENABLED = Enable;
 }
 
 // ------------------------------------------------------------------------- //
 // ------------------------------------------------------------------------- //
 
-
+// ------------------------------------------------------------------------- //
+// Weather from testing,  always responds the same.
 nlohmann::json TOOL_FUNCTIONS::weather_tool()
 {
   return 
@@ -87,6 +82,7 @@ nlohmann::json TOOL_FUNCTIONS::weather_tool_reply()
 }
 
 // ------------------------------------------------------------------------- //
+// Date and TIme
 
 nlohmann::json TOOL_FUNCTIONS::clock_tool()
 {
@@ -95,8 +91,8 @@ nlohmann::json TOOL_FUNCTIONS::clock_tool()
     {"type", "function"},
     {"function", {
       {"name", "get_current_time"},
-      {"description", "Get the time"},
-      {"parameters", {}}
+      {"description", "Get the time"}
+      //{"parameters", {}}
     }}
   };
 
@@ -112,9 +108,6 @@ nlohmann::json TOOL_FUNCTIONS::clock_tool_reply()
   };
 }
 
-
-// ------------------------------------------------------------------------- //
-
 nlohmann::json TOOL_FUNCTIONS::date_tool()
 {
   return 
@@ -122,8 +115,8 @@ nlohmann::json TOOL_FUNCTIONS::date_tool()
     {"type", "function"},
     {"function", {
       {"name", "get_current_date"},
-      {"description", "Get the date"},
-      {"parameters", {}}
+      {"description", "Get the date"}
+      //{"parameters", {}}
     }}
   };
 
@@ -140,8 +133,8 @@ nlohmann::json TOOL_FUNCTIONS::date_tool_reply()
 
 }
 
-
 // ------------------------------------------------------------------------- //
+// System Help
 
 nlohmann::json TOOL_FUNCTIONS::system_help_tool()
 {
@@ -150,22 +143,86 @@ nlohmann::json TOOL_FUNCTIONS::system_help_tool()
     {"type", "function"},
     {"function", {
       {"name", "system_help_tool"},
-      {"description", "The user is asking for help on how to interact with the system."},
+      {"description", "The user is asking for help on how to interact with the system."}
+      //{"parameters", {}}
+    }}
+  };
+
+}
+
+nlohmann::json TOOL_FUNCTIONS::system_help_reply(REMEMBER &Memory)
+{
+  return
+  {
+    {"role", "tool"},
+    {"content", Memory.FILE_MANAGER.get_file("system_help")}, 
+    {"name", "system_help_tool"}
+  };
+
+}
+
+// ------------------------------------------------------------------------- //
+// Memory Files
+
+nlohmann::json TOOL_FUNCTIONS::memory_file_list_tool()
+{
+  return 
+  {
+    {"type", "function"},
+    {"function", {
+      {"name", "memory_file_list_tool"},
+      {"description", "The user is asking for the memory file list."},
       {"parameters", {}}
     }}
   };
 
 }
 
-nlohmann::json TOOL_FUNCTIONS::system_help_reply()
+nlohmann::json TOOL_FUNCTIONS::memory_file_list_reply(REMEMBER &Memory)
 {
   return
   {
     {"role", "tool"},
-    {"content", "Reply with: Take a deep breath, and count to 100."}, 
-    {"name", "system_help_tool"}
+    {"content", "Memory file list:" + 
+                Memory.FILE_MANAGER.memory_file_list()}, 
+    {"name", "memory_file_list_tool"}
   };
 
+}
+
+// ------------------------------------------------------------------------- //
+// Memory Files
+
+nlohmann::json TOOL_FUNCTIONS::tool_list()
+{
+  nlohmann::json ret_tools_list;
+
+  if (WEATHER_TOOL_SUBMIT.enabled())
+  {
+    ret_tools_list.push_back(weather_tool());
+  }
+
+  if (CLOCK_TOOL_SUBMIT.enabled())
+  {
+    ret_tools_list.push_back(clock_tool());
+  }
+
+  if (DATE_TOOL_SUBMIT.enabled())
+  {
+    ret_tools_list.push_back(date_tool());
+  }
+
+  if (SYSTEM_HELP_SUBMIT.enabled())
+  {
+    ret_tools_list.push_back(system_help_tool());
+  }
+
+  if (MEMORY_FILES_SUBMIT.enabled())
+  {
+    ret_tools_list.push_back(memory_file_list_tool());
+  }
+
+  return ret_tools_list;
 }
 
 // ------------------------------------------------------------------------- //

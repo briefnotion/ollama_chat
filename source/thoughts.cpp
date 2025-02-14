@@ -595,7 +595,7 @@ void THOUGHTS::process(SYSTEM &System)
 
   // Handle Output
   VECTORDB_SYSTEM.process();
-  OLLAMA_SYSTEM.process(System.OUTPUT_OLLAMA_RESPONSE, System.OUTPUT_FOCUS);
+  OLLAMA_SYSTEM.process(System.OUTPUT_OLLAMA_RESPONSE, System.OUTPUT_FOCUS, MEMORY);
 }
 
 // ------------------------------------------------------------------------- //

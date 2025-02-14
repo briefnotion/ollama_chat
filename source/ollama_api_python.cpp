@@ -257,28 +257,8 @@ nlohmann::json OLLAMA_API_PYTHON::build_chat_request(string Role_1, string Name_
   // tools
   if (Enable_Tool_Function) 
   {
-    nlohmann::json tools_list;
-
-    if (TOOLS.WEATHER_TOOL_SUBMIT.submit())
-    {
-      tools_list.push_back(TOOLS.weather_tool());
-    }
-
-    if (TOOLS.CLOCK_TOOL_SUBMIT.submit())
-    {
-      tools_list.push_back(TOOLS.clock_tool());
-    }
-
-    if (TOOLS.DATE_TOOL_SUBMIT.submit())
-    {
-      tools_list.push_back(TOOLS.date_tool());
-    }
-
-    if (TOOLS.SYSTEM_HELP_SUBMIT.submit())
-    {
-      tools_list.push_back(TOOLS.system_help_tool());
-    }
-
+    
+    nlohmann::json tools_list = TOOLS.tool_list();
 
     if (!tools_list.empty())
     {
@@ -689,6 +669,28 @@ void OLLAMA_API_PYTHON::create() // ↑ ↓ → ←
   */
 }
 
+nlohmann::json OLLAMA_API_PYTHON::build_new_tool_reply_start(nlohmann::json Message)
+{
+  // ************* Include ID or INDEX
+  /*
+  {
+  "tool_calls": {
+    "function": {
+      "arguments": {},
+      "index": 2,
+      "name": "get_current_date"
+    }
+  }
+  */
+ 
+  nlohmann::json tmpjson;
+  tmpjson["content"] = nullptr;
+  tmpjson["role"] = "assistant";
+  tmpjson["tool_calls"] = {Message["tool_calls"]};
+
+  return tmpjson;
+}
+
 void OLLAMA_API_PYTHON::set_status(int Status)
 {
   OLLAMA_MUTEX.set_done(Status);
@@ -770,7 +772,7 @@ int OLLAMA_API_PYTHON::check_response()
   return RESPONSE_STRING_VECTOR.size();
 }
 
-void OLLAMA_API_PYTHON::check_response_done()
+void OLLAMA_API_PYTHON::check_response_done(REMEMBER &Memory)
 {
   if (OLLAMA_MUTEX.done() == OLLAMA_API_READY_TO_GATHER)
   {
@@ -813,14 +815,7 @@ void OLLAMA_API_PYTHON::check_response_done()
                     TOOLS.WEATHER_TOOL_PARAM_LOCATION = message["tool_calls"]["function"]["arguments"]["location"];
   
                     tool_calls_submittted = true;
-
-                    // new tool call
-                    nlohmann::json tmpjson;
-                    tmpjson["content"] = nullptr;
-                    tmpjson["role"] = "assistant";
-                    tmpjson["tool_calls"] = {message["tool_calls"]};
-                    tool_reply.push_back(tmpjson);
-
+                    tool_reply.push_back(build_new_tool_reply_start(message));
                     tool_reply.push_back(TOOLS.weather_tool_reply());
                   }
                 }
@@ -830,26 +825,7 @@ void OLLAMA_API_PYTHON::check_response_done()
               if (message["tool_calls"]["function"]["name"] == "get_current_time")
               {
                 tool_calls_submittted = true;
-
-                // new tool call
-                nlohmann::json tmpjson;
-                tmpjson["content"] = nullptr;
-                tmpjson["role"] = "assistant";
-                tmpjson["tool_calls"] = {message["tool_calls"]};
-                tool_reply.push_back(tmpjson);
-
-                // ************* Include ID or INDEX
-                /*
-                {
-                "tool_calls": {
-                  "function": {
-                    "arguments": {},
-                    "index": 2,
-                    "name": "get_current_date"
-                  }
-                }
-                */
-
+                tool_reply.push_back(build_new_tool_reply_start(message));
                 tool_reply.push_back(TOOLS.clock_tool_reply());
                 dump_string(DUMP_DIRECTORY, "test.json", tool_reply.dump(2));
               }
@@ -858,14 +834,7 @@ void OLLAMA_API_PYTHON::check_response_done()
               if (message["tool_calls"]["function"]["name"] == "get_current_date")
               {
                 tool_calls_submittted = true;
-
-                // new tool call
-                nlohmann::json tmpjson;
-                tmpjson["content"] = nullptr;
-                tmpjson["role"] = "assistant";
-                tmpjson["tool_calls"] = {message["tool_calls"]};
-                tool_reply.push_back(tmpjson);
-                
+                tool_reply.push_back(build_new_tool_reply_start(message));
                 tool_reply.push_back(TOOLS.date_tool_reply());
               }
   
@@ -873,17 +842,20 @@ void OLLAMA_API_PYTHON::check_response_done()
               if (message["tool_calls"]["function"]["name"] == "system_help_tool")
               {
                 tool_calls_submittted = true;
-
-                // new tool call
-                nlohmann::json tmpjson;
-                tmpjson["content"] = nullptr;
-                tmpjson["role"] = "assistant";
-                tmpjson["tool_calls"] = {message["tool_calls"]};
-                tool_reply.push_back(tmpjson);
-                
-                tool_reply.push_back(TOOLS.system_help_reply());
+                tool_reply.push_back(build_new_tool_reply_start(message));
+                tool_reply.push_back(TOOLS.system_help_reply(Memory));
               }
   
+              // Memory Files
+              if (message["tool_calls"]["function"]["name"] == "memory_file_list_tool")
+              {
+                tool_calls_submittted = true;
+                tool_reply.push_back(build_new_tool_reply_start(message));
+                tool_reply.push_back(TOOLS.memory_file_list_reply(Memory));
+              }
+  
+              // Things get weird if nothing found.
+
             }
           }
         }
@@ -968,7 +940,7 @@ void OLLAMA_API_PYTHON::context_unpause()
   }
 }
 
-void OLLAMA_API_PYTHON::process(TTY_OUTPUT &Output, TTY_OUTPUT_FOCUS &Focus)
+void OLLAMA_API_PYTHON::process(TTY_OUTPUT &Output, TTY_OUTPUT_FOCUS &Focus, REMEMBER &Memory)
 {
   // Print Responses that may arrive.
   if (check_response() > 0)
@@ -994,7 +966,7 @@ void OLLAMA_API_PYTHON::process(TTY_OUTPUT &Output, TTY_OUTPUT_FOCUS &Focus)
     set_status(OLLAMA_API_READY_TO_GATHER);
   }
 
-  check_response_done();
+  check_response_done(Memory);
 }
 
 #endif  // OLLAMA_API_CPP
