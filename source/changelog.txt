@@ -1,3 +1,6 @@
+0.049-250215
+  - Changes made to tool function.
+
 0.048-250214
   - Added a few more tools for testing.
 

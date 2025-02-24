@@ -151,9 +151,15 @@ void THOUGHTS::process_maintenance_mode_cycle(SYSTEM &System)
     TRAIN_OF_THOUGH.back().ISOLATE_INPUT_TO_THOUGHT = true;
     TRAIN_OF_THOUGH.back().SUBJECT = "";
 
-    //string introduction = "Say: You are now entering the maintenance system. Then provide the following list of commands related to maintaining a ChromaDB database and Retrieval Augmented Generation, also known as RAG support: embeding, import, erase, list";
-
     string introduction = MEMORY.FILE_MANAGER.get_file("maintenance_mode_introduction");
+
+    // Turn on and off tools.
+    OLLAMA_SYSTEM.TOOLS.WEATHER_TOOL.enable_set(false);
+    OLLAMA_SYSTEM.TOOLS.CLOCK_TOOL.enable_set(false);
+    OLLAMA_SYSTEM.TOOLS.DATE_TOOL.enable_set(false);
+    OLLAMA_SYSTEM.TOOLS.SYSTEM_HELP.enable_set(false);
+    OLLAMA_SYSTEM.TOOLS.MEMORY_FILES_LIST.enable_set(true);
+    OLLAMA_SYSTEM.TOOLS.MEMORY_FILES_PRINT.enable_set(true);
 
     OLLAMA_SYSTEM.submit_request(ROLE_USER, USER_INSTRUCTIONS, introduction, true, true, true, false);
   }
@@ -269,6 +275,15 @@ void THOUGHTS::process_maintenance_mode_cycle(SYSTEM &System)
         OLLAMA_SYSTEM.context_unpause();
         System.OUTPUT_OLLAMA_RESPONSE.add_to("   *---- EXITING MAINTENANCE MODE CYCLE\n", System.OUTPUT_FOCUS);
         TRAIN_OF_THOUGH.back().THINKING_STAGE = 1000;
+
+        // Turn on and off tools.
+        OLLAMA_SYSTEM.TOOLS.WEATHER_TOOL.enable_set(true);
+        OLLAMA_SYSTEM.TOOLS.CLOCK_TOOL.enable_set(true);
+        OLLAMA_SYSTEM.TOOLS.DATE_TOOL.enable_set(true);
+        OLLAMA_SYSTEM.TOOLS.SYSTEM_HELP.enable_set(true);
+        OLLAMA_SYSTEM.TOOLS.MEMORY_FILES_LIST.enable_set(true);
+        OLLAMA_SYSTEM.TOOLS.MEMORY_FILES_PRINT.enable_set(false);
+
       }
       else                                              // if answered anything else, go to process command
       {

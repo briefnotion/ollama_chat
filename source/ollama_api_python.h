@@ -184,9 +184,6 @@ class OLLAMA_API_PYTHON
   nlohmann::json CONVERSATION;
   nlohmann::json CONVERSATION_CONTEXT;
 
-  // Tool Function Problems
-  TOOL_FUNCTIONS TOOLS;
-
   nlohmann::json CONVERSATION_SNAP_SHOT;
   string ROLE_1_SNAP_SHOT = "";
   string NAME_1_SNAP_SHOT = "";
@@ -216,6 +213,9 @@ class OLLAMA_API_PYTHON
   // Sending
   nlohmann::json REQUEST = "";
 
+  // Tool Function Problems
+  TOOL_FUNCTIONS TOOLS;
+
   private:
 
   void clean_chat_conversation();
@@ -242,11 +242,7 @@ class OLLAMA_API_PYTHON
   //void exec_question();
   // Starts new thread with parameters set in mutex
 
-  nlohmann::json build_new_tool_reply_start(nlohmann::json Message);
-
   public:
-
-  //string tools();
 
   void set_status(int Status);
   // force sets OLLAMA_API_STATUS as defined in header

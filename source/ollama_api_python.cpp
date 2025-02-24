@@ -669,28 +669,6 @@ void OLLAMA_API_PYTHON::create() // ↑ ↓ → ←
   */
 }
 
-nlohmann::json OLLAMA_API_PYTHON::build_new_tool_reply_start(nlohmann::json Message)
-{
-  // ************* Include ID or INDEX
-  /*
-  {
-  "tool_calls": {
-    "function": {
-      "arguments": {},
-      "index": 2,
-      "name": "get_current_date"
-    }
-  }
-  */
- 
-  nlohmann::json tmpjson;
-  tmpjson["content"] = nullptr;
-  tmpjson["role"] = "assistant";
-  tmpjson["tool_calls"] = {Message["tool_calls"]};
-
-  return tmpjson;
-}
-
 void OLLAMA_API_PYTHON::set_status(int Status)
 {
   OLLAMA_MUTEX.set_done(Status);
@@ -779,7 +757,8 @@ void OLLAMA_API_PYTHON::check_response_done(REMEMBER &Memory)
     RESPONSE = OLLAMA_MUTEX.get_complete_response_after_done();
     
     bool tool_calls_found = false;
-    bool tool_calls_submittted = false;
+    
+    TRUTH_CATCH tool_calls_submittted;
 
     nlohmann::json tool_reply;
 
@@ -802,58 +781,13 @@ void OLLAMA_API_PYTHON::check_response_done(REMEMBER &Memory)
             dump_string(DUMP_DIRECTORY, "item_1.txt", message["tool_calls"]["function"].dump(2));
             if (message["tool_calls"]["function"].contains("name"))
             {
-  
-              // get current weather
-              if (message["tool_calls"]["function"]["name"] == "get_current_weather")
-              {
-                if (message["tool_calls"]["function"].contains("arguments"))
-                {
-                  if (message["tool_calls"]["function"]["arguments"].contains("format") &&
-                      message["tool_calls"]["function"]["arguments"].contains("location"))
-                  {
-                    TOOLS.WEATHER_TOOL_PARAM_FORMAT = message["tool_calls"]["function"]["arguments"]["format"];
-                    TOOLS.WEATHER_TOOL_PARAM_LOCATION = message["tool_calls"]["function"]["arguments"]["location"];
-  
-                    tool_calls_submittted = true;
-                    tool_reply.push_back(build_new_tool_reply_start(message));
-                    tool_reply.push_back(TOOLS.weather_tool_reply());
-                  }
-                }
-              }
-  
-              // get current time
-              if (message["tool_calls"]["function"]["name"] == "get_current_time")
-              {
-                tool_calls_submittted = true;
-                tool_reply.push_back(build_new_tool_reply_start(message));
-                tool_reply.push_back(TOOLS.clock_tool_reply());
-                dump_string(DUMP_DIRECTORY, "test.json", tool_reply.dump(2));
-              }
-  
-              // get current time
-              if (message["tool_calls"]["function"]["name"] == "get_current_date")
-              {
-                tool_calls_submittted = true;
-                tool_reply.push_back(build_new_tool_reply_start(message));
-                tool_reply.push_back(TOOLS.date_tool_reply());
-              }
-  
-              // system_help_tool
-              if (message["tool_calls"]["function"]["name"] == "system_help_tool")
-              {
-                tool_calls_submittted = true;
-                tool_reply.push_back(build_new_tool_reply_start(message));
-                tool_reply.push_back(TOOLS.system_help_reply(Memory));
-              }
-  
-              // Memory Files
-              if (message["tool_calls"]["function"]["name"] == "memory_file_list_tool")
-              {
-                tool_calls_submittted = true;
-                tool_reply.push_back(build_new_tool_reply_start(message));
-                tool_reply.push_back(TOOLS.memory_file_list_reply(Memory));
-              }
-  
+              tool_calls_submittted.catch_truth(TOOLS.WEATHER_TOOL_CALL(message, tool_reply));
+              tool_calls_submittted.catch_truth(TOOLS.CLOCK_TOOL_CALL(message, tool_reply));
+              tool_calls_submittted.catch_truth(TOOLS.DATE_TOOL_CALL(message, tool_reply));
+              tool_calls_submittted.catch_truth(TOOLS.SYSTEM_HELP_CALL(message, tool_reply, Memory));
+              tool_calls_submittted.catch_truth(TOOLS.MEMORY_FILES_LIST_CALL(message, tool_reply, Memory));
+              tool_calls_submittted.catch_truth(TOOLS.MEMORY_FILES_PRINT_CALL(message, tool_reply, Memory));
+
               // Things get weird if nothing found.
 
             }
@@ -898,7 +832,7 @@ void OLLAMA_API_PYTHON::check_response_done(REMEMBER &Memory)
       // Tool Calls
       if (tool_calls_found)
       {
-        if (tool_calls_submittted)
+        if (tool_calls_submittted.has_truth())
         {
           dump_string(DUMP_DIRECTORY, "tool_reply.json", tool_reply.dump(2));
           // Resubmit question with tool reply

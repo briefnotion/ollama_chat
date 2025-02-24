@@ -79,7 +79,7 @@ string MEMORY_FILE_MANAGER::memory_file_list()
   {
     for (int pos = 0; pos < (int)FILES.size(); pos++)
     {
-      ret_list += "\"" + FILES[pos].TITLE + "\" ";
+      ret_list += FILES[pos].TITLE + " ";
     }
   }
   else

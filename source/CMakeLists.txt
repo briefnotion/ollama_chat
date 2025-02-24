@@ -37,34 +37,41 @@ include_directories(
 )
 
 # Create a target for files that include ollama.hpp with non-strict options
-add_library(ollama_files STATIC
+#add_library(ollama_files STATIC
+#    ollama_api.cpp
+#    ollama_api_python.cpp
+#    vectordb_python_api.cpp
+#    system.cpp
+#    main.cpp
+#    thoughts.cpp
+#)
+
+#target_include_directories(ollama_files PRIVATE ${OllamaHPP_INCLUDE_DIR})
+
+# Set compile options for ollama_files based on BUILD_STRICT variable
+#if(SUPPORT_BUILD_STRICT)
+#    if(CMAKE_COMPILER_IS_GNUCC OR CMAKE_COMPILER_IS_GNUCXX)
+#        target_compile_options(ollama_files PRIVATE -Wall -Wextra -Werror)
+#        elseif(CMAKE_CXX_COMPILER_ID MATCHES "Clang")
+#        target_compile_options(ollama_files PRIVATE -Weverything -Werror)
+#    endif()
+#else()
+#    if(CMAKE_COMPILER_IS_GNUCC OR CMAKE_COMPILER_IS_GNUCXX)
+#        target_compile_options(ollama_files PRIVATE -Wall -Wextra)
+#    elseif(CMAKE_CXX_COMPILER_ID MATCHES "Clang")
+#        target_compile_options(ollama_files PRIVATE -Weverything)
+#    endif()
+#endif()
+
+# Add the executable for remaining files
+add_executable(chatapi
     ollama_api.cpp
     ollama_api_python.cpp
     vectordb_python_api.cpp
     system.cpp
     main.cpp
     thoughts.cpp
-)
 
-target_include_directories(ollama_files PRIVATE ${OllamaHPP_INCLUDE_DIR})
-
-# Set compile options for ollama_files based on BUILD_STRICT variable
-if(SUPPORT_BUILD_STRICT)
-    if(CMAKE_COMPILER_IS_GNUCC OR CMAKE_COMPILER_IS_GNUCXX)
-        target_compile_options(ollama_files PRIVATE -Wall -Wextra -Werror)
-        elseif(CMAKE_CXX_COMPILER_ID MATCHES "Clang")
-        target_compile_options(ollama_files PRIVATE -Weverything -Werror)
-    endif()
-else()
-    if(CMAKE_COMPILER_IS_GNUCC OR CMAKE_COMPILER_IS_GNUCXX)
-        target_compile_options(ollama_files PRIVATE -Wall -Wextra)
-    elseif(CMAKE_CXX_COMPILER_ID MATCHES "Clang")
-        target_compile_options(ollama_files PRIVATE -Weverything)
-    endif()
-endif()
-
-# Add the executable for remaining files
-add_executable(chatapi
     helper.cpp
     stringthings.cpp
     tty_io.cpp
@@ -97,6 +104,6 @@ endif()
 target_link_libraries(chatapi PRIVATE 
     OpenSSL::SSL 
     OpenSSL::Crypto
-    ollama_files
+    #ollama_files
     ${Boost_LIBRARIES}
 )
