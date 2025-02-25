@@ -70,7 +70,9 @@ add_executable(chatapi
     vectordb_python_api.cpp
     system.cpp
     main.cpp
+    thought_variables.cpp
     thoughts.cpp
+    thought_stages.cpp
 
     helper.cpp
     stringthings.cpp

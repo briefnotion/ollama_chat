@@ -17,11 +17,17 @@
 #include <deque>
 #include <algorithm>
 #include <iostream>
+#include <initializer_list>
 
 // Rasfled Includes
 #include "helper.h"
 
 using namespace std;
+
+bool keyword_search(const string &Input, initializer_list<string> Words);
+// Function to check for multiple words using an initializer list
+// Usage:
+//   if (keyword_search(Sentence, {"maintenance", "mode"}))
 
 int count_char_in_string(string& Text, char Character);
 

@@ -16,6 +16,19 @@
 
 using namespace std;
 
+// Function to check for multiple words using an initializer list
+bool keyword_search(const string &Input, initializer_list<string> Words) 
+{
+  for (const auto &word : Words) 
+  {
+    if (!string_contains_word(Input, word)) 
+    {
+      return false;
+    }
+  }
+  return true;
+}
+
 int count_char_in_string(string& Text, char Character)
 {
   return count(Text.begin(), Text.end(), Character);

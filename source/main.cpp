@@ -100,19 +100,18 @@ int main()
     sdSystem.OUTPUT_OLLAMA_RESPONSE.create(2);
 
     // Memory Processing Module
-    THOUGHTS_SYSTEM.MEMORY.PROPS.WORKING_DIRECTORY = "~/chat_api/";
-    THOUGHTS_SYSTEM.MEMORY.PROPS.DIR_CHAT_UNPROCESSED = "history_unprocessed/";
-    THOUGHTS_SYSTEM.MEMORY.PROPS.DIR_CHAT_PROCESSED = "history_processed/";
-    THOUGHTS_SYSTEM.MEMORY.PROPS.DIR_MEMORY_FILES = "memory_files/";
+    THOUGHTS_SYSTEM.THOUGHT_CONTOL.MEMORY.PROPS.WORKING_DIRECTORY = "~/chat_api/";
+    THOUGHTS_SYSTEM.THOUGHT_CONTOL.MEMORY.PROPS.DIR_CHAT_UNPROCESSED = "history_unprocessed/";
+    THOUGHTS_SYSTEM.THOUGHT_CONTOL.MEMORY.PROPS.DIR_CHAT_PROCESSED = "history_processed/";
+    THOUGHTS_SYSTEM.THOUGHT_CONTOL.MEMORY.PROPS.DIR_MEMORY_FILES = "memory_files/";
+
+    THOUGHTS_SYSTEM.create();
 
     // Blank the screen.
     sdSystem.INPUT.clear_screeen();
   }
 
   // ------------------------------------------------------------------------- //
-
-  THOUGHTS_SYSTEM.OLLAMA_SYSTEM.OLLAMA_RESPONSE_THREAD.create(OLLAMA_RESPONSE_THREAD_TIMER_DELAY);
-  THOUGHTS_SYSTEM.VECTORDB_SYSTEM.PYTHON_QUESTION_RESPONSE_THREAD.create(VECTORDB_API_RESPONSE_THREAD_TIMER_DELAY);
 
   // Send the output of the create to the screen.
   sdSystem.OUTPUT_OLLAMA_RESPONSE.output(sdSystem.OUTPUT_FOCUS);
@@ -139,7 +138,7 @@ int main()
 
       // Close all completed and active threads after sleep cycle is complete.
       THOUGHTS_SYSTEM.OLLAMA_SYSTEM.OLLAMA_RESPONSE_THREAD.check_for_completition();
-      THOUGHTS_SYSTEM.VECTORDB_SYSTEM.PYTHON_QUESTION_RESPONSE_THREAD.check_for_completition();
+      THOUGHTS_SYSTEM.THOUGHT_CONTOL.VECTORDB_SYSTEM.PYTHON_QUESTION_RESPONSE_THREAD.check_for_completition();
     }
 
     // ------------------------------------------------------------------------- //
@@ -151,10 +150,10 @@ int main()
       // Ollama System
       processor_status_display_simple +=  " (olama status:" + to_string(THOUGHTS_SYSTEM.OLLAMA_SYSTEM.get_status()) + ")";
     }
-    if (THOUGHTS_SYSTEM.VECTORDB_SYSTEM.get_status() > 0)
+    if (THOUGHTS_SYSTEM.THOUGHT_CONTOL.VECTORDB_SYSTEM.get_status() > 0)
     {
       // VectorDB System
-      processor_status_display_simple += " (database status:" + to_string(THOUGHTS_SYSTEM.VECTORDB_SYSTEM.get_status()) + ")";
+      processor_status_display_simple += " (database status:" + to_string(THOUGHTS_SYSTEM.THOUGHT_CONTOL.VECTORDB_SYSTEM.get_status()) + ")";
     }
     if (THOUGHTS_SYSTEM.thought_count() > 0)
     {
@@ -193,7 +192,7 @@ int main()
 
     if (generate_closing)
     {
-      if (THOUGHTS_SYSTEM.MEMORY.FILE_MANAGER.is_file_ready("conversation_closing_previous"))
+      if (THOUGHTS_SYSTEM.THOUGHT_CONTOL.MEMORY.FILE_MANAGER.is_file_ready("conversation_closing_previous"))
       {
         main_loop_exit = true;
       }
@@ -302,14 +301,14 @@ int main()
   sdSystem.INPUT.clear_screeen();
 
   // Save Closing
-  THOUGHTS_SYSTEM.MEMORY.save_memory_files();
+  THOUGHTS_SYSTEM.THOUGHT_CONTOL.MEMORY.save_memory_files();
 
   // Remember
-  THOUGHTS_SYSTEM.MEMORY.save_chat_history(sdSystem.OUTPUT_OLLAMA_RESPONSE.HISTORY);
+  THOUGHTS_SYSTEM.THOUGHT_CONTOL.MEMORY.save_chat_history(sdSystem.OUTPUT_OLLAMA_RESPONSE.HISTORY);
 
   // Shutdown any open threads process
   THOUGHTS_SYSTEM.OLLAMA_SYSTEM.OLLAMA_RESPONSE_THREAD.wait_for_thread_to_finish("OLLAMA_RESPONSE_THREAD");
-  THOUGHTS_SYSTEM.VECTORDB_SYSTEM.PYTHON_QUESTION_RESPONSE_THREAD.wait_for_thread_to_finish("PYTHON_QUESTION_RESPONSE_THREAD");
+  THOUGHTS_SYSTEM.THOUGHT_CONTOL.VECTORDB_SYSTEM.PYTHON_QUESTION_RESPONSE_THREAD.wait_for_thread_to_finish("PYTHON_QUESTION_RESPONSE_THREAD");
   
   // Restore the terminal
   sdSystem.INPUT.restore_terminal_settings();
