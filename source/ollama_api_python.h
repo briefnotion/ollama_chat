@@ -14,7 +14,7 @@
 
 #include "rasapi.h"
 #include "tool_functions.h"
-#include "remember.h"
+#include "thought_variables.h"
 
 #define OLLAMA_SERVER_NOT_CONNECTED     0
 #define OLLAMA_SERVER_CONNECTED         1
@@ -280,7 +280,7 @@ class OLLAMA_API_PYTHON
   // Routine to get a currently running ollama response and update 
   //  the accessible live response stream
 
-  void check_response_done(REMEMBER &Memory);
+  void check_response_done(THOUGHT_VARIABLES &Thought_Control);
   // Routine called by process to close and set things when Ollama is 
   //  finish responding
 
@@ -292,7 +292,7 @@ class OLLAMA_API_PYTHON
   void context_pause();
   void context_unpause();
 
-  void process(TTY_OUTPUT &Output, TTY_OUTPUT_FOCUS &Focus, REMEMBER &Memory);
+  void process(TTY_OUTPUT &Output, TTY_OUTPUT_FOCUS &Focus, THOUGHT_VARIABLES &Thought_Control);
   // If Ollama server is active and responding, outputs genereted text.
   // If Ollama has completed genereated text, post processing is called.
   // else, routine does nothing.

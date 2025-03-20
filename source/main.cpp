@@ -175,10 +175,11 @@ int main()
       
       sdSystem.OUTPUT_CLOCK.clear();
       sdSystem.OUTPUT_CLOCK.redraw();
-      sdSystem.OUTPUT_CLOCK.add_to(linemerge_left_justify("-------------------------------------------------------------------------", 
+      sdSystem.OUTPUT_CLOCK.add_to(reverse(linemerge_left_justify("-------------------------------------------------------------------------", 
                                     processor.what_is_it() +
                                     processor_status_display_simple +
-                                    " INPUT:"), sdSystem.OUTPUT_FOCUS);
+                                    " INPUT:")), 
+                                    sdSystem.OUTPUT_FOCUS);
     }
 
     // ------------------------------------------------------------------------- //
@@ -240,8 +241,8 @@ int main()
               // turn off the recorder to save the conclusion
               sdSystem.OUTPUT_OLLAMA_RESPONSE.PROPS.RECORD_HISTORY = false;
 
-              sdSystem.OUTPUT_OLLAMA_RESPONSE.add_to("   *---- EXITING THE SYSTEM\n", sdSystem.OUTPUT_FOCUS);
-              sdSystem.OUTPUT_OLLAMA_RESPONSE.add_to("   *---- GENERATING CLOSING\n", sdSystem.OUTPUT_FOCUS);
+              sdSystem.OUTPUT_OLLAMA_RESPONSE.add_to(reverse("EXITING THE SYSTEM\n"), sdSystem.OUTPUT_FOCUS);
+              sdSystem.OUTPUT_OLLAMA_RESPONSE.add_to(reverse("GENERATING CLOSING\n"), sdSystem.OUTPUT_FOCUS);
 
               string conclusion_request = 
                 //"i need to remember this entire conversation. write a detailed explaination of everything we talked about. feel free tell me as much as you possibly can and put more detail in the most important things.";

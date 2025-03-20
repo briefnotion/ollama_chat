@@ -351,9 +351,14 @@ bool check_create_working_dir(string Directory, bool Create)
   return ret_exist;
 }
 
+void dump_string(string Directory, string Filename, string Value, bool Append)
+{
+  string_to_file(Directory + Filename, Value, Append);
+}
+
 void dump_string(string Directory, string Filename, string Value)
 {
-  string_to_file(Directory + Filename, Value, false);
+  dump_string(Directory, Filename, Value, false);
 }
 
 bool get_files_list(string Directory, vector<string> &List, string Only_Type)

@@ -1240,7 +1240,7 @@ int two_byte_complement_signed(unsigned char byte1, unsigned char byte2)
   return value;
 }
 
-string current_time()
+string current_time(bool Twelve_Hour_Format)
 {
   FLED_TIME_VAR time; 
   string ret_date_time = "";
@@ -1250,11 +1250,38 @@ string current_time()
 
   time.put_seconds(dur.count());
 
-  ret_date_time = linemerge_right_justify(2, "00", to_string (time.get_hour())) +
-                  ":" +
-                  linemerge_right_justify(2, "00", to_string(time.get_minute()));
+  if (Twelve_Hour_Format)
+  {
+    string ampm = " AM";
+    if (time.get_hour() >= 12)
+    {
+      ampm = " PM";
+    }
+
+    int hour = time.get_hour() % 12;
+    if (hour == 0)
+    {
+      hour = 12;
+    }
+
+    ret_date_time = to_string (hour) +
+    ":" +
+    linemerge_right_justify(2, "00", to_string(time.get_minute())) +
+    ampm;
+  }
+  else
+  {
+    ret_date_time = linemerge_right_justify(2, "00", to_string (time.get_hour())) +
+    ":" +
+    linemerge_right_justify(2, "00", to_string(time.get_minute()));
+  }
 
   return ret_date_time;
+}
+
+string current_time()
+{
+  return current_time(false);
 }
 
 string current_date()

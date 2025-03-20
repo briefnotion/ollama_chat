@@ -750,7 +750,7 @@ int OLLAMA_API_PYTHON::check_response()
   return RESPONSE_STRING_VECTOR.size();
 }
 
-void OLLAMA_API_PYTHON::check_response_done(REMEMBER &Memory)
+void OLLAMA_API_PYTHON::check_response_done(THOUGHT_VARIABLES &Thought_Control)
 {
   if (OLLAMA_MUTEX.done() == OLLAMA_API_READY_TO_GATHER)
   {
@@ -784,11 +784,19 @@ void OLLAMA_API_PYTHON::check_response_done(REMEMBER &Memory)
               tool_calls_submittted.catch_truth(TOOLS.WEATHER_TOOL_CALL(message, tool_reply));
               tool_calls_submittted.catch_truth(TOOLS.CLOCK_TOOL_CALL(message, tool_reply));
               tool_calls_submittted.catch_truth(TOOLS.DATE_TOOL_CALL(message, tool_reply));
-              tool_calls_submittted.catch_truth(TOOLS.SYSTEM_HELP_CALL(message, tool_reply, Memory));
-              tool_calls_submittted.catch_truth(TOOLS.MEMORY_FILES_LIST_CALL(message, tool_reply, Memory));
-              tool_calls_submittted.catch_truth(TOOLS.MEMORY_FILES_PRINT_CALL(message, tool_reply, Memory));
+              tool_calls_submittted.catch_truth(TOOLS.SYSTEM_HELP_CALL(message, tool_reply, Thought_Control));
+              tool_calls_submittted.catch_truth(TOOLS.MEMORY_FILES_LIST_CALL(message, tool_reply, Thought_Control));
+              tool_calls_submittted.catch_truth(TOOLS.MEMORY_FILES_PRINT_CALL(message, tool_reply, Thought_Control));
+              //tool_calls_submittted.catch_truth(TOOLS.MAINTENANCE_MODE_ENTER_CALL(message, tool_reply, Thought_Control));
+
+              //tool_calls_submittted.catch_truth(TOOLS.memory_file_edit_show_name_call(message, tool_reply));
+              //tool_calls_submittted.catch_truth(TOOLS.memory_file_edit_store_name_call(message, tool_reply, Thought_Control));
+              //tool_calls_submittted.catch_truth(TOOLS.memory_file_edit_show_content_call(message, tool_reply, Thought_Control));
+              //tool_calls_submittted.catch_truth(TOOLS.memory_file_edit_store_content_call(message, tool_reply, Thought_Control));
+              tool_calls_submittted.catch_truth(TOOLS.memory_file_edit_save_call(message, tool_reply, Thought_Control));
 
               // Things get weird if nothing found.
+              tool_calls_submittted.catch_truth(TOOLS.UNKNOWN_CALL(message, tool_reply));
 
             }
           }
@@ -874,7 +882,7 @@ void OLLAMA_API_PYTHON::context_unpause()
   }
 }
 
-void OLLAMA_API_PYTHON::process(TTY_OUTPUT &Output, TTY_OUTPUT_FOCUS &Focus, REMEMBER &Memory)
+void OLLAMA_API_PYTHON::process(TTY_OUTPUT &Output, TTY_OUTPUT_FOCUS &Focus, THOUGHT_VARIABLES &Thought_Control)
 {
   // Print Responses that may arrive.
   if (check_response() > 0)
@@ -900,7 +908,7 @@ void OLLAMA_API_PYTHON::process(TTY_OUTPUT &Output, TTY_OUTPUT_FOCUS &Focus, REM
     set_status(OLLAMA_API_READY_TO_GATHER);
   }
 
-  check_response_done(Memory);
+  check_response_done(Thought_Control);
 }
 
 #endif  // OLLAMA_API_CPP

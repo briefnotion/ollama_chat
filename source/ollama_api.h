@@ -35,7 +35,7 @@
 // Role user names
 #define USER_AI           ""
 #define USER_DOCUMENATION "DOCUMENTATION"
-#define USER_INSTRUCTIONS "INSTRUCTIONNS"
+#define USER_INSTRUCTIONS "INSTRUCTIONS"
 
 using namespace std;
 

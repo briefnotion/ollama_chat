@@ -112,6 +112,7 @@ class FILE_WATCH
 bool check_create_working_dir(string Directory, bool Create);
 // Not Coded
 
+void dump_string(string Directory, string Filename, string Value, bool Append);
 void dump_string(string Directory, string Filename, string Value);
 // Copies string to file Filename
 

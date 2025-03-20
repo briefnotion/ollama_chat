@@ -41,6 +41,10 @@ void THOUGHTS::check_intentions(THOUGHT &Thought)
     {
       Thought.ABOUT = "maintenance mode";
     }
+    else if (keyword_search(THOUGHT_CONTOL.TRAIN_OF_THOUGH.back().SUBJECT, {"edit", "memory", "file"}))
+    {
+      Thought.ABOUT = "memory file mode";
+    }
     else
     {
       Thought.ABOUT = "input";
@@ -102,6 +106,14 @@ void THOUGHTS::process_thinking(SYSTEM &System)
     else if (THOUGHT_CONTOL.TRAIN_OF_THOUGH.back().ABOUT == "in conclusion")
     {
       STAGES.process_in_conclusion_mode_stages(THOUGHT_CONTOL, OLLAMA_SYSTEM);
+    }
+    else if (THOUGHT_CONTOL.TRAIN_OF_THOUGH.back().ABOUT == "memory file mode")
+    {
+      STAGES.process_memory_file_mode_stages(THOUGHT_CONTOL);
+    }
+    else if (THOUGHT_CONTOL.TRAIN_OF_THOUGH.back().ABOUT == "memory file mode cycle")
+    {
+      STAGES.process_memory_file_mode_cycle(System, THOUGHT_CONTOL, OLLAMA_SYSTEM);
     }
   }
 }
@@ -199,7 +211,7 @@ void THOUGHTS::process(SYSTEM &System)
 
   // Handle Output
   THOUGHT_CONTOL.VECTORDB_SYSTEM.process();
-  OLLAMA_SYSTEM.process(System.OUTPUT_OLLAMA_RESPONSE, System.OUTPUT_FOCUS, THOUGHT_CONTOL.MEMORY);
+  OLLAMA_SYSTEM.process(System.OUTPUT_OLLAMA_RESPONSE, System.OUTPUT_FOCUS, THOUGHT_CONTOL);
 }
 
 // ------------------------------------------------------------------------- //
