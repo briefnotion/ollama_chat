@@ -50,7 +50,7 @@ nlohmann::json TOOL_FUNCTIONS::weather_tool()
   {
     {"type", "function"},
     {"function", {
-      {"name", "get_current_weather"},
+      {"name", WEATHER_TOOL_NAME},
       {"description", "Get the current weather for a location"},
       {"parameters", {
         {"type", "object"},
@@ -80,7 +80,7 @@ nlohmann::json TOOL_FUNCTIONS::weather_tool_reply()
     {
       {"role", "tool"},
       {"content", "The current weather in " + WEATHER_TOOL_PARAM_LOCATION + " has a temperature of 25° " + WEATHER_TOOL_PARAM_FORMAT + "."}, 
-      {"name", "get_current_weather"}
+      {"name", WEATHER_TOOL_NAME}
     };
   }
   else if (WEATHER_TOOL_PARAM_FORMAT == "fahrenheit")
@@ -89,7 +89,7 @@ nlohmann::json TOOL_FUNCTIONS::weather_tool_reply()
     {
       {"role", "tool"},
       {"content", "The current weather in " + WEATHER_TOOL_PARAM_LOCATION + " has a temperature of 77° " + WEATHER_TOOL_PARAM_FORMAT + "."}, 
-      {"name", "get_current_weather"}
+      {"name", WEATHER_TOOL_NAME}
     };
   }
   else
@@ -98,7 +98,7 @@ nlohmann::json TOOL_FUNCTIONS::weather_tool_reply()
     {
       {"role", "tool"},
       {"content", "I need fahrenheit or celsius?"}, 
-      {"name", "get_current_weather"}
+      {"name", WEATHER_TOOL_NAME}
     };
   }
 }
@@ -108,7 +108,7 @@ bool TOOL_FUNCTIONS::WEATHER_TOOL_CALL(nlohmann::json Message, nlohmann::json &T
   bool ret_submitted = false;
 
   // get current weather
-  if (Message["tool_calls"]["function"]["name"] == "get_current_weather")
+  if (Message["tool_calls"]["function"]["name"] == WEATHER_TOOL_NAME)
   {
     ret_submitted = true;
     if(WEATHER_TOOL.enabled())
@@ -141,7 +141,7 @@ nlohmann::json TOOL_FUNCTIONS::clock_tool()
   {
     {"type", "function"},
     {"function", {
-      {"name", "get_current_time"},
+      {"name", CLOCK_TOOL_NAME},
       {"description", "The user is asking for the current time"},
       //{"parameters", {}}
       {"parameters", {
@@ -167,7 +167,7 @@ nlohmann::json TOOL_FUNCTIONS::clock_tool_reply()
     {
       {"role", "tool"},
       {"content", "The time is " + current_time(false) + "."}, 
-      {"name", "get_current_time"}
+      {"name", CLOCK_TOOL_NAME}
     };
   }
   else
@@ -175,7 +175,7 @@ nlohmann::json TOOL_FUNCTIONS::clock_tool_reply()
     {
       {"role", "tool"},
       {"content", "The time is " + current_time(true) + "."}, 
-      {"name", "get_current_time"}
+      {"name", CLOCK_TOOL_NAME}
     };
   }
 }
@@ -184,7 +184,7 @@ bool TOOL_FUNCTIONS::CLOCK_TOOL_CALL(nlohmann::json Message, nlohmann::json &Too
 {
   bool ret_submitted = false;
 
-  if (Message["tool_calls"]["function"]["name"] == "get_current_time")
+  if (Message["tool_calls"]["function"]["name"] == CLOCK_TOOL_NAME)
   {
     ret_submitted = true;
     if(CLOCK_TOOL.enabled())
@@ -255,7 +255,7 @@ nlohmann::json TOOL_FUNCTIONS::system_help_tool()
   {
     {"type", "function"},
     {"function", {
-      {"name", "system_help_tool"},
+      {"name", SYSTEM_HELP_TOOL_NAME},
       {"description", "The user is asking for help on how to interact with the system."}
       //{"parameters", {}}
     }}
@@ -269,14 +269,14 @@ nlohmann::json TOOL_FUNCTIONS::system_help_reply(THOUGHT_VARIABLES &Thought_Cont
   {
     {"role", "tool"},
     {"content", Thought_Control.MEMORY.FILE_MANAGER.get_file("system_help")}, 
-    {"name", "system_help_tool"}
+    {"name", SYSTEM_HELP_TOOL_NAME}
   };
 }
 
 bool TOOL_FUNCTIONS::SYSTEM_HELP_CALL(nlohmann::json Message, nlohmann::json &Tool_Reply, THOUGHT_VARIABLES &Thought_Control)
 {
   bool ret_submitted = false;
-  if (Message["tool_calls"]["function"]["name"] == "system_help_tool")
+  if (Message["tool_calls"]["function"]["name"] == SYSTEM_HELP_TOOL_NAME)
   {
     ret_submitted = true;
     if(SYSTEM_HELP.enabled())
@@ -298,7 +298,7 @@ nlohmann::json TOOL_FUNCTIONS::memory_file_list_tool()
   {
     {"type", "function"},
     {"function", {
-      {"name", "memory_file_list_tool"},
+      {"name", MEMORY_FILES_LIST_TOOL_NAME},
       {"description", "The user is asking for the memory file list."}
     }}
   };
@@ -312,14 +312,14 @@ nlohmann::json TOOL_FUNCTIONS::memory_file_list_reply(THOUGHT_VARIABLES &Thought
     {"role", "tool"},
     {"content", "Memory file list: " + 
       Thought_Control.MEMORY.FILE_MANAGER.memory_file_list()}, 
-    {"name", "memory_file_list_tool"}
+    {"name", MEMORY_FILES_LIST_TOOL_NAME}
   };
 }
 
 bool TOOL_FUNCTIONS::MEMORY_FILES_LIST_CALL(nlohmann::json Message, nlohmann::json &Tool_Reply, THOUGHT_VARIABLES &Thought_Control)
 {
   bool ret_submitted = false;
-  if (Message["tool_calls"]["function"]["name"] == "memory_file_list_tool")
+  if (Message["tool_calls"]["function"]["name"] == MEMORY_FILES_LIST_TOOL_NAME)
   {
     ret_submitted = true;
     if(MEMORY_FILES_LIST.enabled())
@@ -342,7 +342,7 @@ nlohmann::json TOOL_FUNCTIONS::memory_file_print_tool()
   {
     {"type", "function"},
     {"function", {
-      {"name", "memory_file_print"},
+      {"name", MEMORY_FILES_PRINT_TOOL_NAME},
       {"description", "Print the contents of a memory file."},
       {"parameters", {
         {"type", "object"},
@@ -369,7 +369,7 @@ nlohmann::json TOOL_FUNCTIONS::memory_file_print_reply(THOUGHT_VARIABLES &Though
          MEMORY_FILES_PRINT_NAME + 
          " is: \n" + 
          Thought_Control.MEMORY.FILE_MANAGER.get_file(MEMORY_FILES_PRINT_NAME)}, 
-      {"name", "memory_file_print"}
+      {"name", MEMORY_FILES_PRINT_TOOL_NAME}
     };
   }
   /*
@@ -381,7 +381,7 @@ nlohmann::json TOOL_FUNCTIONS::memory_file_print_reply(THOUGHT_VARIABLES &Though
       {"content", "The memory file: " + 
          MEMORY_FILES_PRINT_NAME + 
          " is not found.\n"}, 
-      {"name", "memory_file_print"}
+      {"name", MEMORY_FILES_PRINT_TOOL_NAME}
     };
   }
   */
@@ -390,7 +390,7 @@ nlohmann::json TOOL_FUNCTIONS::memory_file_print_reply(THOUGHT_VARIABLES &Though
 bool TOOL_FUNCTIONS::MEMORY_FILES_PRINT_CALL(nlohmann::json Message, nlohmann::json &Tool_Reply, THOUGHT_VARIABLES &Thought_Control)
 {
   bool ret_submitted = false;
-  if (Message["tool_calls"]["function"]["name"] == "memory_file_print")
+  if (Message["tool_calls"]["function"]["name"] == MEMORY_FILES_PRINT_TOOL_NAME)
   {
     ret_submitted = true;
 
@@ -526,7 +526,7 @@ nlohmann::json TOOL_FUNCTIONS::memory_file_edit_save_tool()
   {
     {"type", "function"},
     {"function", {
-      {"name", "memory_file_edit_save_tool"},
+      {"name", MEMORY_FILE_EDIT_SAVE_TOOL_NAME},
       {"description", "Store or save the memory file text with the filename provided."},
       {"parameters", {
         {"type", "object"},
@@ -563,7 +563,7 @@ nlohmann::json TOOL_FUNCTIONS::memory_file_edit_save_reply(THOUGHT_VARIABLES &Th
     {
       {"role", "tool"},
       {"content", "The memory file was saved."}, 
-      {"name", "memory_file_edit_save_tool"}
+      {"name", MEMORY_FILE_EDIT_SAVE_TOOL_NAME}
     };
   }
 
@@ -573,7 +573,7 @@ bool TOOL_FUNCTIONS::memory_file_edit_save_call(nlohmann::json Message, nlohmann
 {
   bool ret_submitted = false;
 
-  if (Message["tool_calls"]["function"]["name"] == "memory_file_edit_save_tool")
+  if (Message["tool_calls"]["function"]["name"] == MEMORY_FILE_EDIT_SAVE_TOOL_NAME)
   {
     ret_submitted = true;
 
@@ -690,6 +690,54 @@ nlohmann::json TOOL_FUNCTIONS::tool_list()
 
   // ------------------------------------------------------------------------- //
   return ret_tools_list;
+}
+
+// ------------------------------------------------------------------------- //
+
+void TOOL_FUNCTIONS::tool_calls(nlohmann::json Message, 
+                                nlohmann::json &Tool_Reply, THOUGHT_VARIABLES &Thought_Control)
+{
+  /*
+  Tool_Calls_Submittted.catch_truth(WEATHER_TOOL_CALL(Message, Tool_Reply));
+  Tool_Calls_Submittted.catch_truth(CLOCK_TOOL_CALL(Message, Tool_Reply));
+  Tool_Calls_Submittted.catch_truth(DATE_TOOL_CALL(Message, Tool_Reply));
+  Tool_Calls_Submittted.catch_truth(SYSTEM_HELP_CALL(Message, Tool_Reply, Thought_Control));
+  Tool_Calls_Submittted.catch_truth(MEMORY_FILES_LIST_CALL(Message, Tool_Reply, Thought_Control));
+  Tool_Calls_Submittted.catch_truth(MEMORY_FILES_PRINT_CALL(Message, Tool_Reply, Thought_Control));
+  //Tool_Calls_Submittted.catch_truth(MAINTENANCE_MODE_ENTER_CALL(Message, Tool_Reply, Thought_Control));
+
+  //Tool_Calls_Submittted.catch_truth(memory_file_edit_show_name_call(Message, Tool_Reply));
+  //Tool_Calls_Submittted.catch_truth(memory_file_edit_store_name_call(Message, Tool_Reply, Thought_Control));
+  //Tool_Calls_Submittted.catch_truth(memory_file_edit_show_content_call(Message, Tool_Reply, Thought_Control));
+  //Tool_Calls_Submittted.catch_truth(memory_file_edit_store_content_call(Message, Tool_Reply, Thought_Control));
+  Tool_Calls_Submittted.catch_truth(memory_file_edit_save_call(Message, Tool_Reply, Thought_Control));
+
+  // Things get weird if nothing found.
+  Tool_Calls_Submittted.catch_truth(UNKNOWN_CALL(Message, Tool_Reply));
+  */
+
+  TRUTH_CATCH found;
+
+  found.catch_truth(WEATHER_TOOL_CALL(Message, Tool_Reply));
+  found.catch_truth(CLOCK_TOOL_CALL(Message, Tool_Reply));
+  found.catch_truth(DATE_TOOL_CALL(Message, Tool_Reply));
+  found.catch_truth(SYSTEM_HELP_CALL(Message, Tool_Reply, Thought_Control));
+  found.catch_truth(MEMORY_FILES_LIST_CALL(Message, Tool_Reply, Thought_Control));
+  found.catch_truth(MEMORY_FILES_PRINT_CALL(Message, Tool_Reply, Thought_Control));
+  //found.catch_truth(MAINTENANCE_MODE_ENTER_CALL(Message, Tool_Reply, Thought_Control));
+
+  //found.catch_truth(memory_file_edit_show_name_call(Message, Tool_Reply));
+  //found.catch_truth(memory_file_edit_store_name_call(Message, Tool_Reply, Thought_Control));
+  //found.catch_truth(memory_file_edit_show_content_call(Message, Tool_Reply, Thought_Control));
+  //found.catch_truth(memory_file_edit_store_content_call(Message, Tool_Reply, Thought_Control));
+  found.catch_truth(memory_file_edit_save_call(Message, Tool_Reply, Thought_Control));
+
+  // Things get weird if nothing found.
+  if (found.has_truth() == false)
+  {
+    UNKNOWN_CALL(Message, Tool_Reply);
+  }
+
 }
 
 // ------------------------------------------------------------------------- //

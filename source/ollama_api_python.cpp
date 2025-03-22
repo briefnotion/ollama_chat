@@ -758,7 +758,7 @@ void OLLAMA_API_PYTHON::check_response_done(THOUGHT_VARIABLES &Thought_Control)
     
     bool tool_calls_found = false;
     
-    TRUTH_CATCH tool_calls_submittted;
+    bool tool_calls_submittted = false;
 
     nlohmann::json tool_reply;
 
@@ -781,36 +781,8 @@ void OLLAMA_API_PYTHON::check_response_done(THOUGHT_VARIABLES &Thought_Control)
             dump_string(DUMP_DIRECTORY, "item_1.txt", message["tool_calls"]["function"].dump(2));
             if (message["tool_calls"]["function"].contains("name"))
             {
-              tool_calls_submittted.catch_truth(TOOLS.WEATHER_TOOL_CALL(message, tool_reply));
-              tool_calls_submittted.catch_truth(TOOLS.CLOCK_TOOL_CALL(message, tool_reply));
-              tool_calls_submittted.catch_truth(TOOLS.DATE_TOOL_CALL(message, tool_reply));
-              tool_calls_submittted.catch_truth(TOOLS.SYSTEM_HELP_CALL(message, tool_reply, Thought_Control));
-              tool_calls_submittted.catch_truth(TOOLS.MEMORY_FILES_LIST_CALL(message, tool_reply, Thought_Control));
-              tool_calls_submittted.catch_truth(TOOLS.MEMORY_FILES_PRINT_CALL(message, tool_reply, Thought_Control));
-              //tool_calls_submittted.catch_truth(TOOLS.MAINTENANCE_MODE_ENTER_CALL(message, tool_reply, Thought_Control));
-
-              //tool_calls_submittted.catch_truth(TOOLS.memory_file_edit_show_name_call(message, tool_reply));
-              //tool_calls_submittted.catch_truth(TOOLS.memory_file_edit_store_name_call(message, tool_reply, Thought_Control));
-              //tool_calls_submittted.catch_truth(TOOLS.memory_file_edit_show_content_call(message, tool_reply, Thought_Control));
-              //tool_calls_submittted.catch_truth(TOOLS.memory_file_edit_store_content_call(message, tool_reply, Thought_Control));
-              tool_calls_submittted.catch_truth(TOOLS.memory_file_edit_save_call(message, tool_reply, Thought_Control));
-
-              // Things get weird if nothing found.
-              tool_calls_submittted.catch_truth(TOOLS.UNKNOWN_CALL(message, tool_reply));
-
-            }
-          }
-        }
-        else if (message.contains("role"))
-        {
-          //dump_string(DUMP_DIRECTORY, "tool_respons.json", RESPONSE.dump(2));
-          // If no tool call found, store the response.
-          if (message["content"] != "")
-          {
-            if (REMEMBER_CONTEXT)
-            {
-              // resubmit without tool info
-              CONVERSATION.push_back(message);
+              TOOLS.tool_calls(message, tool_reply, Thought_Control);
+              tool_calls_submittted = true;
             }
           }
         }
@@ -840,7 +812,7 @@ void OLLAMA_API_PYTHON::check_response_done(THOUGHT_VARIABLES &Thought_Control)
       // Tool Calls
       if (tool_calls_found)
       {
-        if (tool_calls_submittted.has_truth())
+        if (tool_calls_submittted)
         {
           dump_string(DUMP_DIRECTORY, "tool_reply.json", tool_reply.dump(2));
           // Resubmit question with tool reply

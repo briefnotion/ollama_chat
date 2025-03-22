@@ -36,6 +36,8 @@ class TOOL_FUNCTIONS
   // ------------------------------------------------------------------------- //
   // Weather from testing,  always responds the same.
   TOOL_TRACKER WEATHER_TOOL;
+
+  string WEATHER_TOOL_NAME = "get_current_weather";
   nlohmann::json weather_tool();
   string WEATHER_TOOL_PARAM_FORMAT = "";
   string WEATHER_TOOL_PARAM_LOCATION = "";
@@ -45,12 +47,16 @@ class TOOL_FUNCTIONS
   // ------------------------------------------------------------------------- //
   // Date and TIme
   TOOL_TRACKER CLOCK_TOOL;
+
+  string CLOCK_TOOL_NAME = "get_current_time";
   nlohmann::json clock_tool();
   string CLOCK_TOOL_PARAM_FORMAT = "";
   nlohmann::json clock_tool_reply();
   bool CLOCK_TOOL_CALL(nlohmann::json Message, nlohmann::json &Tool_Reply);
 
   TOOL_TRACKER DATE_TOOL;
+
+  string DATE_TOOL_NAME = "get_current_date";
   nlohmann::json date_tool();
   nlohmann::json date_tool_reply();
   bool DATE_TOOL_CALL(nlohmann::json Message, nlohmann::json &Tool_Reply);
@@ -58,6 +64,8 @@ class TOOL_FUNCTIONS
   // ------------------------------------------------------------------------- //
   // System Help
   TOOL_TRACKER SYSTEM_HELP;
+
+  string SYSTEM_HELP_TOOL_NAME = "system_help_tool";
   nlohmann::json system_help_tool();
   nlohmann::json system_help_reply(THOUGHT_VARIABLES &Thought_Control);
   bool SYSTEM_HELP_CALL(nlohmann::json Message, nlohmann::json &Tool_Reply, THOUGHT_VARIABLES &Thought_Control);
@@ -65,11 +73,15 @@ class TOOL_FUNCTIONS
   // ------------------------------------------------------------------------- //
   // Memory Files
   TOOL_TRACKER MEMORY_FILES_LIST;
+
+  string MEMORY_FILES_LIST_TOOL_NAME = "memory_file_list_tool";
   nlohmann::json memory_file_list_tool();
   nlohmann::json memory_file_list_reply(THOUGHT_VARIABLES &Thought_Control);
   bool MEMORY_FILES_LIST_CALL(nlohmann::json Message, nlohmann::json &Tool_Reply, THOUGHT_VARIABLES &Thought_Control);
   
   TOOL_TRACKER MEMORY_FILES_PRINT;
+
+  string MEMORY_FILES_PRINT_TOOL_NAME = "memory_file_print";
   nlohmann::json memory_file_print_tool();
   string MEMORY_FILES_PRINT_NAME = "";
   nlohmann::json memory_file_print_reply(THOUGHT_VARIABLES &Thought_Control);
@@ -100,6 +112,7 @@ class TOOL_FUNCTIONS
   nlohmann::json memory_file_edit_store_content_reply(THOUGHT_VARIABLES &Thought_Control);
   */
 
+  string MEMORY_FILE_EDIT_SAVE_TOOL_NAME = "memory_file_edit_save_tool";
   nlohmann::json memory_file_edit_save_tool();
   nlohmann::json memory_file_edit_save_reply(THOUGHT_VARIABLES &Thought_Control);
   bool memory_file_edit_save_call(nlohmann::json Message, nlohmann::json &Tool_Reply, THOUGHT_VARIABLES &Thought_Control);
@@ -119,6 +132,9 @@ class TOOL_FUNCTIONS
   // ------------------------------------------------------------------------- //
   // Tool Call List
   nlohmann::json tool_list();
+
+  void tool_calls(nlohmann::json Message, 
+                  nlohmann::json &Tool_Reply, THOUGHT_VARIABLES &Thought_Control);
 
   // Tool Enable Block
   void enable_ollama();
